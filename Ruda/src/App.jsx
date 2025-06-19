@@ -4,7 +4,8 @@ import { AppBar, Box, Toolbar, Typography } from '@mui/material';
 import LayerFilterPanel from './components/LayerFilterPanel';
 import MapView from './components/MapView';
 import bbox from '@turf/bbox';
-
+import DashboardRTWExact from './components/DashboardRTW';
+import { Routes, Route } from 'react-router-dom';
 function getRandomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
 }
@@ -146,39 +147,46 @@ const App = () => {
 
   return (
     <>
-      {/* ✅ Header */}
-      <AppBar position="static" color="primary">
-        <Toolbar>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', letterSpacing: 1 }}>
-            (RUDA) Ravi Urban Development Authority
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Routes>
+        <Route path="/" element={
+          <>
+            {/* ✅ Main RUDA Dashboard UI */}
+            <AppBar position="static" color="primary">
+              <Toolbar>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', letterSpacing: 1 }}>
+                  (RUDA) Ravi Urban Development Authority
+                </Typography>
+              </Toolbar>
+            </AppBar>
 
-      {/* ✅ Main Layout */}
-      <Box display="flex" height="calc(100vh - 64px)">
-        <Box width="380px" bgcolor="#191c20" color="#fff" overflow="auto">
-          <LayerFilterPanel
-            features={features}
-            selectedPhases={selectedPhases}
-            setSelectedPhases={setSelectedPhases}
-            selectedPackages={selectedPackages}
-            setSelectedPackages={setSelectedPackages}
-            selectedProjects={selectedProjects}
-            setSelectedProjects={setSelectedProjects}
-            colorMap={colorMap}
-            onColorChange={handleColorChange}
-          />
-        </Box>
-        <Box flex={1}>
-          <MapView
-            features={filteredFeatures}
-            colorMap={colorMap}
-            selectedNames={selectedNames}
-            districtBoundaries={districtBoundaries}
-          />
-        </Box>
-      </Box>
+            <Box display="flex" height="calc(100vh - 64px)">
+              <Box width="380px" bgcolor="#191c20" color="#fff" overflow="auto">
+                <LayerFilterPanel
+                  features={features}
+                  selectedPhases={selectedPhases}
+                  setSelectedPhases={setSelectedPhases}
+                  selectedPackages={selectedPackages}
+                  setSelectedPackages={setSelectedPackages}
+                  selectedProjects={selectedProjects}
+                  setSelectedProjects={setSelectedProjects}
+                  colorMap={colorMap}
+                  onColorChange={handleColorChange}
+                />
+              </Box>
+              <Box flex={1}>
+                <MapView
+                  features={filteredFeatures}
+                  colorMap={colorMap}
+                  selectedNames={selectedNames}
+                  districtBoundaries={districtBoundaries}
+                />
+              </Box>
+            </Box>
+          </>
+        } />
+        
+        <Route path="/details/:name" element={<DashboardRTWExact />} />
+      </Routes>
     </>
   );
 };

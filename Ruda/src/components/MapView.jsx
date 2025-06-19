@@ -15,8 +15,8 @@ mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 const baseStyles = {
   Light: 'mapbox://styles/mapbox/light-v11',
   Dark: 'mapbox://styles/mapbox/dark-v11',
-  Satellite: 'mapbox://styles/mapbox/satellite-v9',
-  'Satellite Streets': 'mapbox://styles/mapbox/satellite-streets-v12',
+  Satellite: 'mapbox://styles/mapbox/satellite-streets-v12',
+  // "Only Satellite": 'mapbox://styles/mapbox/satellite-v9',
   Streets: 'mapbox://styles/mapbox/streets-v12',
   Outdoors: 'mapbox://styles/mapbox/outdoors-v12'
 };
@@ -166,6 +166,82 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
         'fill-opacity': 0.6
       }
     });
+
+    map.on('mouseenter', 'ruda-fill', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'ruda-fill', () => {
+      map.getCanvas().style.cursor = '';
+    });
+    
+    // ✅ Popup on click
+    map.on('click', 'ruda-fill', (e) => {
+      const feature = e.features[0];
+      const { name, area_sqkm, land_available_pct, physical_actual_pct } = feature.properties;
+    
+      const area = area_sqkm ? `${parseFloat(area_sqkm).toFixed(2)} sq.km` : 'N/A';
+      const land = land_available_pct != null ? `${land_available_pct}%` : 'N/A';
+      const progress = physical_actual_pct != null ? `${physical_actual_pct}%` : 'N/A';
+    
+      const popupHTML = `
+        <div style="font-family: 'Segoe UI', sans-serif; min-width:220px; padding:8px;">
+          <h3 style="margin:0 0 8px; font-size:16px; color:#1976d2;">${name || 'Unnamed'}</h3>
+    
+          <div style="font-size:14px; margin-bottom:8px;">
+            <strong>Area:</strong> ${area}
+          </div>
+    
+          <div style="display:flex; gap:6px; font-size:13px; margin-bottom:10px;">
+            <div style="
+              flex:1;
+              background:#e3f2fd;
+              border:1px solid #90caf9;
+              border-radius:6px;
+              padding:6px;
+              text-align:center;
+              color:#1565c0;
+            ">
+              <div style="font-weight:500;">Land Available</div>
+              <div style="font-size:15px;">${land}</div>
+            </div>
+            <div style="
+              flex:1;
+              background:#fff8e1;
+              border:1px solid #ffe082;
+              border-radius:6px;
+              padding:6px;
+              text-align:center;
+              color:#f9a825;
+            ">
+              <div style="font-weight:500;">Physical Progress</div>
+              <div style="font-size:15px;">${progress}</div>
+            </div>
+          </div>
+    
+          <a href="/details/${encodeURIComponent(name)}"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="
+            display:inline-block;
+            margin-top:4px;
+            font-size:13px;
+            color:#388e3c;
+            text-decoration:none;
+            font-weight:500;
+          ">
+          🔍 View Details
+       </a>
+       
+
+        </div>
+      `;
+    
+      new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(popupHTML)
+        .addTo(map);
+    });
+    
 
     map.addLayer({
       id: 'ruda-outline',
