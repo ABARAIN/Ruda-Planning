@@ -43,7 +43,7 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
     });
 
     mapRef.current = map;
-
+    window.__MAPBOX_INSTANCE__ = map;
     map.addControl(new mapboxgl.NavigationControl(), 'top-left');
     map.addControl(new mapboxgl.ScaleControl({ unit: 'metric' }), 'bottom-left');
 
