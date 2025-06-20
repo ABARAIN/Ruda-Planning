@@ -54,3 +54,13 @@
 ::-webkit-scrollbar-track {
   background: #f0f0f0;
 }
+
+
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}

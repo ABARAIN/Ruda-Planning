@@ -61,13 +61,7 @@ const App = () => {
     });
   }, []);
 
-  // 🧠 Extract phases
-  useEffect(() => {
-    const phases = [...new Set(
-      features.filter(f => f.properties?.name?.startsWith('Phase')).map(f => f.properties.name)
-    )];
-    setSelectedPhases(phases);
-  }, [features]);
+
 
   // 🧠 Extract packages from selected phases
   useEffect(() => {
@@ -152,15 +146,52 @@ const App = () => {
           <>
             {/* ✅ Main RUDA Dashboard UI */}
             <AppBar position="static" color="primary">
-              <Toolbar>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', letterSpacing: 1 }}>
-                  (RUDA) Ravi Urban Development Authority
-                </Typography>
-              </Toolbar>
-            </AppBar>
+  <Toolbar sx={{ display: 'flex', alignItems: 'center' }}>
+    <Box
+      component="img"
+      src="/ruda.png"
+      alt="RUDA Logo"
+      sx={{
+        width: 32,
+        height: 45,
+        transform: 'scale(2.8)', // Scales up without affecting layout
+        transformOrigin: 'left center',
+        mr: 7,
+      }}
+    />
+    <Typography
+      variant="h6"
+      sx={{
+        fontWeight: 'bold',
+        letterSpacing: 1,
+        flexGrow: 1,
+      }}
+    >
+       Ravi Urban Development Authority
+    </Typography>
+  </Toolbar>
+</AppBar>
 
-            <Box display="flex" height="calc(100vh - 64px)">
-              <Box width="335px" bgcolor="#191c20" color="#fff" overflow="auto">
+
+<Box
+  display="flex"
+  height="calc(100vh - 64px)"
+  sx={{ overflow: 'hidden' }} // ✅ Prevents scroll at app level
+>
+
+<Box
+  sx={{
+    width: 335,
+    height: '100%',
+    bgcolor: '#2a2a2a',
+    color: '#fff',
+    px: 2,
+    py: 3,
+    overflow: 'hidden', // ✅ Ensures no scroll inside sidebar
+  }}
+>
+
+
                 <LayerFilterPanel
                   features={features}
                   selectedPhases={selectedPhases}
@@ -173,7 +204,8 @@ const App = () => {
                   onColorChange={handleColorChange}
                 />
               </Box>
-              <Box flex={1}>
+              <Box flex={1} sx={{ overflow: 'hidden' }}>
+
                 <MapView
                   features={filteredFeatures}
                   colorMap={colorMap}

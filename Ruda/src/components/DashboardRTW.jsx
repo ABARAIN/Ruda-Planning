@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Box, Typography, Grid, Paper, Table, TableBody, TableRow, TableCell, Avatar
+    Box, Typography, Grid, Paper, Table, TableBody, TableRow, TableCell, Avatar,  CircularProgress 
 } from '@mui/material';
 import {
     PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, CartesianGrid, Legend
@@ -22,20 +22,83 @@ const SectionCard = ({ title, children, noStrip }) => (
     </Paper>
 );
 
+
+
+const bounceStyle = `
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+`;
+
+const styleSheet = document.createElement("style");
+styleSheet.type = "text/css";
+styleSheet.innerText = bounceStyle;
+document.head.appendChild(styleSheet);
+
+
 export default function DashboardRTWExact() {
     const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         axios.get('https://ruda-backend-ny14.onrender.com/api/all')
-            .then(res => {
-                const pkg = res.data.features.find(f => f.properties.name === "RTW Package-02");
+          .then(res => {
+            const pkg = res.data.features.find(f => f.properties.name === "RTW Package-02");
+      
+            if (pkg) {
+              setData(pkg.properties);
+              setLoading(false);
+            } else {
+              console.warn("RTW Package-02 not found.");
+              setLoading(false);
+            }
+          })
+          .catch(err => {
+            console.error('Failed to fetch API:', err);
+            setLoading(false);
+          });
+      }, []);
+      
 
-                if (pkg) setData(pkg.properties);
-            })
-            .catch(err => console.error('Failed to fetch API:', err));
-    }, []);
+   
 
-    if (!data) return <Typography>Loading...</Typography>;
+
+
+      if (loading) {
+        return (
+          <Box
+            sx={{
+              height: '100vh',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: '#121212',
+              flexDirection: 'column',
+            }}
+          >
+            <Box
+              component="img"
+              src="/ruda.png"
+              alt="Loading..."
+              sx={{
+                width: 180,
+                height: 'auto',
+                animation: 'bounce 1.5s infinite ease-in-out',
+              }}
+            />
+          </Box>
+        );
+      }
+      
+
+
+
+
 
     return (
         <Box sx={{
