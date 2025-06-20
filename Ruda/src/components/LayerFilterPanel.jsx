@@ -64,7 +64,7 @@ const LayerFilterPanel = ({
         input={<OutlinedInput label={label} />}
         renderValue={(selected) => selected.join(', ')}
         sx={{
-          bgcolor: '#1e1e1e', color: '#fff',
+          bgcolor: '#2a2a2a', color: '#fff',
           '& .MuiSvgIcon-root': { color: '#fff' },
           '& .MuiOutlinedInput-notchedOutline': { borderColor: '#555' },
         }}
@@ -72,22 +72,21 @@ const LayerFilterPanel = ({
           PaperProps: {
             style: {
               maxHeight: 300,
-              backgroundColor: '#121212',
-              color: '#fff',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none'
-            }
-          },
-          MenuListProps: {
-            sx: {
-              '&::-webkit-scrollbar': { display: 'none' }
+              backgroundColor: '#1f1f1f',
+              color: '#fff'
             }
           }
         }}
       >
         {options.map(opt => (
           <MenuItem key={opt} value={opt}>
-            <Checkbox checked={value.includes(opt)} />
+            <Checkbox
+              checked={value.includes(opt)}
+              sx={{
+                color: '#ccc',
+                '&.Mui-checked': { color: '#2196f3' }
+              }}
+            />
             <ColorSwatch color={colorMap[opt] || '#999'} />
             <ListItemText primary={opt} />
             <input
@@ -113,17 +112,17 @@ const LayerFilterPanel = ({
       sx={{
         width: 320,
         height: '100vh',
-        bgcolor: '#121212',
+        bgcolor: '#2a2a2a', // Lighter gray instead of black
         color: '#fff',
         px: 2,
         py: 3,
-        overflow: 'hidden', // Ensures no scroll
-        '&::-webkit-scrollbar': { display: 'none' },
-        scrollbarWidth: 'none'
+        overflow: 'hidden',         // Removes scrollbars
+        scrollbarWidth: 'none',     // Firefox
+        '&::-webkit-scrollbar': { display: 'none' }, // Chrome, Edge
       }}
     >
       <Typography variant="h6" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        
+       
         <span style={{ color: '#2196f3' }}>Layer Filters</span>
       </Typography>
 

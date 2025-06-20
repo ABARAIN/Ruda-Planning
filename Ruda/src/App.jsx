@@ -29,8 +29,8 @@ const App = () => {
     const fetchBoundaries = async () => {
       try {
         const [sheikhupura, lahore] = await Promise.all([
-          axios.get('http://localhost:5000/api/sheikhpura'),
-          axios.get('http://localhost:5000/api/lahore')
+          axios.get('https://ruda-backend-ny14.onrender.com/api/sheikhpura'),
+          axios.get('https://ruda-backend-ny14.onrender.com/api/lahore')
         ]);
         setDistrictBoundaries([
           ...sheikhupura.data.features.map(f => ({ ...f, properties: { ...f.properties, district: 'Sheikhupura' } })),
@@ -46,7 +46,7 @@ const App = () => {
 
   // 🚀 Load all spatial features
   useEffect(() => {
-    axios.get('http://localhost:5000/api/all').then(res => {
+    axios.get('https://ruda-backend-ny14.onrender.com/api/all').then(res => {
       const feats = res.data.features || [];
       setFeatures(feats);
 
