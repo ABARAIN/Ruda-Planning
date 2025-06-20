@@ -26,7 +26,7 @@ export default function DashboardRTWExact() {
     const [data, setData] = useState(null);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/all')
+        axios.get('https://ruda-backend-ny14.onrender.com/api/all')
             .then(res => {
                 const pkg = res.data.features.find(f => f.properties.name === "RTW Package-02");
 
