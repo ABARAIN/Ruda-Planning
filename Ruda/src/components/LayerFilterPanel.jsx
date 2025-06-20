@@ -3,6 +3,7 @@ import {
   Box, Typography, FormControl, InputLabel, Select,
   MenuItem, Checkbox, ListItemText, OutlinedInput
 } from '@mui/material';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 const normalize = str => (str || '').toLowerCase().replace(/ruda\s+/i, '').trim();
 
@@ -23,8 +24,6 @@ const LayerFilterPanel = ({
   colorMap = {},
   onColorChange
 }) => {
-
-  // 🔹 Extract all unique phases (by name)
   const phaseOptions = useMemo(() =>
     [...new Set(
       features
@@ -32,7 +31,6 @@ const LayerFilterPanel = ({
         .map(f => f.properties.name)
     )], [features]);
 
-  // 🔹 Extract all packages linked to selected phases via ruda_phase column
   const packageOptions = useMemo(() =>
     [...new Set(
       features
@@ -43,9 +41,8 @@ const LayerFilterPanel = ({
             normalize(f.properties.ruda_phase) === normalize(phase))
         )
         .map(f => f.properties.name)
-    )], [features, selectedPhases]);
+    )].sort((a, b) => a.localeCompare(b)), [features, selectedPhases]);
 
-  // 🔹 Extract all projects linked to selected packages via rtw_pkg column
   const projectOptions = useMemo(() =>
     [...new Set(
       features
@@ -55,18 +52,38 @@ const LayerFilterPanel = ({
           selectedPackages.includes(f.properties.rtw_pkg)
         )
         .map(f => f.properties.name)
-    )], [features, selectedPackages]);
+    )].sort((a, b) => a.localeCompare(b)), [features, selectedPackages]);
 
   const renderDropdown = (label, value, setValue, options) => (
     <FormControl fullWidth sx={{ mt: 2 }}>
-      <InputLabel>{label}</InputLabel>
+      <InputLabel sx={{ color: '#ccc' }}>{label}</InputLabel>
       <Select
         multiple
         value={value}
         onChange={e => setValue(e.target.value)}
         input={<OutlinedInput label={label} />}
         renderValue={(selected) => selected.join(', ')}
-        MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
+        sx={{
+          bgcolor: '#1e1e1e', color: '#fff',
+          '& .MuiSvgIcon-root': { color: '#fff' },
+          '& .MuiOutlinedInput-notchedOutline': { borderColor: '#555' },
+        }}
+        MenuProps={{
+          PaperProps: {
+            style: {
+              maxHeight: 300,
+              backgroundColor: '#121212',
+              color: '#fff',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }
+          },
+          MenuListProps: {
+            sx: {
+              '&::-webkit-scrollbar': { display: 'none' }
+            }
+          }
+        }}
       >
         {options.map(opt => (
           <MenuItem key={opt} value={opt}>
@@ -92,8 +109,24 @@ const LayerFilterPanel = ({
   );
 
   return (
-    <Box p={2} sx={{ width: 320 }}>
-      <Typography variant="h6" gutterBottom>Map Filters</Typography>
+    <Box
+      sx={{
+        width: 320,
+        height: '100vh',
+        bgcolor: '#121212',
+        color: '#fff',
+        px: 2,
+        py: 3,
+        overflow: 'hidden', // Ensures no scroll
+        '&::-webkit-scrollbar': { display: 'none' },
+        scrollbarWidth: 'none'
+      }}
+    >
+      <Typography variant="h6" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        
+        <span style={{ color: '#2196f3' }}>Layer Filters</span>
+      </Typography>
+
       {renderDropdown('Phases', selectedPhases, setSelectedPhases, phaseOptions)}
       {renderDropdown('Packages', selectedPackages, setSelectedPackages, packageOptions)}
       {renderDropdown('Projects', selectedProjects, setSelectedProjects, projectOptions)}

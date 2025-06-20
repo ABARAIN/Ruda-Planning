@@ -29,8 +29,8 @@ const App = () => {
     const fetchBoundaries = async () => {
       try {
         const [sheikhupura, lahore] = await Promise.all([
-          axios.get('https://ruda-backend-ny14.onrender.com/api/sheikhpura'),
-          axios.get('https://ruda-backend-ny14.onrender.com/api/lahore')
+          axios.get('http://localhost:5000/api/sheikhpura'),
+          axios.get('http://localhost:5000/api/lahore')
         ]);
         setDistrictBoundaries([
           ...sheikhupura.data.features.map(f => ({ ...f, properties: { ...f.properties, district: 'Sheikhupura' } })),
@@ -46,7 +46,7 @@ const App = () => {
 
   // 🚀 Load all spatial features
   useEffect(() => {
-    axios.get('https://ruda-backend-ny14.onrender.com/api/all').then(res => {
+    axios.get('http://localhost:5000/api/all').then(res => {
       const feats = res.data.features || [];
       setFeatures(feats);
 
@@ -160,7 +160,7 @@ const App = () => {
             </AppBar>
 
             <Box display="flex" height="calc(100vh - 64px)">
-              <Box width="380px" bgcolor="#191c20" color="#fff" overflow="auto">
+              <Box width="335px" bgcolor="#191c20" color="#fff" overflow="auto">
                 <LayerFilterPanel
                   features={features}
                   selectedPhases={selectedPhases}
