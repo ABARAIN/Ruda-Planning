@@ -210,7 +210,7 @@ const LayerFilterPanel = ({
     input={<OutlinedInput label="Projects" />}
     renderValue={(selected) => selected.join(', ')}
     sx={{
-      bgcolor: '#1e1e1e', color: '#fff',
+       color: '#fff',
       '& .MuiSvgIcon-root': { color: '#fff' },
       '& .MuiOutlinedInput-notchedOutline': { borderColor: '#555' },
     }}
