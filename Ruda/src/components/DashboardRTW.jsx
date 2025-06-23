@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Box, Typography, Grid, Paper, Table, TableBody, TableRow, TableCell, Avatar,  CircularProgress 
+    Box, Typography, Grid, Paper, Table, TableBody, TableRow, TableCell, Avatar, CircularProgress
 } from '@mui/material';
 import {
     PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, CartesianGrid, Legend
@@ -15,7 +15,14 @@ const SectionCard = ({ title, children, noStrip }) => (
     <Paper sx={{ border: noStrip ? 'none' : '1px solid black', boxShadow: 'none', bgcolor: '#fff' }}>
         {!noStrip && (
             <Box sx={{ bgcolor: '#000', color: '#fff', px: 2, py: 1 }}>
-                <Typography variant="subtitle1" fontWeight="bold">{title}</Typography>
+                <Typography
+                    variant="subtitle1"
+                    fontWeight="bold"
+                    sx={{ textTransform: 'uppercase', textAlign: 'center' }}
+                >
+                    {title}
+                </Typography>
+
             </Box>
         )}
         <Box sx={{ p: 2 }}>{children}</Box>
@@ -47,54 +54,54 @@ export default function DashboardRTWExact() {
 
     useEffect(() => {
         axios.get('https://ruda-backend-ny14.onrender.com/api/all')
-          .then(res => {
-            const pkg = res.data.features.find(f => f.properties.name === "RTW Package-02");
-      
-            if (pkg) {
-              setData(pkg.properties);
-              setLoading(false);
-            } else {
-              console.warn("RTW Package-02 not found.");
-              setLoading(false);
-            }
-          })
-          .catch(err => {
-            console.error('Failed to fetch API:', err);
-            setLoading(false);
-          });
-      }, []);
-      
+            .then(res => {
+                const pkg = res.data.features.find(f => f.properties.name === "RTW Package-02");
 
-   
+                if (pkg) {
+                    setData(pkg.properties);
+                    setLoading(false);
+                } else {
+                    console.warn("RTW Package-02 not found.");
+                    setLoading(false);
+                }
+            })
+            .catch(err => {
+                console.error('Failed to fetch API:', err);
+                setLoading(false);
+            });
+    }, []);
 
 
 
-      if (loading) {
+
+
+
+    if (loading) {
         return (
-          <Box
-            sx={{
-              height: '100vh',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#121212',
-              flexDirection: 'column',
-            }}
-          >
             <Box
-              component="img"
-              src="/ruda.png"
-              alt="Loading..."
-              sx={{
-                width: 180,
-                height: 'auto',
-                animation: 'bounce 1.5s infinite ease-in-out',
-              }}
-            />
-          </Box>
+                sx={{
+                    height: '100vh',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#121212',
+                    flexDirection: 'column',
+                }}
+            >
+                <Box
+                    component="img"
+                    src="/ruda.png"
+                    alt="Loading..."
+                    sx={{
+                        width: 180,
+                        height: 'auto',
+                        animation: 'bounce 1.5s infinite ease-in-out',
+                    }}
+                />
+            </Box>
         );
-      }
-      
+    }
+
 
 
 
@@ -123,36 +130,51 @@ export default function DashboardRTWExact() {
                 <Grid container spacing={4}>
                     <Grid item xs={12} md={5}>
                         <Paper sx={{ boxShadow: 'none', border: '1px solid black' }}>
-                            <Box sx={{ p: 1, width: 600 }}>
-                                <Typography variant="h6" fontWeight="bold">Location Map</Typography>
+                            <Box sx={{ p: 0.5, width: 580 }}>
+                                <Typography
+                                    variant="h6"
+                                    fontWeight="bold"
+                                    sx={{ textTransform: 'uppercase', textAlign: 'center' }}
+                                >
+                                    Location Map</Typography>
                                 <Box component="img" src="/Img.png" width="100%" height="240px" sx={{ objectFit: 'cover' }} />
                             </Box>
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={2.5}>
                         <Paper sx={{ boxShadow: 'none', p: 2 }}>
-                            <Typography variant="h6" fontWeight="bold">Scope of Work</Typography>
+                            <Typography
+                                variant="h6"
+                                fontWeight="bold"
+                                sx={{ textTransform: 'uppercase', textAlign: 'center' }}
+                            >
+                                Scope of Work</Typography>
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-                            {data.scope_of_work.map((item, i) => {
-    const match = item.match(/^(.+?)\s*\((.+)\)$/);
-    return (
-        <Box key={i}>
-            <Typography variant="body1" fontWeight="bold">➤ {match ? match[1] : item}</Typography>
-            {match && (
-                <Typography variant="body2" sx={{ color: 'gray', ml: 3 }}>
-                    ({match[2]})
-                </Typography>
-            )}
-        </Box>
-    );
-})}
+                                {data.scope_of_work.map((item, i) => {
+                                    const match = item.match(/^(.+?)\s*\((.+)\)$/);
+                                    return (
+                                        <Box key={i}>
+                                            <Typography variant="body1" fontWeight="bold">➤ {match ? match[1] : item}</Typography>
+                                            {match && (
+                                                <Typography variant="body2" sx={{ color: 'gray', ml: 3 }}>
+                                                    ({match[2]})
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    );
+                                })}
 
                             </Box>
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={2.5}>
                         <Paper sx={{ boxShadow: 'none', p: 2 }}>
-                            <Typography variant="h6" fontWeight="bold">Land Status</Typography>
+                            <Typography
+                                variant="h6"
+                                fontWeight="bold"
+                                sx={{ textTransform: 'uppercase', textAlign: 'center' }}
+                            >
+                                Land Status</Typography>
                             <PieChart width={210} height={150}>
                                 <Pie data={[
                                     { name: 'Available', value: data.land_available_pct },
@@ -168,17 +190,18 @@ export default function DashboardRTWExact() {
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={1.5}>
-                        <Paper sx={{ boxShadow: 'none', p: 2, textAlign: 'center' }}>
-                            <AttachMoneyIcon fontSize="large" />
-                            <Typography fontWeight="bold">Awarded Cost</Typography>
-                            <Typography fontWeight="bold">PKR {data.awarded_cost}M</Typography>
+                        <Paper sx={{ boxShadow: 'none', p: 2, textAlign: 'center', }}>
+                        <AttachMoneyIcon sx={{ fontSize: 50, color: '#000000' }} />
+
+                            <Typography fontWeight="bold" fontSize="small">Awarded Cost</Typography>
+                            <Typography fontWeight="bold" fontSize="large">PKR {data.awarded_cost}M</Typography>
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={1.5}>
                         <Paper sx={{ boxShadow: 'none', p: 2, textAlign: 'center' }}>
-                            <TimerIcon fontSize="large" />
-                            <Typography fontWeight="bold">Duration</Typography>
-                            <Typography fontWeight="bold">{data.duration_months} Months</Typography>
+                            <TimerIcon  sx={{ fontSize: 50, color: '#000000' }} />
+                            <Typography fontWeight="bold" fontSize="small">Duration</Typography>
+                            <Typography fontWeight="bold" fontSize="large">{data.duration_months} Months</Typography>
                         </Paper>
                     </Grid>
                 </Grid>
@@ -205,19 +228,19 @@ export default function DashboardRTWExact() {
                                 <YAxis domain={[0, 100]} />
                                 <Tooltip />
                                 <Bar dataKey="value">
-  {data.physical_chart.map((entry, index) => (
-    <Cell
-      key={index}
-      fill={
-        entry.name === 'Planned'
-          ? '#1565c0'
-          : entry.name === 'Actual'
-          ? '#fbc02d'
-          : '#4caf50' // fallback if any
-      }
-    />
-  ))}
-</Bar>
+                                    {data.physical_chart.map((entry, index) => (
+                                        <Cell
+                                            key={index}
+                                            fill={
+                                                entry.name === 'Planned'
+                                                    ? '#1565c0'
+                                                    : entry.name === 'Actual'
+                                                        ? '#fbc02d'
+                                                        : '#4caf50' // fallback if any
+                                            }
+                                        />
+                                    ))}
+                                </Bar>
 
                             </BarChart>
                         </SectionCard>
