@@ -119,7 +119,7 @@ function MobileView({ data }) {
 
       <Grid container spacing={2} sx={{ my: 2 }}>
         <Grid item xs={6}>
-          <SectionCard title="Cost">
+          <SectionCard title="AWARDED COST">
             <Box textAlign="center">
               <AttachMoneyIcon sx={{ fontSize: 50 }} />
               <Typography fontWeight="bold">PKR {data.awarded_cost}M</Typography>
@@ -127,7 +127,7 @@ function MobileView({ data }) {
           </SectionCard>
         </Grid>
         <Grid item xs={6}>
-          <SectionCard title="Duration">
+          <SectionCard title="TIME DURATION">
             <Box textAlign="center">
               <TimerIcon sx={{ fontSize: 50 }} />
               <Typography fontWeight="bold">{data.duration_months} Months</Typography>
