@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { AppBar, Box, Toolbar, Typography } from '@mui/material';
+import {
+  AppBar, Box, Toolbar, Typography, IconButton, Drawer, useMediaQuery
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import { useTheme } from '@mui/material/styles';
 import LayerFilterPanel from './components/LayerFilterPanel';
 import MapView from './components/MapView';
-import bbox from '@turf/bbox';
 import DashboardRTWExact from './components/DashboardRTW';
 import { Routes, Route } from 'react-router-dom';
+import bbox from '@turf/bbox';
+
 function getRandomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
 }
@@ -17,6 +22,10 @@ const App = () => {
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [colorMap, setColorMap] = useState({});
   const [districtBoundaries, setDistrictBoundaries] = useState([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const selectedNames = [
     ...selectedPhases,
@@ -24,7 +33,6 @@ const App = () => {
     ...selectedProjects
   ];
 
-  // 🚀 Load district boundaries
   useEffect(() => {
     const fetchBoundaries = async () => {
       try {
@@ -44,7 +52,6 @@ const App = () => {
     fetchBoundaries();
   }, []);
 
-  // 🚀 Load all spatial features
   useEffect(() => {
     axios.get('https://ruda-backend-ny14.onrender.com/api/all').then(res => {
       const feats = res.data.features || [];
@@ -61,9 +68,6 @@ const App = () => {
     });
   }, []);
 
-
-
-  // 🧠 Extract packages from selected phases
   useEffect(() => {
     const pkgs = [...new Set(
       features.filter(f =>
@@ -75,19 +79,6 @@ const App = () => {
     setSelectedPackages(pkgs);
   }, [features, selectedPhases]);
 
-  // 🧠 Extract projects from selected packages
-  useEffect(() => {
-    const projs = [...new Set(
-      features.filter(f =>
-        (f.properties?.name?.startsWith('RTW P') || f.properties?.name === '11') &&
-        f.properties?.rtw_pkg &&
-        selectedPackages.includes(f.properties.rtw_pkg)
-      ).map(f => f.properties.name)
-    )];
- 
-  }, [features, selectedPackages]);
-
-  // 🎯 Filter visible features
   const filteredFeatures = features.filter(f =>
     selectedNames.includes(f.properties.name)
   );
@@ -99,17 +90,7 @@ const App = () => {
     }));
   };
 
-  // 📍 Zoom helper for exact match
-  const zoomToExactFeatures = (featuresList, selectedList) => {
-    return {
-      type: 'FeatureCollection',
-      features: featuresList.filter(f =>
-        selectedList.includes(f.properties?.name)
-      )
-    };
-  };
-
-  // ✅ Zoom to selected Package only (not children)
+  // Map zoom logic for packages
   useEffect(() => {
     const map = window.__MAPBOX_INSTANCE__;
     if (!map || selectedPackages.length === 0) return;
@@ -117,14 +98,20 @@ const App = () => {
     const pkgFeatures = features.filter(f =>
       f.properties?.name?.startsWith('RTW Package')
     );
-    const selection = zoomToExactFeatures(pkgFeatures, selectedPackages);
+    const selection = {
+      type: 'FeatureCollection',
+      features: pkgFeatures.filter(f =>
+        selectedPackages.includes(f.properties?.name)
+      )
+    };
+
     if (!selection.features.length) return;
 
     const bounds = bbox(selection);
     map.fitBounds(bounds, { padding: 60, duration: 800 });
   }, [selectedPackages]);
 
-  // ✅ Zoom to selected Project only
+  // Map zoom logic for projects
   useEffect(() => {
     const map = window.__MAPBOX_INSTANCE__;
     if (!map || selectedProjects.length === 0) return;
@@ -132,7 +119,13 @@ const App = () => {
     const projFeatures = features.filter(f =>
       f.properties?.name?.startsWith('RTW P') || f.properties?.name === '11'
     );
-    const selection = zoomToExactFeatures(projFeatures, selectedProjects);
+    const selection = {
+      type: 'FeatureCollection',
+      features: projFeatures.filter(f =>
+        selectedProjects.includes(f.properties?.name)
+      )
+    };
+
     if (!selection.features.length) return;
 
     const bounds = bbox(selection);
@@ -140,86 +133,127 @@ const App = () => {
   }, [selectedProjects]);
 
   return (
-    <>
-      <Routes>
-        <Route path="/" element={
+    <Routes>
+      <Route
+        path="/"
+        element={
           <>
-            {/* ✅ Main RUDA Dashboard UI */}
+            {/* Header */}
             <AppBar position="static" color="primary">
-  <Toolbar sx={{ display: 'flex', alignItems: 'center' }}>
-    <Box
-      component="img"
-      src="/ruda.png"
-      alt="RUDA Logo"
-      sx={{
-        width: 32,
-        height: 45,
-        transform: 'scale(2.8)', // Scales up without affecting layout
-        transformOrigin: 'left center',
-        mr: 7,
-      }}
-    />
-    <Typography
-      variant="h6"
-      sx={{
-        fontWeight: 'bold',
-        letterSpacing: 1,
-        flexGrow: 1,
-      }}
-    >
-       Ravi Urban Development Authority
-    </Typography>
-  </Toolbar>
-</AppBar>
-
-
-<Box
-  display="flex"
-  height="calc(100vh - 64px)"
-  sx={{ overflow: 'hidden' }} // ✅ Prevents scroll at app level
->
-
-<Box
-  sx={{
-    width: 335,
-    height: '100%',
-    bgcolor: '#2a2a2a',
-    color: '#fff',
-    px: 2,
-    py: 3,
-    overflow: 'hidden', // ✅ Ensures no scroll inside sidebar
-  }}
->
-
-
-                <LayerFilterPanel
-                  features={features}
-                  selectedPhases={selectedPhases}
-                  setSelectedPhases={setSelectedPhases}
-                  selectedPackages={selectedPackages}
-                  setSelectedPackages={setSelectedPackages}
-                  selectedProjects={selectedProjects}
-                  setSelectedProjects={setSelectedProjects}
-                  colorMap={colorMap}
-                  onColorChange={handleColorChange}
+              <Toolbar sx={{ display: 'flex', alignItems: 'center' }}>
+                {isMobile && (
+                  <IconButton
+                    edge="start"
+                    color="inherit"
+                    onClick={() => setDrawerOpen(true)}
+                    sx={{ mr: isMobile ? 0 : 2 }}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                )}
+                <Box
+                  component="img"
+                  src="/ruda.png"
+                  alt="RUDA Logo"
+                  sx={{
+                    width: isMobile ? 32 : 32,
+                    height: isMobile ? 40 : 45,
+                    transform: 'scale(2.8)',
+                    transformOrigin: 'left center',
+                    mr: isMobile ? 6 : 7
+                  }}
                 />
-              </Box>
-              <Box flex={1} sx={{ overflow: 'hidden' }}>
+                <Typography
+                  variant={isMobile ? 'subtitle2' : 'h6'}
+                  noWrap
+                  sx={{
+                    fontWeight: 'bold',
+                    letterSpacing: 0.5,
+                    fontSize: isMobile ? '13.0px' : '1.2rem',
+                    flexGrow: 1,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  Ravi Urban Development Authority
+                </Typography>
 
-                <MapView
-                  features={filteredFeatures}
-                  colorMap={colorMap}
-                  selectedNames={selectedNames}
-                  districtBoundaries={districtBoundaries}
-                />
+              </Toolbar>
+            </AppBar>
+
+            {/* Layout */}
+            {isMobile ? (
+              <>
+                <Drawer
+                  anchor="left"
+                  open={drawerOpen}
+                  onClose={() => setDrawerOpen(false)}
+                >
+                  <Box sx={{ width: 255, }}>
+                    <LayerFilterPanel
+                      features={features}
+                      selectedPhases={selectedPhases}
+                      setSelectedPhases={setSelectedPhases}
+                      selectedPackages={selectedPackages}
+                      setSelectedPackages={setSelectedPackages}
+                      selectedProjects={selectedProjects}
+                      setSelectedProjects={setSelectedProjects}
+                      colorMap={colorMap}
+                      onColorChange={handleColorChange} onClose={() => setDrawerOpen(false)}
+                    />
+                  </Box>
+                </Drawer>
+                <Box sx={{ height: 'calc(100vh - 64px)' }}>
+                  <MapView
+                    features={filteredFeatures}
+                    colorMap={colorMap}
+                    selectedNames={selectedNames}
+                    districtBoundaries={districtBoundaries}
+                  />
+                </Box>
+              </>
+            ) : (
+              <Box display="flex" height="calc(100vh - 64px)" sx={{ overflow: 'hidden' }}>
+                <Box
+                  sx={{
+                    width: 335,
+                    height: '100%',
+                    bgcolor: '#2a2a2a',
+                    color: '#fff',
+                    px: 2,
+                    py: 3,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <LayerFilterPanel
+                    features={features}
+                    selectedPhases={selectedPhases}
+                    setSelectedPhases={setSelectedPhases}
+                    selectedPackages={selectedPackages}
+                    setSelectedPackages={setSelectedPackages}
+                    selectedProjects={selectedProjects}
+                    setSelectedProjects={setSelectedProjects}
+                    colorMap={colorMap}
+                    onColorChange={handleColorChange}
+                  />
+                </Box>
+                <Box flex={1} sx={{ overflow: 'hidden' }}>
+                  <MapView
+                    features={filteredFeatures}
+                    colorMap={colorMap}
+                    selectedNames={selectedNames}
+                    districtBoundaries={districtBoundaries}
+                  />
+                </Box>
               </Box>
-            </Box>
+            )}
           </>
-        } />
-        
-        <Route path="/details/:name" element={<DashboardRTWExact />} />
-      </Routes>
-    </>
+        }
+      />
+
+      <Route path="/details/:name" element={<DashboardRTWExact />} />
+    </Routes>
   );
 };
 

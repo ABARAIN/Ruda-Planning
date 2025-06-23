@@ -7,8 +7,10 @@ import {
   FormControl,
   Select,
   MenuItem,
-  InputLabel
+  InputLabel,
+  useMediaQuery
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -16,23 +18,23 @@ const baseStyles = {
   Light: 'mapbox://styles/mapbox/light-v11',
   Dark: 'mapbox://styles/mapbox/dark-v11',
   Satellite: 'mapbox://styles/mapbox/satellite-streets-v12',
-  // "Only Satellite": 'mapbox://styles/mapbox/satellite-v9',
   Streets: 'mapbox://styles/mapbox/streets-v12',
   Outdoors: 'mapbox://styles/mapbox/outdoors-v12'
 };
 
 const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] }) => {
-
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
   const [baseStyleKey, setBaseStyleKey] = useState('Light');
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const geojson = {
     type: 'FeatureCollection',
     features: features || []
   };
 
-  // Initialize map once
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -44,6 +46,7 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
 
     mapRef.current = map;
     window.__MAPBOX_INSTANCE__ = map;
+
     map.addControl(new mapboxgl.NavigationControl(), 'top-left');
     map.addControl(new mapboxgl.ScaleControl({ unit: 'metric' }), 'bottom-left');
 
@@ -52,7 +55,6 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
     return () => map.remove();
   }, []);
 
-  // Change style without refreshing whole map
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -69,7 +71,6 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
     map.setStyle(baseStyles[baseStyleKey]);
   }, [baseStyleKey]);
 
-  // Update GeoJSON data
   useEffect(() => {
     const map = mapRef.current;
     const source = map?.getSource('ruda');
@@ -78,7 +79,6 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
     }
   }, [features]);
 
-  // Update fill color on color change
   useEffect(() => {
     const map = mapRef.current;
     if (map?.getLayer('ruda-fill')) {
@@ -90,7 +90,6 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
     }
   }, [colorMap, features]);
 
-
   useEffect(() => {
     const map = mapRef.current;
     const source = map?.getSource('districts');
@@ -101,8 +100,7 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
       });
     }
   }, [districtBoundaries]);
-  
-  // Fly to selected features
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !selectedNames?.length || !features?.length) return;
@@ -125,7 +123,6 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
   }, [selectedNames]);
 
   const addLayers = (map) => {
-    // 3D Terrain
     map.addSource('mapbox-dem', {
       type: 'raster-dem',
       url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
@@ -134,7 +131,6 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
     });
     map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.4 });
 
-    // 3D Buildings
     if (!map.getSource('composite')) return;
     map.addLayer({
       id: '3d-buildings',
@@ -151,11 +147,7 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
       }
     });
 
-    // RUDA Polygon Layer
-    map.addSource('ruda', {
-      type: 'geojson',
-      data: geojson
-    });
+    map.addSource('ruda', { type: 'geojson', data: geojson });
 
     map.addLayer({
       id: 'ruda-fill',
@@ -173,141 +165,90 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
     map.on('mouseleave', 'ruda-fill', () => {
       map.getCanvas().style.cursor = '';
     });
-    
-    // ✅ Popup on click
+
     map.on('click', 'ruda-fill', (e) => {
       const feature = e.features[0];
       const { name, area_sqkm, land_available_pct, physical_actual_pct } = feature.properties;
-    
-      const area = area_sqkm ? `${parseFloat(area_sqkm).toFixed(2)} sq.km` : 'N/A';
-      const land = land_available_pct != null ? `${land_available_pct}%` : 'N/A';
-      const progress = physical_actual_pct != null ? `${physical_actual_pct}%` : 'N/A';
-    
+
       const popupHTML = `
         <div style="font-family: 'Segoe UI', sans-serif; min-width:220px; padding:8px;">
           <h3 style="margin:0 0 8px; font-size:16px; color:#1976d2;">${name || 'Unnamed'}</h3>
-    
-          <div style="font-size:14px; margin-bottom:8px;">
-            <strong>Area:</strong> ${area}
-          </div>
-    
+          <div style="font-size:14px; margin-bottom:8px;"><strong>Area:</strong> ${parseFloat(area_sqkm || 0).toFixed(2)} sq.km</div>
           <div style="display:flex; gap:6px; font-size:13px; margin-bottom:10px;">
-            <div style="
-              flex:1;
-              background:#e3f2fd;
-              border:1px solid #90caf9;
-              border-radius:6px;
-              padding:6px;
-              text-align:center;
-              color:#1565c0;
-            ">
-              <div style="font-weight:500;">Land Available</div>
-              <div style="font-size:15px;">${land}</div>
+            <div style="flex:1;background:#e3f2fd;border:1px solid #90caf9;border-radius:6px;padding:6px;text-align:center;color:#1565c0;">
+              <div style="font-weight:500;">Land Available</div><div>${land_available_pct || 0}%</div>
             </div>
-            <div style="
-              flex:1;
-              background:#fff8e1;
-              border:1px solid #ffe082;
-              border-radius:6px;
-              padding:6px;
-              text-align:center;
-              color:#f9a825;
-            ">
-              <div style="font-weight:500;">Physical Progress</div>
-              <div style="font-size:15px;">${progress}</div>
+            <div style="flex:1;background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:6px;text-align:center;color:#f9a825;">
+              <div style="font-weight:500;">Physical Progress</div><div>${physical_actual_pct || 0}%</div>
             </div>
           </div>
-    
-          <a href="/details/${encodeURIComponent(name)}"
-          target="_blank"
-          rel="noopener noreferrer"
-          style="
-            display:inline-block;
-            margin-top:4px;
-            font-size:13px;
-            color:#388e3c;
-            text-decoration:none;
-            font-weight:500;
-          ">
-          🔍 View Details
-       </a>
-       
-
+          <a href="/details/${encodeURIComponent(name)}" target="_blank" style="font-size:13px;color:#388e3c;font-weight:500;text-decoration:none;">
+            🔍 View Details
+          </a>
         </div>
       `;
-    
+
       new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(popupHTML)
         .addTo(map);
     });
-    
 
     map.addLayer({
       id: 'ruda-outline',
       type: 'line',
       source: 'ruda',
-      paint: {
-        'line-color': '#000',
-        'line-width': 1
-      }
+      paint: { 'line-color': '#000', 'line-width': 1 }
     });
 
+    if (!map.getSource('districts')) {
+      map.addSource('districts', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: districtBoundaries }
+      });
 
-// Sheikhupura & Lahore Boundaries
-if (!map.getSource('districts')) {
-  map.addSource('districts', {
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: districtBoundaries
+      map.addLayer({
+        id: 'district-fill',
+        type: 'fill',
+        source: 'districts',
+        paint: {
+          'fill-color': [
+            'match',
+            ['get', 'district'],
+            'Sheikhupura', '#FF0000',
+            'Lahore', '#32CD32',
+            '#ccc'
+          ],
+          'fill-opacity': 0.2
+        }
+      }, 'ruda-fill');
+
+      map.addLayer({
+        id: 'district-outline',
+        type: 'line',
+        source: 'districts',
+        paint: {
+          'line-color': '#444',
+          'line-width': 2
+        }
+      }, 'ruda-fill');
     }
-  });
-
-  map.addLayer({
-    id: 'district-fill',
-    type: 'fill',
-    source: 'districts',
-    paint: {
-      'fill-color': [
-        'match',
-        ['get', 'district'],
-        'Sheikhupura', '#FF0000',
-        'Lahore', '#32CD32',
-        '#ccc'
-      ],
-      'fill-opacity': 0.2
-    }
-  },'ruda-fill'); 
-
-  map.addLayer({
-    id: 'district-outline',
-    type: 'line',
-    source: 'districts',
-    paint: {
-      'line-color': '#444',
-      'line-width': 2
-    }
-  },'ruda-fill'); 
-}
-
-
-
   };
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {/* 🔽 Basemap Dropdown */}
+      {/* Basemap dropdown */}
       <Box
         sx={{
           position: 'absolute',
-          top: 10,
-          right: 10,
-          zIndex: 2,
+          top: isMobile ? 8 : 12,
+          right: isMobile ? 8 : 12,
+          zIndex: 10,
           background: '#fff',
           p: 1,
           borderRadius: 1,
-          boxShadow: 2
+          boxShadow: 2,
+          minWidth: 120
         }}
       >
         <FormControl size="small" fullWidth>
@@ -330,11 +271,10 @@ if (!map.getSource('districts')) {
 };
 
 const buildFillExpression = (features, colorMap) => {
-  const nameColorPairs = features
+  const pairs = features
     .filter(f => !!f.properties?.name)
     .map(f => [f.properties.name, colorMap[f.properties.name] || '#cccccc']);
-  const uniquePairs = Array.from(new Map(nameColorPairs).entries()).flat();
-
+  const uniquePairs = Array.from(new Map(pairs).entries()).flat();
   return uniquePairs.length >= 2
     ? ['match', ['get', 'name'], ...uniquePairs, '#cccccc']
     : '#cccccc';

@@ -1,17 +1,23 @@
 import React, { useMemo } from 'react';
 import {
   Box, Typography, FormControl, InputLabel, Select,
-  MenuItem, Checkbox, ListItemText, OutlinedInput
+  MenuItem, Checkbox, ListItemText, OutlinedInput, useMediaQuery, IconButton
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import CloseIcon from '@mui/icons-material/Close';
 
 const normalize = str => (str || '').toLowerCase().replace(/ruda\s+/i, '').trim();
 
 const ColorSwatch = ({ color }) => (
   <span style={{
     display: 'inline-block',
-    width: 18, height: 18, borderRadius: 4,
-    background: color, border: '1.5px solid #888',
-    marginRight: 8, verticalAlign: 'middle'
+    width: 18,
+    height: 18,
+    borderRadius: 4,
+    background: color,
+    border: '1.5px solid #888',
+    marginRight: 8,
+    verticalAlign: 'middle'
   }} />
 );
 
@@ -21,8 +27,12 @@ const LayerFilterPanel = ({
   selectedPackages = [], setSelectedPackages,
   selectedProjects = [], setSelectedProjects,
   colorMap = {},
-  onColorChange
+  onColorChange,
+  onClose = () => {}
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const phaseOptions = useMemo(() =>
     [...new Set(
       features
@@ -58,16 +68,10 @@ const LayerFilterPanel = ({
 
     const handleChange = (event) => {
       const selected = event.target.value;
-
       if (selected.includes('ALL')) {
-        if (isAllSelected) {
-          setValue([]); // Deselect all
-        } else {
-          setValue(options); // Select all
-        }
+        setValue(isAllSelected ? [] : options);
         return;
       }
-
       setValue(selected);
     };
 
@@ -86,28 +90,22 @@ const LayerFilterPanel = ({
                 maxHeight: 300,
                 backgroundColor: '#1f1f1f',
                 color: '#fff',
-                scrollbarWidth: 'thin',
+                scrollbarWidth: 'thin'
               }
             },
-            MenuListProps: {
-              disablePadding: true,
-              style: { paddingTop: 0 }
-            }
+            MenuListProps: { disablePadding: true, style: { paddingTop: 0 } }
           }}
           sx={{
             bgcolor: '#2a2a2a', color: '#fff',
             '& .MuiSvgIcon-root': { color: '#fff' },
-            '& .MuiOutlinedInput-notchedOutline': { borderColor: '#555' },
+            '& .MuiOutlinedInput-notchedOutline': { borderColor: '#555' }
           }}
         >
           <MenuItem value="ALL">
             <Checkbox
               checked={isAllSelected}
               indeterminate={value.length > 0 && value.length < options.length}
-              sx={{
-                color: '#ccc',
-                '&.Mui-checked': { color: '#2196f3' }
-              }}
+              sx={{ color: '#ccc', '&.Mui-checked': { color: '#2196f3' } }}
             />
             <ListItemText primary="Select All" />
           </MenuItem>
@@ -116,10 +114,7 @@ const LayerFilterPanel = ({
             <MenuItem key={opt} value={opt}>
               <Checkbox
                 checked={value.includes(opt)}
-                sx={{
-                  color: '#ccc',
-                  '&.Mui-checked': { color: '#2196f3' }
-                }}
+                sx={{ color: '#ccc', '&.Mui-checked': { color: '#2196f3' } }}
               />
               <ColorSwatch color={colorMap[opt] || '#999'} />
               <ListItemText primary={opt} />
@@ -145,29 +140,40 @@ const LayerFilterPanel = ({
   return (
     <Box
       sx={{
-        width: 320,
-        height: '100%',
+        width: isMobile ? 260 : 320,
+        height: isMobile ? '400%' : '100%',
+        maxHeight: isMobile ? '100vh' : '100%',
         bgcolor: '#2a2a2a',
         color: '#fff',
         px: 2,
         py: 3,
         overflowY: 'auto',
-
-        // ✅ Fully black thin scrollbar
-        '&::-webkit-scrollbar': {
-          width: '6px',
-        },
-        '&::-webkit-scrollbar-track': {
-          backgroundColor: '#1a1a1a',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: '#000',
-          borderRadius: '3px',
-        },
+        position: 'relative',
+        '&::-webkit-scrollbar': { width: '6px' },
+        '&::-webkit-scrollbar-track': { backgroundColor: '#1a1a1a' },
+        '&::-webkit-scrollbar-thumb': { backgroundColor: '#000', borderRadius: '3px' },
         scrollbarWidth: 'thin',
-        scrollbarColor: '#000 #1a1a1a',
+        scrollbarColor: '#000 #1a1a1a'
       }}
     >
+      {/* ❌ Cancel icon for mobile */}
+      {isMobile && (
+        <IconButton
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            color: '#fff',
+            backgroundColor: '#444',
+            '&:hover': { backgroundColor: '#666' }
+          }}
+          size="small"
+        >
+          <CloseIcon />
+        </IconButton>
+      )}
+
       <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
         <span style={{ color: '#2196f3' }}>Layer Filters</span>
       </Typography>
