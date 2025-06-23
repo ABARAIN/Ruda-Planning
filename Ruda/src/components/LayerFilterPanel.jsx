@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box, Typography, FormControl, InputLabel, Select,
   MenuItem, Checkbox, ListItemText, OutlinedInput, useMediaQuery, IconButton
@@ -32,6 +32,7 @@ const LayerFilterPanel = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
   const phaseOptions = useMemo(() =>
     [...new Set(
@@ -52,26 +53,32 @@ const LayerFilterPanel = ({
         .map(f => f.properties.name)
     )].sort((a, b) => a.localeCompare(b)), [features, selectedPhases]);
 
-    const groupedProjects = useMemo(() => {
-      const groups = {};
-    
-      features
-        .filter(f =>
-          (f.properties?.name?.startsWith('RTW P') || f.properties?.name === '11') &&
-          f.properties?.rtw_pkg &&
-          selectedPackages.includes(f.properties.rtw_pkg)
-        )
-        .forEach(f => {
-          const category = f.properties?.category || 'Other';
-          if (!groups[category]) groups[category] = [];
-          if (!groups[category].includes(f.properties.name)) {
-            groups[category].push(f.properties.name);
-          }
-        });
-    
-      return groups;
-    }, [features, selectedPackages]);
-    
+  const categoryOptions = useMemo(() => {
+    const categories = new Set();
+    features
+      .filter(f =>
+        (f.properties?.name?.startsWith('RTW P') || f.properties?.name === '11') &&
+        f.properties?.rtw_pkg &&
+        selectedPackages.includes(f.properties.rtw_pkg)
+      )
+      .forEach(f => {
+        if (f.properties?.category) {
+          categories.add(f.properties.category);
+        }
+      });
+    return Array.from(categories);
+  }, [features, selectedPackages]);
+
+  const projectOptions = useMemo(() => {
+    return features
+      .filter(f =>
+        (f.properties?.name?.startsWith('RTW P') || f.properties?.name === '11') &&
+        f.properties?.rtw_pkg &&
+        selectedPackages.includes(f.properties.rtw_pkg) &&
+        selectedCategories.includes(f.properties?.category)
+      )
+      .map(f => f.properties.name);
+  }, [features, selectedPackages, selectedCategories]);
 
   const renderDropdown = (label, value, setValue, options) => {
     const isAllSelected = options.length > 0 && value.length === options.length;
@@ -100,22 +107,14 @@ const LayerFilterPanel = ({
                 maxHeight: 300,
                 backgroundColor: '#121212',
                 color: '#fff',
-                '&::-webkit-scrollbar': {
-                  width: '6px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: '#000',
-                  borderRadius: '4px',
-                },
-                '&::-webkit-scrollbar-track': {
-                  backgroundColor: '#222',
-                },
+                '&::-webkit-scrollbar': { width: '6px' },
+                '&::-webkit-scrollbar-thumb': { backgroundColor: '#000', borderRadius: '4px' },
+                '&::-webkit-scrollbar-track': { backgroundColor: '#222' },
                 scrollbarColor: '#000 #222',
                 scrollbarWidth: 'thin',
               }
             }
           }}
-          
           sx={{
             bgcolor: '#2a2a2a', color: '#fff',
             '& .MuiSvgIcon-root': { color: '#fff' },
@@ -158,6 +157,72 @@ const LayerFilterPanel = ({
     );
   };
 
+  const renderSimpleDropdown = (label, value, setValue, options) => {
+    const isAllSelected = options.length > 0 && value.length === options.length;
+
+    const handleChange = (event) => {
+      const selected = event.target.value;
+      if (selected.includes('ALL')) {
+        setValue(isAllSelected ? [] : options);
+        setSelectedProjects([]); // reset projects when categories change
+        return;
+      }
+      setValue(selected);
+      setSelectedProjects([]); // reset projects when categories change
+    };
+
+    return (
+      <FormControl fullWidth sx={{ mt: 2 }}>
+        <InputLabel sx={{ color: '#ccc' }}>{label}</InputLabel>
+        <Select
+          multiple
+          value={value}
+          onChange={handleChange}
+          input={<OutlinedInput label={label} />}
+          renderValue={(selected) => selected.join(', ')}
+          MenuProps={{
+            PaperProps: {
+              sx: {
+                maxHeight: 300,
+                backgroundColor: '#121212',
+                color: '#fff',
+                '&::-webkit-scrollbar': { width: '6px' },
+                '&::-webkit-scrollbar-thumb': { backgroundColor: '#000', borderRadius: '4px' },
+                '&::-webkit-scrollbar-track': { backgroundColor: '#222' },
+                scrollbarColor: '#000 #222',
+                scrollbarWidth: 'thin',
+              }
+            }
+          }}
+          sx={{
+            bgcolor: '#2a2a2a', color: '#fff',
+            '& .MuiSvgIcon-root': { color: '#fff' },
+            '& .MuiOutlinedInput-notchedOutline': { borderColor: '#555' }
+          }}
+        >
+          <MenuItem value="ALL">
+            <Checkbox
+              checked={isAllSelected}
+              indeterminate={value.length > 0 && value.length < options.length}
+              sx={{ color: '#ccc', '&.Mui-checked': { color: '#2196f3' } }}
+            />
+            <ListItemText primary="Select All" />
+          </MenuItem>
+
+          {options.map(opt => (
+            <MenuItem key={opt} value={opt}>
+              <Checkbox
+                checked={value.includes(opt)}
+                sx={{ color: '#ccc', '&.Mui-checked': { color: '#2196f3' } }}
+              />
+              <ListItemText primary={opt} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    );
+  };
+
   return (
     <Box
       sx={{
@@ -177,7 +242,6 @@ const LayerFilterPanel = ({
         scrollbarColor: '#000 #1a1a1a'
       }}
     >
-      {/* ❌ Cancel icon for mobile */}
       {isMobile && (
         <IconButton
           onClick={onClose}
@@ -201,6 +265,9 @@ const LayerFilterPanel = ({
 
       {renderDropdown('Phases', selectedPhases, setSelectedPhases, phaseOptions)}
       {renderDropdown('Packages', selectedPackages, setSelectedPackages, packageOptions)}
+      {renderSimpleDropdown('Category', selectedCategories, setSelectedCategories, categoryOptions)}
+
+      {/* 🔽 Filtered Projects Dropdown */}
       <FormControl fullWidth sx={{ mt: 2 }}>
   <InputLabel sx={{ color: '#ccc' }}>Projects</InputLabel>
   <Select
@@ -210,9 +277,9 @@ const LayerFilterPanel = ({
     input={<OutlinedInput label="Projects" />}
     renderValue={(selected) => selected.join(', ')}
     sx={{
-       color: '#fff',
+      color: '#fff',
       '& .MuiSvgIcon-root': { color: '#fff' },
-      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#555' },
+      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#555' }
     }}
     MenuProps={{
       PaperProps: {
@@ -220,35 +287,45 @@ const LayerFilterPanel = ({
           maxHeight: 300,
           backgroundColor: '#121212',
           color: '#fff',
-          '&::-webkit-scrollbar': {
-            width: '6px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: '#000',
-            borderRadius: '4px',
-          },
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: '#222',
-          },
+          '&::-webkit-scrollbar': { width: '6px' },
+          '&::-webkit-scrollbar-thumb': { backgroundColor: '#000', borderRadius: '4px' },
+          '&::-webkit-scrollbar-track': { backgroundColor: '#222' },
           scrollbarColor: '#000 #222',
-          scrollbarWidth: 'thin',
+          scrollbarWidth: 'thin'
         }
       }
     }}
-    
   >
-    {Object.entries(groupedProjects).map(([category, projects]) => (
-      [
-        <MenuItem key={category} disabled sx={{ fontWeight: 'bold', opacity: 0.8 }}>
-          ─ {category.toUpperCase()} ─
-        </MenuItem>,
-        ...projects.map(name => (
-          <MenuItem key={name} value={name}>
-            <Checkbox checked={selectedProjects.includes(name)} />
-            <ListItemText primary={name} />
-          </MenuItem>
-        ))
-      ]
+    <MenuItem value="ALL">
+      <Checkbox
+        checked={projectOptions.length > 0 && selectedProjects.length === projectOptions.length}
+        indeterminate={selectedProjects.length > 0 && selectedProjects.length < projectOptions.length}
+        sx={{ color: '#ccc', '&.Mui-checked': { color: '#2196f3' } }}
+      />
+      <ListItemText primary="Select All" />
+    </MenuItem>
+
+    {projectOptions.map(name => (
+      <MenuItem key={name} value={name}>
+        <Checkbox
+          checked={selectedProjects.includes(name)}
+          sx={{ color: '#ccc', '&.Mui-checked': { color: '#2196f3' } }}
+        />
+        <ColorSwatch color={colorMap[name] || '#999'} />
+        <ListItemText primary={name} />
+        <input
+          type="color"
+          value={colorMap[name] || '#cccccc'}
+          onChange={e => onColorChange(name, e.target.value)}
+          style={{
+            marginLeft: 10, marginRight: 4,
+            width: 26, height: 26, border: 'none',
+            background: 'none', cursor: 'pointer'
+          }}
+          onClick={e => e.stopPropagation()}
+          title="Change color"
+        />
+      </MenuItem>
     ))}
   </Select>
 </FormControl>

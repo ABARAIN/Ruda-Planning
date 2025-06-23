@@ -10,6 +10,7 @@ import MapView from './components/MapView';
 import DashboardRTWExact from './components/DashboardRTW';
 import { Routes, Route } from 'react-router-dom';
 import bbox from '@turf/bbox';
+import RTWMap from './components/RTWMap';
 
 function getRandomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
@@ -251,7 +252,7 @@ const App = () => {
           </>
         }
       />
-
+       <Route path="/map" element={<RTWMap />} />
       <Route path="/details/:name" element={<DashboardRTWExact />} />
     </Routes>
   );
