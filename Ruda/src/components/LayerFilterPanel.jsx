@@ -52,16 +52,26 @@ const LayerFilterPanel = ({
         .map(f => f.properties.name)
     )].sort((a, b) => a.localeCompare(b)), [features, selectedPhases]);
 
-  const projectOptions = useMemo(() =>
-    [...new Set(
+    const groupedProjects = useMemo(() => {
+      const groups = {};
+    
       features
         .filter(f =>
           (f.properties?.name?.startsWith('RTW P') || f.properties?.name === '11') &&
           f.properties?.rtw_pkg &&
           selectedPackages.includes(f.properties.rtw_pkg)
         )
-        .map(f => f.properties.name)
-    )].sort((a, b) => a.localeCompare(b)), [features, selectedPackages]);
+        .forEach(f => {
+          const category = f.properties?.category || 'Other';
+          if (!groups[category]) groups[category] = [];
+          if (!groups[category].includes(f.properties.name)) {
+            groups[category].push(f.properties.name);
+          }
+        });
+    
+      return groups;
+    }, [features, selectedPackages]);
+    
 
   const renderDropdown = (label, value, setValue, options) => {
     const isAllSelected = options.length > 0 && value.length === options.length;
@@ -86,15 +96,26 @@ const LayerFilterPanel = ({
           renderValue={(selected) => selected.join(', ')}
           MenuProps={{
             PaperProps: {
-              style: {
+              sx: {
                 maxHeight: 300,
-                backgroundColor: '#1f1f1f',
+                backgroundColor: '#121212',
                 color: '#fff',
-                scrollbarWidth: 'thin'
+                '&::-webkit-scrollbar': {
+                  width: '6px',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#000',
+                  borderRadius: '4px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: '#222',
+                },
+                scrollbarColor: '#000 #222',
+                scrollbarWidth: 'thin',
               }
-            },
-            MenuListProps: { disablePadding: true, style: { paddingTop: 0 } }
+            }
           }}
+          
           sx={{
             bgcolor: '#2a2a2a', color: '#fff',
             '& .MuiSvgIcon-root': { color: '#fff' },
@@ -180,7 +201,58 @@ const LayerFilterPanel = ({
 
       {renderDropdown('Phases', selectedPhases, setSelectedPhases, phaseOptions)}
       {renderDropdown('Packages', selectedPackages, setSelectedPackages, packageOptions)}
-      {renderDropdown('Projects', selectedProjects, setSelectedProjects, projectOptions)}
+      <FormControl fullWidth sx={{ mt: 2 }}>
+  <InputLabel sx={{ color: '#ccc' }}>Projects</InputLabel>
+  <Select
+    multiple
+    value={selectedProjects}
+    onChange={e => setSelectedProjects(e.target.value)}
+    input={<OutlinedInput label="Projects" />}
+    renderValue={(selected) => selected.join(', ')}
+    sx={{
+      bgcolor: '#1e1e1e', color: '#fff',
+      '& .MuiSvgIcon-root': { color: '#fff' },
+      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#555' },
+    }}
+    MenuProps={{
+      PaperProps: {
+        sx: {
+          maxHeight: 300,
+          backgroundColor: '#121212',
+          color: '#fff',
+          '&::-webkit-scrollbar': {
+            width: '6px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: '#000',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: '#222',
+          },
+          scrollbarColor: '#000 #222',
+          scrollbarWidth: 'thin',
+        }
+      }
+    }}
+    
+  >
+    {Object.entries(groupedProjects).map(([category, projects]) => (
+      [
+        <MenuItem key={category} disabled sx={{ fontWeight: 'bold', opacity: 0.8 }}>
+          ─ {category.toUpperCase()} ─
+        </MenuItem>,
+        ...projects.map(name => (
+          <MenuItem key={name} value={name}>
+            <Checkbox checked={selectedProjects.includes(name)} />
+            <ListItemText primary={name} />
+          </MenuItem>
+        ))
+      ]
+    ))}
+  </Select>
+</FormControl>
+
     </Box>
   );
 };
