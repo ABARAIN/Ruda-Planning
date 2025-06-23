@@ -79,12 +79,15 @@ export default function DashboardRTWExact() {
 }
 
 function MobileView({ data }) {
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <Box sx={{ px: 2, py: 2 }}>
       <Typography variant="h5" align="center" fontWeight="bold" sx={{ textTransform: 'uppercase' }}>{data.name}</Typography>
       <Typography align="center" sx={{ mb: 2 }}>Date: {data.completion_date}</Typography>
-      <Box component="img" src="/Img.png" width="100%" height="200px" sx={{ objectFit: 'cover', mb: 2 }} />
-
+      <Box component="img" src="/Img.png" width="100%" height="200px" sx={{ objectFit: 'cover', mb: 2, }} />
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <SectionCard title="Scope of Work">
         {data.scope_of_work.map((item, i) => {
           const match = item.match(/^(.+?)\s*\((.+)\)$/);
@@ -180,16 +183,24 @@ function MobileView({ data }) {
       </SectionCard>
 
       <SectionCard title="Firms">
-        <Box display="flex" flexDirection="column" gap={2} alignItems="center">
-          {data.firms.map((firm, index) => (
-            <Box key={index} textAlign="center">
-              <Avatar src={firm.img} sx={{ width: 56, height: 56, mx: 'auto' }} />
-              <Typography variant="caption" fontWeight="bold">{firm.title}</Typography>
-              <Typography variant="body2">{firm.name}</Typography>
-            </Box>
-          ))}
-        </Box>
-      </SectionCard>
+  <Box
+    height={200}
+    sx={{
+      display: 'grid',
+      gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr',
+      gap: 2,
+      textAlign: 'center'
+    }}
+  >
+    {data.firms.map((firm, index) => (
+      <Box key={index}>
+        <Avatar src={firm.img} sx={{ width: 56, height: 56, mx: 'auto', mb: 0 }} />
+        <Typography variant="caption" fontWeight="bold">{firm.title}</Typography>
+        <Typography variant="body2">{firm.name}</Typography>
+      </Box>
+    ))}
+  </Box>
+</SectionCard>
 
       <SectionCard title="Scope KPIs">
         <ResponsiveContainer width="100%" height={300}>
@@ -216,7 +227,7 @@ function MobileView({ data }) {
           </LineChart>
         </ResponsiveContainer>
       </SectionCard>
-    </Box>
+    </Box></Box>
   );
 }
 
