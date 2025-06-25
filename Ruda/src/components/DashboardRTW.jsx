@@ -227,6 +227,7 @@ function MobileView({ data }) {
           </LineChart>
         </ResponsiveContainer>
       </SectionCard>
+      
     </Box></Box>
   );
 }
@@ -313,7 +314,7 @@ function DesktopView({ data }) {
               <Paper sx={{ boxShadow: 'none', p: 2, textAlign: 'center' }}>
                 <AttachMoneyIcon sx={{ fontSize: 60, color: '#000000' }} />
                 <Typography fontWeight="bold" fontSize="small">Awarded Cost</Typography>
-                <Typography fontWeight="bold" fontSize="large">PKR {data.awarded_cost}M</Typography>
+                <Typography fontWeight="bold" fontSize="1.4rem">PKR {data.awarded_cost}M</Typography>
               </Paper>
             </Grid>
   
@@ -321,7 +322,7 @@ function DesktopView({ data }) {
               <Paper sx={{ boxShadow: 'none', p: 2, textAlign: 'center' }}>
                 <TimerIcon sx={{ fontSize: 60, color: '#000000' }} />
                 <Typography fontWeight="bold" fontSize="small">Duration</Typography>
-                <Typography fontWeight="bold" fontSize="large">{data.duration_months} Months</Typography>
+                <Typography fontWeight="bold" fontSize="1.4rem">{data.duration_months} Months</Typography>
               </Paper>
             </Grid>
           </Grid>
@@ -426,7 +427,7 @@ function DesktopView({ data }) {
                 </LineChart>
               </SectionCard>
             </Grid>
-          </Grid>
+          </Grid><Box sx={{ height: 1 }} />
         </Box>
       </Box>
     );
