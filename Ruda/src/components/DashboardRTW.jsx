@@ -9,6 +9,10 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import TimerIcon from '@mui/icons-material/Timer';
 import axios from 'axios';
 import { useTheme } from '@mui/material/styles';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import PrintIcon from '@mui/icons-material/Print';
+import IconButton from '@mui/material/IconButton';
 
 const pieColors = ['#4caf50', '#f44336'];
 
@@ -78,6 +82,57 @@ export default function DashboardRTWExact() {
   return isMobile ? <MobileView data={data} /> : <DesktopView data={data} />;
 }
 
+
+
+
+const handlePrintPDF = async () => {
+  const input = document.getElementById('dashboard-print-area');
+
+  const originalStyle = input.getAttribute('style');
+  input.style.maxHeight = 'unset';
+  input.style.overflow = 'visible';
+
+  await new Promise(resolve => setTimeout(resolve, 300));
+
+  const canvas = await html2canvas(input, {
+    scale: 3, // Higher scale = better resolution
+    scrollY: -window.scrollY,
+    useCORS: true
+  });
+
+  const imgData = canvas.toDataURL('image/png');
+  const pdf = new jsPDF('landscape', 'mm', 'a4');
+
+
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = pdf.internal.pageSize.getHeight();
+
+  const imgProps = {
+    width: canvas.width,
+    height: canvas.height
+  };
+
+  const ratio = imgProps.width / imgProps.height;
+  const desiredWidth = pdfWidth;
+  const desiredHeight = desiredWidth / ratio;
+
+  // Center the image vertically if it's short
+  const verticalOffset = desiredHeight < pdfHeight ? (pdfHeight - desiredHeight) / 2 : 0;
+
+  pdf.addImage(imgData, 'PNG', 0, verticalOffset, desiredWidth, desiredHeight);
+  pdf.save('dashboard-report.pdf');
+
+  if (originalStyle) input.setAttribute('style', originalStyle);
+  else input.removeAttribute('style');
+};
+
+
+
+
+
+
+
+
 function MobileView({ data }) {
 
     const theme = useTheme();
@@ -102,16 +157,27 @@ function MobileView({ data }) {
 
       <SectionCard title="Land Status">
         <ResponsiveContainer width="100%" height={150}>
-          <PieChart>
-            <Pie data={[
-              { name: 'Available', value: data.land_available_pct },
-              { name: 'Remaining', value: data.land_remaining_pct }
-            ]} outerRadius={60} innerRadius={35} dataKey="value">
-              {pieColors.map((color, index) => (
-                <Cell key={index} fill={color} />
-              ))}
-            </Pie>
-          </PieChart>
+        <PieChart
+  onClick={() => window.open('/map', '_blank')}
+  style={{ cursor: 'pointer' }}
+>
+  <Pie
+    data={[
+      { name: 'Available', value: data.land_available_pct },
+      { name: 'Remaining', value: data.land_remaining_pct }
+    ]}
+    outerRadius={60}
+    innerRadius={35}
+    dataKey="value"
+    onClick={() => window.open('/map', '_blank')}
+  >
+    {pieColors.map((color, index) => (
+      <Cell key={index} fill={color} />
+    ))}
+  </Pie>
+  <Tooltip />
+</PieChart>
+
         </ResponsiveContainer>
         <Typography>➤ Available - {data.land_available_pct}% ({data.land_available_km} km)</Typography>
         <Typography>➤ Remaining - {data.land_remaining_pct}% ({data.land_remaining_km} km)</Typography>
@@ -222,8 +288,9 @@ function MobileView({ data }) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="planned" stroke="#1976d2" />
-            <Line type="monotone" dataKey="actual" stroke="#f44336" />
+            <Line type="monotone" dataKey="planned" name="Planned" stroke="#1976d2" />
+<Line type="monotone" dataKey="actual" name="Actual" stroke="#f44336" />
+
           </LineChart>
         </ResponsiveContainer>
       </SectionCard>
@@ -236,21 +303,32 @@ function MobileView({ data }) {
 // It should be placed here as DesktopView component:
 function DesktopView({ data }) {
     return (
-      <Box sx={{
-        width: '100vw', minHeight: '100vh', bgcolor: '#fff', overflowY: 'auto',
+      <Box
+      id="dashboard-print-area"
+      sx={{
+        width: '100vw',
+        minHeight: '100vh',
+        bgcolor: '#fff',
+        overflowY: 'auto',
         maxHeight: '100vh',
         '::-webkit-scrollbar': { width: '6px' },
         '::-webkit-scrollbar-thumb': { backgroundColor: '#aaa', borderRadius: '3px' },
         '::-webkit-scrollbar-track': { backgroundColor: '#f0f0f0' }
-      }}>
-        <Box sx={{ bgcolor: '#000', color: '#fff', p: 2, display: 'flex', alignItems: 'center' }}>
-          <Typography variant="h4" fontWeight="bold" sx={{ flexGrow: 1, textAlign: 'center' }}>
-            {data.name}
-          </Typography>
-          <Typography variant="subtitle2" sx={{ whiteSpace: 'nowrap' }}>
-            Date: {data.completion_date}
-          </Typography>
-        </Box>
+      }}
+    >
+    
+       <Box sx={{ bgcolor: '#000', color: '#fff', p: 2, display: 'flex', alignItems: 'center' }}>
+  <IconButton onClick={handlePrintPDF} sx={{ color: '#fff', mr: 2 }}>
+    <PrintIcon />
+  </IconButton>
+  <Typography variant="h4" fontWeight="bold" sx={{ flexGrow: 1, textAlign: 'center' }}>
+    {data.name}
+  </Typography>
+  <Typography variant="subtitle2" sx={{ whiteSpace: 'nowrap' }}>
+    Date: {data.completion_date}
+  </Typography>
+</Box>
+
   
         <Box sx={{ px: 2, pt: 2, maxWidth: '1600px', mx: 'auto' }}>
           <Typography sx={{ mb: 1 }}>{data.description}</Typography>
@@ -295,16 +373,29 @@ function DesktopView({ data }) {
                 <Typography variant="h6" fontWeight="bold" sx={{ textTransform: 'uppercase', textAlign: 'center' }}>
                   Land Status
                 </Typography>
-                <PieChart width={210} height={150}>
-                  <Pie data={[
-                    { name: 'Available', value: data.land_available_pct },
-                    { name: 'Remaining', value: data.land_remaining_pct }
-                  ]} outerRadius={60} innerRadius={35} dataKey="value">
-                    {pieColors.map((color, index) => (
-                      <Cell key={index} fill={color} />
-                    ))}
-                  </Pie>
-                </PieChart>
+                <PieChart
+  width={210}
+  height={150}
+  onClick={() => window.open('/map', '_blank')}
+  style={{ cursor: 'pointer' }}
+>
+  <Pie
+    data={[
+      { name: 'Available', value: data.land_available_pct },
+      { name: 'Remaining', value: data.land_remaining_pct }
+    ]}
+    outerRadius={60}
+    innerRadius={35}
+    dataKey="value"
+    onClick={() => window.open('/map', '_blank')}
+  >
+    {pieColors.map((color, index) => (
+      <Cell key={index} fill={color} />
+    ))}
+  </Pie>
+  <Tooltip />
+</PieChart>
+
                 <Typography>➤ Available - {data.land_available_pct}% ({data.land_available_km} km)</Typography>
                 <Typography>➤ Remaining - {data.land_remaining_pct}% ({data.land_remaining_km} km)</Typography>
               </Paper>
@@ -422,8 +513,9 @@ function DesktopView({ data }) {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="planned" stroke="#1976d2" />
-                  <Line type="monotone" dataKey="actual" stroke="#f44336" />
+                  <Line type="monotone" dataKey="planned" name="Planned" stroke="#1976d2" />
+<Line type="monotone" dataKey="actual" name="Actual" stroke="#f44336" />
+
                 </LineChart>
               </SectionCard>
             </Grid>
