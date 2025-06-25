@@ -427,7 +427,7 @@ function DesktopView({ data }) {
                 </LineChart>
               </SectionCard>
             </Grid>
-          </Grid><Box sx={{ height: 1 }} />
+          </Grid><Box sx={{ height: 15 }} />
         </Box>
       </Box>
     );
