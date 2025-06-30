@@ -8,7 +8,6 @@ import {
 import axios from 'axios';
 import * as turf from '@turf/turf';
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
-import MenuIcon from '@mui/icons-material/Menu';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -191,149 +190,140 @@ const RTWMap = () => {
     <Box sx={{ position: 'relative', height: '100vh', width: '100vw' }}>
       <Box ref={mapContainer} sx={{ height: '100%', width: '100%' }} />
 
-      {/* Open Buttons */}
-      <Box sx={{ position: 'absolute', top: 10, left: 10, zIndex: 1100, display: 'flex', gap: 1 }}>
-      <Button
-  size="small"
-  onClick={() => setShowChart(true)}
-  sx={{
-    backdropFilter: 'blur(6px)',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    border: '1px solid #fff',
-    color: '#fff',
-    textTransform: 'none',
-    fontSize: '0.75rem',
-    px: 2,
-    '&:hover': {
-      backgroundColor: 'rgba(255,255,255,0.2)',
-    },
-  }}
->
-  Show Chart
-</Button>
-<Button
-  size="small"
-  onClick={() => setShowToggle(true)}
-  sx={{
-    backdropFilter: 'blur(6px)',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    border: '1px solid #fff',
-    color: '#fff',
-    textTransform: 'none',
-    fontSize: '0.75rem',
-    px: 2,
-    '&:hover': {
-      backgroundColor: 'rgba(255,255,255,0.2)',
-    },
-  }}
->
-  Show Layers
-</Button>
-
+      {/* Toggle buttons for mobile */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 10,
+          left: 10,
+          zIndex: 1100,
+          display: { xs: 'flex', md: 'none' },
+          gap: 1,
+        }}
+      >
+        <Button
+          size="small"
+          onClick={() => setShowChart(true)}
+          sx={{
+            backdropFilter: 'blur(6px)',
+            backgroundColor: 'rgba(255,255,255,0.1)',
+            border: '1px solid #fff',
+            color: '#fff',
+            textTransform: 'none',
+            fontSize: '0.75rem',
+            px: 2,
+            '&:hover': { backgroundColor: 'rgba(255,255,255,0.2)' },
+          }}
+        >
+          Show Chart
+        </Button>
+        <Button
+          size="small"
+          onClick={() => setShowToggle(true)}
+          sx={{
+            backdropFilter: 'blur(6px)',
+            backgroundColor: 'rgba(255,255,255,0.1)',
+            border: '1px solid #fff',
+            color: '#fff',
+            textTransform: 'none',
+            fontSize: '0.75rem',
+            px: 2,
+            '&:hover': { backgroundColor: 'rgba(255,255,255,0.2)' },
+          }}
+        >
+          Show Layers
+        </Button>
       </Box>
 
       {/* Chart Panel */}
-      {areaStats && showChart && (
-        <Card
-          elevation={6}
-          sx={{
-            position: 'absolute',
-            top: 50,
-            left: 10,
-            width: { xs: 260, sm: 300 },
-            maxHeight: '85vh',
-            zIndex: 1000,
-            borderRadius: 2,
-            bgcolor: 'rgba(20, 20, 20, 0.9)',
-            color: 'white',
-            p: 1,
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="subtitle2">Land Distribution</Typography>
-            <IconButton size="small" onClick={() => setShowChart(false)} sx={{ color: 'white' }}>
-              <CancelIcon />
-            </IconButton>
-          </Box>
-          <Box sx={{ width: '100%', height: 160 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="35%"
-                  outerRadius="60%"
-                  dataKey="value"
-                  label={({ percent }) => `${(percent * 100).toFixed(1)}%`}
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v) => `${v.toFixed(2)} acres`} />
-              </PieChart>
-            </ResponsiveContainer>
-          </Box>
-          <Divider sx={{ my: 1, borderColor: '#555' }} />
-          <Typography variant="body2">🔴 Total: {areaStats.total.toFixed(2)} ac</Typography>
-          <Typography variant="body2">🟢 Available: {areaStats.available.toFixed(2)} ac</Typography>
-        </Card>
-      )}
+      // 🟢 everything remains same at top (imports, mapbox token, useEffect, etc.)
 
-      {/* Toggle Panel */}
-      {showToggle && (
-        <Card
-          elevation={6}
-          sx={{
-            position: 'absolute',
-            bottom: 70,
-            left: 10,
-            width: { xs: 240 },
-            zIndex: 1000,
-            borderRadius: 2,
-            bgcolor: 'rgba(20, 20, 20, 0.9)',
-            color: 'white',
-            p: 1.5,
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="subtitle2">Layer Visibility</Typography>
-            <IconButton size="small" onClick={() => setShowToggle(false)} sx={{ color: 'white' }}>
-              <CancelIcon />
-            </IconButton>
-          </Box>
-          <Box>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <input
-                type="checkbox"
-                checked={layerVisibility.rtw}
-                onChange={(e) => {
-                  const val = e.target.checked;
-                  setLayerVisibility(prev => ({ ...prev, rtw: val }));
-                  toggleLayer('rtw-p02', val);
-                }}
-              />
-              🔴 RTW P-02
-            </label>
-          </Box>
-          <Box sx={{ mt: 1 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <input
-                type="checkbox"
-                checked={layerVisibility.available}
-                onChange={(e) => {
-                  const val = e.target.checked;
-                  setLayerVisibility(prev => ({ ...prev, available: val }));
-                  toggleLayer('rtw2', val);
-                }}
-              />
-              🟢 Available Land
-            </label>
-          </Box>
-        </Card>
-      )}
+// Inside the `return` of the component — only the chart panel is updated:
+{areaStats && (
+  <Card
+    elevation={6}
+    sx={{
+      display: { xs: showChart ? 'block' : 'none', md: 'block' },
+      position: 'absolute',
+      top: { xs: 50, md: 20 },
+      left: { xs: 10, md: 20 },
+      width: { xs: 270, sm: 300, md: 360 },
+      maxHeight: '90vh',
+      overflowY: 'auto',
+      zIndex: 1000,
+      borderRadius: 2,
+      bgcolor: 'rgba(20, 20, 20, 0.92)',
+      color: 'white',
+      p: 2,
+    }}
+  >
+    <Box
+      sx={{
+        display: { xs: 'flex', md: 'none' },
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        mb: 1,
+      }}
+    >
+      <Typography variant="subtitle2">Land Distribution</Typography>
+      <IconButton size="small" onClick={() => setShowChart(false)} sx={{ color: 'white' }}>
+        <CancelIcon />
+      </IconButton>
+    </Box>
 
+    <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+      <Typography variant="h6" gutterBottom>
+        Land Area Distribution
+      </Typography>
+    </Box>
+
+    <Box sx={{ width: '100%', height: 180 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            innerRadius="35%"
+            outerRadius="60%"
+            dataKey="value"
+            label={({ percent }) => `${(percent * 100).toFixed(1)}%`}
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={index} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip formatter={(v) => `${v.toFixed(2)} acres`} />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </Box>
+
+    <Divider sx={{ my: 1, borderColor: '#555' }} />
+
+    <Typography variant="body2">
+    ⚪ <strong>Total RTW P-02 Area:</strong> {areaStats.total.toFixed(2)} acres
+    </Typography>
+    <Typography variant="body2">
+      🟢 <strong>Available Area:</strong> {areaStats.available.toFixed(2)} acres
+    </Typography>
+    <Typography variant="body2">
+    🔴 <strong>Unavailable Area:</strong> {areaStats.unavailable.toFixed(2)} acres
+    </Typography>
+
+    <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>
+      ➤ Available Polygons:
+    </Typography>
+    {areaStats.polygons.map((p, idx) => (
+      <Typography key={idx} variant="body2" sx={{ ml: 2, color: '#90ee90' }}>
+        • {p.id}: {p.area.toFixed(2)} acres
+      </Typography>
+    ))}
+  </Card>
+)}
+
+
+      {/* Loading */}
       {loading && (
         <Box
           sx={{
