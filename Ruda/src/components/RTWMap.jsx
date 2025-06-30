@@ -287,7 +287,7 @@ const RTWMap = () => {
           elevation={6}
           sx={{
             position: 'absolute',
-            bottom: 62,
+            bottom: 70,
             left: 10,
             width: { xs: 240 },
             zIndex: 1000,
