@@ -2,8 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import {
-  Box, CircularProgress, Typography, Card, CardContent, Divider,
-  IconButton, Button
+  Box, CircularProgress, Typography, Card, IconButton, Button, Divider
 } from '@mui/material';
 import axios from 'axios';
 import * as turf from '@turf/turf';
@@ -236,92 +235,155 @@ const RTWMap = () => {
       </Box>
 
       {/* Chart Panel */}
-      // 🟢 everything remains same at top (imports, mapbox token, useEffect, etc.)
-
-// Inside the `return` of the component — only the chart panel is updated:
-{areaStats && (
-  <Card
-    elevation={6}
-    sx={{
-      display: { xs: showChart ? 'block' : 'none', md: 'block' },
-      position: 'absolute',
-      top: { xs: 50, md: 20 },
-      left: { xs: 10, md: 20 },
-      width: { xs: 270, sm: 300, md: 360 },
-      maxHeight: '90vh',
-      overflowY: 'auto',
-      zIndex: 1000,
-      borderRadius: 2,
-      bgcolor: 'rgba(20, 20, 20, 0.92)',
-      color: 'white',
-      p: 2,
-    }}
-  >
-    <Box
-      sx={{
-        display: { xs: 'flex', md: 'none' },
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        mb: 1,
-      }}
-    >
-      <Typography variant="subtitle2">Land Distribution</Typography>
-      <IconButton size="small" onClick={() => setShowChart(false)} sx={{ color: 'white' }}>
-        <CancelIcon />
-      </IconButton>
-    </Box>
-
-    <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-      <Typography variant="h6" gutterBottom>
-        Land Area Distribution
-      </Typography>
-    </Box>
-
-    <Box sx={{ width: '100%', height: 180 }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            innerRadius="35%"
-            outerRadius="60%"
-            dataKey="value"
-            label={({ percent }) => `${(percent * 100).toFixed(1)}%`}
+      {areaStats && (
+        <Card
+          elevation={6}
+          sx={{
+            display: { xs: showChart ? 'block' : 'none', md: 'block' },
+            position: 'absolute',
+            top: { xs: 50, md: 20 },
+            left: { xs: 10, md: 20 },
+            width: { xs: 270, sm: 300, md: 360 },
+            maxHeight: { xs: '90vh', md: 'none' },
+            overflowY: { xs: 'auto', md: 'visible' },
+            zIndex: 1000,
+            borderRadius: 2,
+            bgcolor: 'rgba(20, 20, 20, 0.92)',
+            color: 'white',
+            p: 2,
+          }}
+        >
+          <Box
+            sx={{
+              display: { xs: 'flex', md: 'none' },
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 1,
+            }}
           >
-            {chartData.map((entry, index) => (
-              <Cell key={index} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip formatter={(v) => `${v.toFixed(2)} acres`} />
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
-    </Box>
+            <Typography variant="subtitle2">Land Distribution</Typography>
+            <IconButton size="small" onClick={() => setShowChart(false)} sx={{ color: 'white' }}>
+              <CancelIcon />
+            </IconButton>
+          </Box>
+          <Typography variant="h6" sx={{ display: { xs: 'none', md: 'block' } }} gutterBottom>
+            Land Area Distribution
+          </Typography>
 
-    <Divider sx={{ my: 1, borderColor: '#555' }} />
+          <Box sx={{ width: '100%', height: 180 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius="35%"
+                  outerRadius="60%"
+                  dataKey="value"
+                  label={({ percent }) => `${(percent * 100).toFixed(1)}%`}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(v) => `${v.toFixed(2)} acres`} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </Box>
 
-    <Typography variant="body2">
-    ⚪ <strong>Total RTW P-02 Area:</strong> {areaStats.total.toFixed(2)} acres
-    </Typography>
-    <Typography variant="body2">
-      🟢 <strong>Available Area:</strong> {areaStats.available.toFixed(2)} acres
-    </Typography>
-    <Typography variant="body2">
-    🔴 <strong>Unavailable Area:</strong> {areaStats.unavailable.toFixed(2)} acres
-    </Typography>
+          <Divider sx={{ my: 1, borderColor: '#555' }} />
 
-    <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>
-      ➤ Available Polygons:
-    </Typography>
-    {areaStats.polygons.map((p, idx) => (
-      <Typography key={idx} variant="body2" sx={{ ml: 2, color: '#90ee90' }}>
-        • {p.id}: {p.area.toFixed(2)} acres
-      </Typography>
-    ))}
-  </Card>
-)}
+          <Typography variant="body2">
+            ⚪ <strong>Total RTW P-02 Area:</strong> {areaStats.total.toFixed(2)} acres
+          </Typography>
+          <Typography variant="body2">
+            🟢 <strong>Available Area:</strong> {areaStats.available.toFixed(2)} acres
+          </Typography>
+          <Typography variant="body2">
+            🔴 <strong>Unavailable Area:</strong> {areaStats.unavailable.toFixed(2)} acres
+          </Typography>
 
+          <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>
+            ➤ Available Polygons:
+          </Typography>
+          {areaStats.polygons.map((p, idx) => (
+            <Typography key={idx} variant="body2" sx={{ ml: 2, color: '#90ee90' }}>
+              • {p.id}: {p.area.toFixed(2)} acres
+            </Typography>
+          ))}
+        </Card>
+      )}
+
+      {/* Layer Toggle Panel */}
+      <Card
+        elevation={6}
+        sx={{
+          display: { xs: showToggle ? 'block' : 'none', md: 'block' },
+          position: 'absolute',
+          bottom: { xs: 30, md: 'auto' },
+          top: { md: 20 },
+          right: { md: 50 },
+          left: { xs: 10, md: 'auto' },
+          width: { xs: 240, md: 220 },
+          zIndex: 1000,
+          borderRadius: 3,
+          bgcolor: 'rgba(25, 25, 25, 0.95)',
+          border: '1px solid rgba(255,255,255,0.15)',
+          boxShadow: '0px 4px 20px rgba(0,0,0,0.4)',
+          color: 'white',
+          p: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: { xs: 'flex', md: 'none' },
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 1,
+          }}
+        >
+          <Typography variant="subtitle2">Layer Visibility</Typography>
+          <IconButton size="small" onClick={() => setShowToggle(false)} sx={{ color: 'white' }}>
+            <CancelIcon />
+          </IconButton>
+        </Box>
+        <Typography
+          variant="subtitle2"
+          gutterBottom
+          sx={{ display: { xs: 'none', md: 'block' } }}
+        >
+          Layer Visibility
+        </Typography>
+        <Box>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <input
+              type="checkbox"
+              checked={layerVisibility.rtw}
+              onChange={(e) => {
+                const val = e.target.checked;
+                setLayerVisibility(prev => ({ ...prev, rtw: val }));
+                toggleLayer('rtw-p02', val);
+              }}
+            />
+            🔴 RTW P-02
+          </label>
+        </Box>
+        <Box sx={{ mt: 1 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <input
+              type="checkbox"
+              checked={layerVisibility.available}
+              onChange={(e) => {
+                const val = e.target.checked;
+                setLayerVisibility(prev => ({ ...prev, available: val }));
+                toggleLayer('rtw2', val);
+              }}
+            />
+            🟢 Available Land
+          </label>
+        </Box>
+      </Card>
 
       {/* Loading */}
       {loading && (
