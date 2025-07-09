@@ -1,30 +1,43 @@
 import { useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 
+const legendItems = [
+ 
+  
+  { label: "Primary Roads (300'-Wide)", color: '#2196f3' },
+  { label: "Secondary Road (200'-Wide)", color: '#4caf50' },
+  { label: "Tertiary Roads", color: '#ff9800' },
+  { label: "Tertiary Roads (80'-Wide)", color: '#ff5722' },
+  { label: "Uti Walk Cycle", color: '#8bc34a' },
+  { label: "Bridge", color: '#9c27b0' },
+  { label: "300' CL", color: '#ff0000' },
+  { label: "300' ROW", color: '#00bcd4' },
+];
+
 const ProposedRoadsLayer = () => {
   const [proposedRoads, setProposedRoads] = useState(null);
   const [visible, setVisible] = useState(false);
 
+  // 🔁 Preload GeoJSON and listen for toggle
   useEffect(() => {
-    const toggle = async () => {
-      const next = !visible;
-      setVisible(next);
-
-      if (next && !proposedRoads) {
-        try {
-          const res = await fetch('https://ruda-backend-ny14.onrender.com/api/purposed_ruda_road_network');
-          const data = await res.json();
-          setProposedRoads(data);
-        } catch (err) {
-          console.error('Failed to load proposed roads:', err);
-        }
+    const fetchData = async () => {
+      try {
+        const res = await fetch('https://ruda-backend-ny14.onrender.com/api/purposed_ruda_road_network');
+        const data = await res.json();
+        setProposedRoads(data);
+      } catch (err) {
+        console.error('Failed to preload proposed roads:', err);
       }
     };
 
+    fetchData();
+
+    const toggle = () => setVisible(prev => !prev);
     window.addEventListener('toggleProposedRoads', toggle);
     return () => window.removeEventListener('toggleProposedRoads', toggle);
-  }, [visible, proposedRoads]);
+  }, []);
 
+  // 🗺️ Add/Update layer on map
   useEffect(() => {
     const map = window.__MAPBOX_INSTANCE__;
     if (!map || !proposedRoads) return;
@@ -96,7 +109,41 @@ const ProposedRoadsLayer = () => {
     }
   }, [proposedRoads, visible]);
 
-  return null;
+  return (
+    <>
+      {visible && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 20,
+            right: 20,
+            backgroundColor: 'rgba(0,0,0,0.75)',
+            color: '#fff',
+            padding: '10px 12px',
+            borderRadius: '8px',
+            fontSize: '13px',
+            zIndex: 999,
+            maxWidth: 240
+          }}
+        >
+          <strong style={{ display: 'block', marginBottom: 6 }}>Proposed Roads Legend</strong>
+          {legendItems.map((item, idx) => (
+            <div key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+              <span
+                style={{
+                  width: 16,
+                  height: 4,
+                  backgroundColor: item.color,
+                  marginRight: 8
+                }}
+              />
+              <span>{item.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
 };
 
 export default ProposedRoadsLayer;
