@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
-  AppBar, Box, Toolbar, Typography, IconButton, Drawer, useMediaQuery
+  AppBar, Box, Toolbar, Typography, IconButton, Drawer, useMediaQuery, Button
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from '@mui/material/styles';
@@ -178,7 +178,23 @@ const App = () => {
                   }}
                 >
                   Ravi Urban Development Authority
+                  
                 </Typography>
+                <Button
+  variant="outlined"
+  size="small"
+  onClick={() => window.dispatchEvent(new CustomEvent('toggleProposedRoads'))}
+  sx={{
+    ml: 2,
+    color: '#fff',
+    borderColor: '#fff',
+    textTransform: 'none',
+    fontSize: '0.75rem',
+    '&:hover': { backgroundColor: '#fff', color: '#000' }
+  }}
+>
+  Proposed Roads
+</Button>
 
               </Toolbar>
             </AppBar>

@@ -20,7 +20,8 @@ const pool = new Pool({
 const allowedTables = {
   all: 'all',
   lahore: 'lahore',
-  sheikhpura: 'sheikhpura'
+  sheikhpura: 'sheikhpura',
+  purposed_ruda_road_network: 'purposed_ruda_road_network gcs'
 };
 
 // ✅ GeoJSON API endpoint
@@ -28,7 +29,7 @@ app.get('/api/:tableName', async (req, res) => {
   const { tableName } = req.params;
 
   if (!allowedTables[tableName]) {
-    return res.status(400).json({ error: 'Invalid table. Use: all, lahore, sheikhpura' });
+    return res.status(400).json({ error: 'Invalid table. Use one of the whitelisted names.' });
   }
 
   try {
