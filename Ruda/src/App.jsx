@@ -12,6 +12,9 @@ import { Routes, Route } from 'react-router-dom';
 import bbox from '@turf/bbox';
 import RTWMap from './components/RTWMap';
 import GeoDataManager from './components/GeoDataManager';
+import Portfolio from "./components/Portfolio/Portfolio";
+
+
 function getRandomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
 }
@@ -269,6 +272,7 @@ const App = () => {
         }
       />
        <Route path="/map" element={<RTWMap />} />
+       <Route path="/portfolio" element={<Portfolio/>} />
        <Route path="/crud" element={<GeoDataManager />} />
       <Route path="/details/:name" element={<DashboardRTWExact />} />
     </Routes>
