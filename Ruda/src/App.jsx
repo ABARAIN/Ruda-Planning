@@ -167,22 +167,24 @@ const App = () => {
                     mr: isMobile ? 6 : 7
                   }}
                 />
-                <Typography
-                  variant={isMobile ? 'subtitle2' : 'h6'}
-                  noWrap
-                  sx={{
-                    fontWeight: 'bold',
-                    letterSpacing: 0.5,
-                    fontSize: isMobile ? '13.0px' : '1.2rem',
-                    flexGrow: 1,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}
-                >
-                  Ravi Urban Development Authority
-                  
-                </Typography>
+               {!isMobile && (
+  <Typography
+    variant="h6"
+    noWrap
+    sx={{
+      fontWeight: 'bold',
+      letterSpacing: 0.5,
+      fontSize: '1.2rem',
+      flexGrow: 1,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
+    }}
+  >
+    Ravi Urban Development Authority
+  </Typography>
+)}
+
 
                 <Button
   variant="outlined"
