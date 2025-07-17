@@ -183,6 +183,25 @@ const App = () => {
                   Ravi Urban Development Authority
                   
                 </Typography>
+
+                <Button
+  variant="outlined"
+  size="small"
+  onClick={() => window.location.href = '/portfolio'}
+  sx={{
+    ml: 1,
+    color: '#fff',
+    borderColor: '#fff',
+    textTransform: 'none',
+    fontSize: '0.75rem',
+    '&:hover': { backgroundColor: '#fff', color: '#000' }
+  }}
+>
+  Portfolio
+</Button>
+
+
+
                 <Button
   variant="outlined"
   size="small"
@@ -198,6 +217,12 @@ const App = () => {
 >
   Proposed Roads
 </Button>
+
+
+
+
+
+
 
               </Toolbar>
             </AppBar>

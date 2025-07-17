@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import {
   PieChart,
   Pie,
@@ -8,23 +8,34 @@ import {
   XAxis,
   YAxis, Tooltip, CartesianGrid,
   ResponsiveContainer,
-  Legend
+  Legend, LabelList
 } from 'recharts';
 import {
   Clock,
   MapPin,
   Building,
   Droplets,
-  Recycle,
+  Recycle,Printer,
   Trees,
   Lightbulb, Route, Waves,
   TrendingUp
 } from 'lucide-react';
 import "../../Portfolio.css"
 import styles from "./styles"
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
 
 
 const RudaPortfolioDashboard = () => {
+
+
+
+
+
+
+
+
   const developmentData = [
     { name: 'Residential', value: 30, color: '#8B4513' },
     { name: 'Commercial', value: 25, color: '#9932CC' },
@@ -42,6 +53,7 @@ const RudaPortfolioDashboard = () => {
   ];
 
 
+  const totalSpent = expenditureData.reduce((sum, item) => sum + item.amount, 0).toFixed(1);
 
   const financialData = [
     { name: 'Total Budget', value: 1.66e12, color: '#3b82f6' },  // 1.66 Trillion
@@ -99,68 +111,90 @@ const RudaPortfolioDashboard = () => {
     </div>
   );
 
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const { name, value } = payload[0];
-      const total = developmentData.reduce((acc, item) => acc + item.value, 0);
-      const percentage = ((value / total) * 100).toFixed(2);
-      return (
-        <div style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '8px', borderRadius: '4px' }}>
-          <strong>{name}</strong>
-          <div>{`Value: ${value}`}</div>
-          <div>{`Percentage: ${percentage}%`}</div>
-        </div>
-      );
+
+
+
+  const handleDownloadPDF = async () => {
+    const input = document.body;
+  
+    const canvas = await html2canvas(input, {
+      scale: 2,
+      useCORS: true,
+      windowWidth: document.body.scrollWidth
+    });
+  
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+  
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgWidth = pdfWidth;
+    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+  
+    // If image height fits within one page
+    if (imgHeight <= pdfHeight) {
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    } else {
+      // Multi-page logic, no extra space below
+      let heightLeft = imgHeight;
+      let position = 0;
+  
+      while (heightLeft > 0) {
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+        position -= pdfHeight;
+  
+        if (heightLeft > 0) {
+          pdf.addPage();
+        }
+      }
     }
-    return null;
+  
+    pdf.save('RUDA_Portfolio.pdf');
   };
 
-  const renderLabel = (props) => {
-    const { cx, cy, midAngle, innerRadius, outerRadius, value, index } = props;
-    const radius = outerRadius + 10; // position label outside the slice
-    const angle = midAngle * (Math.PI / 180); // Convert angle to radians
-    const x = cx + radius * Math.cos(angle); // X position of the label
-    const y = cy + radius * Math.sin(angle); // Y position of the label
-    const total = developmentData.reduce((acc, item) => acc + item.value, 0);
-    const percentage = ((value / total) * 100).toFixed(2);
-
-    return (
-      <g>
-        <text x={x} y={y} textAnchor="middle" fill="#000" fontSize="14" fontWeight="bold">
-          {`${percentage}%`} {/* Display percentage */}
-        </text>
-        {/* Optional: Add a line connecting the label to the pie slice */}
-        <line
-          x1={cx}
-          y1={cy}
-          x2={x}
-          y2={y}
-          stroke={developmentData[index].color}
-          strokeWidth={2}
-          strokeDasharray="5 5"
-        />
-      </g>
-    );
+  const useMobileView = () => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    
+    useEffect(() => {
+      const handleResize = () => setIsMobile(window.innerWidth <= 768);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+    
+    return isMobile;
   };
-  const CustomLegend = ({ payload }) => (
-    <div style={styles.customLegend}>
-      {payload.map((entry, index) => (
-        <div key={index} style={styles.legendEntry}>
-          <div style={{ ...styles.legendDot, backgroundColor: entry.color }} />
-          <span style={{ fontSize: '12px' }}>{entry.value}</span>
-        </div>
-      ))}
-    </div>
-  );
+
+  const isMobile = useMobileView();
 
   return (
+
+
+
+
+    
     <div style={styles.container}>
       <h1 style={styles.title}>
         RUDA DEVELOPMENT PORTFOLIO
       </h1>
 
+
+      <Printer
+    size={22}
+    onClick={handleDownloadPDF}
+    style={{
+      cursor: 'pointer',
+      color: '#333',
+      marginLeft: '4px',
+      marginTop: "-110px",
+    }}
+  />
+
+
       {/* First Row - 3 containers */}
-      <div style={styles.firstRow}>
+      <div style={isMobile ? { display: 'flex', flexDirection: 'column', gap: '16px' } : styles.firstRow}>
+
         {/* RAVI CITY MASTER PLAN */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>RAVI CITY MASTER PLAN</h2>
@@ -174,24 +208,36 @@ const RudaPortfolioDashboard = () => {
         {/* DEVELOPMENT COMPONENTS */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>DEVELOPMENT COMPONENTS</h2>
-          <div style={styles.chartContainer}>
-            <ResponsiveContainer width="100%" height="100%">
+          <div style={{ width: '100%', height: 300 }}>
+            <ResponsiveContainer>
               <PieChart>
                 <Pie
                   data={developmentData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={30}
-                  outerRadius={75}
-                  paddingAngle={2}
                   dataKey="value"
+                  nameKey="name"
+                  cx="48%"
+                  cy="50%"
+                  outerRadius={80}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                 >
                   {developmentData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Legend />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip formatter={(value, name) => [`${value}`, name]} />
+                <Legend
+                  layout="horizontal"
+                  verticalAlign="bottom"
+                  align="center"
+                  wrapperStyle={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: '12px',
+                    color: 'unset',      // ✅ removes any inherited forced color
+                    fontSize: '13px',    // ✅ optional tweak
+                  }}
+                  iconSize={12}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -228,7 +274,8 @@ const RudaPortfolioDashboard = () => {
       </div>
 
       {/* Second Row - 2 containers */}
-      <div style={styles.secondRow}>
+      <div style={isMobile ? { display: 'flex', flexDirection: 'column', gap: '16px' } : styles.secondRow}>
+
         {/* DEVELOPMENT TIMELINES */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>
@@ -277,7 +324,7 @@ const RudaPortfolioDashboard = () => {
       </div>
 
       {/* Third Row - 3 containers */}
-      <div style={styles.thirdRow}>
+      <div style={isMobile ? { display: 'flex', flexDirection: 'column', gap: '16px' } : styles.thirdRow}>
         {/* FINANCIAL OVERVIEW */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>FINANCIAL OVERVIEW</h2>
@@ -316,56 +363,74 @@ const RudaPortfolioDashboard = () => {
             FY24-25 BUDGET STATUS
           </h2>
           <div style={styles.budgetContainer}>
-            <div style={styles.budgetItem}>
-              <div style={styles.budgetLabel}>Planned Till Date FY24-25</div>
-              <div style={styles.budgetBar}>
-                <div style={styles.budgetProgress}>
-                  <div style={{ ...styles.budgetFill, backgroundColor: '#3b82f6', width: '85%' }} />
-                </div>
-                <span style={styles.budgetValue}>15.36 B</span>
-              </div>
-            </div>
-            <div style={styles.budgetItem}>
-              <div style={styles.budgetLabel}>Certified Amount Till Date FY24-25</div>
-              <div style={styles.budgetBar}>
-                <div style={styles.budgetProgress}>
-                  <div style={{ ...styles.budgetFill, backgroundColor: '#10b981', width: '45%' }} />
-                </div>
-                <span style={styles.budgetValue}>7.5 B</span>
-              </div>
-            </div>
-            <div style={styles.budgetItem}>
-              <div style={styles.budgetLabel}>Expenditure Till Date FY24-25</div>
-              <div style={styles.budgetBar}>
-                <div style={styles.budgetProgress}>
-                  <div style={{ ...styles.budgetFill, backgroundColor: '#f59e0b', width: '35%' }} />
-                </div>
-                <span style={styles.budgetValue}>7.1 B</span>
-              </div>
-            </div>
+          <div style={styles.budgetItem}>
+  <div style={styles.budgetLabel}>Planned Till Date FY24-25</div>
+  <div
+    style={{
+      ...styles.budgetBar3D,
+      backgroundColor: '#003366', // Dark blue
+      width: '250px',             // Adjust per bar length
+    }}
+  >
+    15.96 B
+  </div>
+</div>
+
+<div style={styles.budgetItem}>
+  <div style={styles.budgetLabel}>Certified Amount Till Date FY24-25</div>
+  <div
+    style={{
+      ...styles.budgetBar3D,
+      backgroundColor: '#2e7d32', // Green
+      width: '160px',
+    }}
+  >
+    7.5 B
+  </div>
+</div>
+
+<div style={styles.budgetItem}>
+  <div style={styles.budgetLabel}>Expenditure Till Date FY24-25</div>
+  <div
+    style={{
+      ...styles.budgetBar3D,
+      backgroundColor: '#a84320', // Orange/Brown
+      width: '140px',
+    }}
+  >
+    7.1 B
+  </div>
+</div>
+
           </div>
         </div>
 
         {/* YEAR-WISE EXPENDITURE */}
         <div style={styles.card}>
-          <h2 style={styles.cardTitle}>
-            YEAR-WISE EXPENDITURE
-          </h2>
-          <div style={styles.expenditureLabel}>(PKR MILLIONS)</div>
-          <div style={styles.expenditureContainer}>
-            <ResponsiveContainer width="100%" height="100%">
+
+          <h2 style={styles.cardTitle}>Year-wise Expenditure</h2>
+          <div style={styles.chartContainer}>
+            <ResponsiveContainer width="100%" height={250}>
               <BarChart data={expenditureData}>
-                <XAxis dataKey="year" tick={{ fontSize: 10 }} />
-                <YAxis tick={{ fontSize: 10 }} />
-                <Bar dataKey="amount" fill="#2196f3" />
+                <XAxis dataKey="year" />
+                <YAxis />
+                <Tooltip formatter={(value) => `Rs. ${value}B`} />
+                <Bar dataKey="amount" fill="#3b82f6">
+                  <LabelList dataKey="amount" position="top" formatter={(value) => `Rs. ${value}B`} />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
+
+          <div style={{ textAlign: 'right', marginTop: '8px', fontWeight: 'bold', fontSize: '14px' }}>
+            Total Spent: Rs. {totalSpent}B
+          </div>
         </div>
+
       </div>
 
       {/* Fourth Row - 2 containers */}
-      <div style={styles.fourthRow}>
+      <div style={isMobile ? { display: 'flex', flexDirection: 'column', gap: '16px' } : styles.fourthRow}>
         {/* KEY ACHIEVEMENTS */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>
@@ -384,7 +449,9 @@ const RudaPortfolioDashboard = () => {
           <h2 style={styles.cardTitle}>
             SUSTAINABILITY HIGHLIGHTS
           </h2>
-          <div style={styles.sustainabilityContainer}>
+
+          <div style={isMobile ? { display: 'flex', flexDirection: 'column', gap: '12px' } : styles.sustainabilityContainer}>
+
             <SustainabilityItem
               icon={Droplets}
               title="RIVER CHANNELIZATION"

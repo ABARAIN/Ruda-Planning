@@ -1,4 +1,14 @@
 const styles = {
+
+
+
+
+
+
+
+
+
+    
     container: {
         minHeight: '100vh',
         backgroundColor: '#f5f5f5',
@@ -21,8 +31,10 @@ const styles = {
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
         gap: '16px',
-        marginBottom: '24px'
+        marginBottom: '24px',
+        alignItems: 'stretch',     // ✅ Forces child cards to same height
     },
+
     secondRow: {
         display: 'grid',
         gridTemplateColumns: '2fr 1fr',
@@ -42,15 +54,17 @@ const styles = {
     },
     card: {
         backgroundColor: 'white',
-        padding: '16px',
+        padding: '12px', // reduced padding
         borderRadius: '8px',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-        height: 'fit-content', /* Makes sure cards have adjustable height */
-        maxHeight: '400px', /* Add a max height */
-        overflow: 'hidden', /* Prevent content overflow */
         display: 'flex',
-        flexDirection: 'column', /* Make sure content stacks vertically */
-    },
+        flexDirection: 'column',
+        justifyContent: 'flex-start', // or 'center' if you want centered layout
+        height: 'auto', // let it shrink-wrap
+        minHeight: 'auto', // override fixed sizing if any
+      },
+      
+
 
     cardTitle: {
         fontSize: '18px',
@@ -72,7 +86,7 @@ const styles = {
 
 
     masterPlan: {
-        height: '192px', /* Set the height of the master plan container */
+        height: '292px', /* Set the height of the master plan container */
         backgroundColor: '#e5e7eb', /* Background color if image is not loaded */
         borderRadius: '8px',
         display: 'flex',
@@ -83,11 +97,15 @@ const styles = {
     },
 
     img: {
-        width: '100%', /* Make the image take up the entire container width */
-        height: '100%', /* Make the image take up the entire container height */
-        objectFit: 'cover', /* Ensures the image covers the container without distortion */
-        borderRadius: '8px', /* Match the border radius of the container */
-    }
+        width: '100%',
+        height: '100%',
+        objectFit: 'fill', // ✅ Ensures it fills entire container box
+        borderRadius: '8px',
+        display: 'block',   // ✅ Prevents extra spacing or collapse
+      }
+      
+      
+      
     ,
 
 
@@ -137,6 +155,7 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'center'
     },
+
     metricValue: {
         fontSize: '20px',
         fontWeight: 'bold',
@@ -338,24 +357,40 @@ const styles = {
 
 
     budgetContainer: {
+        marginTop: "35px",
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         height: 'auto', /* Adjust based on content */
         gap: '16px',
-        overflow: 'hidden', /* Prevent overflow */
+        overflow: 'hidden',
+        padding: '0px', /* Prevent overflow */
     },
     budgetItem: {
-        marginBottom: '16px',
-        overflow: 'hidden', /* Prevent content overflow */
-    },
-    budgetLabel: {
-        fontSize: '12px',
+        marginBottom: '10px', // reduced space between rows
+        textAlign: 'left',
+      },
+      
+      
+      budgetLabel: {
+        fontSize: '15px',
+        fontWeight: 'bold',
         marginBottom: '4px',
-        textOverflow: 'ellipsis', /* Add ellipsis for long labels */
-        overflow: 'hidden', /* Prevent overflow */
-        whiteSpace: 'nowrap', /* Prevent wrapping text */
-    },
+      },
+      
+      budgetBar3D: {
+        height: '40px',
+        display: 'flex',
+        alignItems: 'center',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: '13px',
+        padding: '0 12px',
+        boxShadow: '4px 4px 0 rgba(0,0,0,0.2)', // 👈 3D effect
+        borderRadius: '3px',maxWidth: '300px',
+        width: 'fit-content', // shrink to content unless explicitly set
+      },
+      
     budgetBar: {
         display: 'flex',
         alignItems: 'center',
@@ -403,57 +438,64 @@ const styles = {
 
 
 
-
-
-
-
-
     sustainabilityContainer: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)', // 2 items per row
-        gridGap: '16px', // Space between items
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: '16px',
         padding: '16px',
-        justifyItems: 'center', // Center grid items horizontally
-        alignItems: 'center', // Center items vertically
-        textAlign: 'center', // Center text under the icons
     },
+
     sustainabilityItem: {
         display: 'flex',
-        flexDirection: 'row',  // Change to row layout to display icons in a line
-        alignItems: 'center',  // Center items horizontally (icon and text)
-        gap: '8px', /* Space between icon and text */
-        marginBottom: '16px', /* Space between each sustainability item */
-        overflow: 'hidden', /* Prevent content overflow */
+        flexDirection: 'row',
+        alignItems: 'center',          // Ensures icon and text align vertically
+        gap: '12px',
+        width: '100%',                 // Ensures full width alignment
+        padding: '4px 8px',
     },
 
     sustainabilityIcon: {
-        padding: '10px',
+        width: '40px',
+        height: '40px',
+        minWidth: '40px',              // ✅ Keeps icon column fixed
         borderRadius: '50%',
+        backgroundColor: '#2196f3',
+        color: 'white',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#2196f3', /* Adjust based on the icon color */
-        color: 'white',
-        marginBottom: '8px',  // Space between icon and text
+        fontSize: '18px',
+        flexShrink: 0,                 // Prevent icon from shrinking
     },
+
     sustainabilityText: {
-        textAlign: 'center',  // Center the text under the icon
-        overflow: 'hidden', /* Prevent text from overflowing */
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',      // ✅ Left-aligns text
+        justifyContent: 'center',
+        textAlign: 'left',             // ✅ Ensures internal text is left-aligned
     },
+
     sustainabilityTitle: {
-        fontWeight: '600',
-        fontSize: '12px',  // Adjusted font size
-        textOverflow: 'ellipsis', /* Add ellipsis for long titles */
-        whiteSpace: 'nowrap', /* Prevent wrapping text */
-        overflow: 'hidden', /* Prevent overflow */
+        fontWeight: 600,
+        fontSize: '13px',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
     },
+
     sustainabilitySubtitle: {
-        fontSize: '10px',
+        fontSize: '11px',
         color: '#6b7280',
-        overflow: 'hidden', /* Prevent overflow */
-        textOverflow: 'ellipsis', /* Add ellipsis for long subtitles */
-        whiteSpace: 'nowrap', /* Prevent wrapping text */
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
     },
+
+
+
+
+
 
 
 
@@ -482,84 +524,122 @@ const styles = {
 
 
 
-
-
-
-
-
-
-    // Media queries for responsive design
+  
+      
     '@media (max-width: 768px)': {
-        // Adjusting main container for mobile view
-        sustainabilityContainer: {
-            gridTemplateColumns: '1fr', // Stack items in a single column
-            padding: '8px', // Reduce padding for mobile
+        container: {
+          padding: '8px',
         },
-        sustainabilityItem: {
-            flexDirection: 'column', // Stack items vertically (icon on top, text below)
-            alignItems: 'center', // Center everything
-            gap: '10px', // Space between icon and text
+      
+        firstRow: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+          width: '100%',
         },
-        sustainabilityIcon: {
-            fontSize: '30px', // Adjust icon size for mobile
-            padding: '8px', // Reduce padding for mobile icons
+      
+        secondRow: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+          width: '100%',
         },
-        sustainabilityText: {
-            textAlign: 'center',  // Center the text below the icon
-            overflow: 'hidden',
+      
+        thirdRow: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+          width: '100%',
         },
-        sustainabilityTitle: {
-            fontSize: '16px',  // Increase font size slightly for titles
+      
+        fourthRow: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+          width: '100%',
         },
-        sustainabilitySubtitle: {
-            fontSize: '14px',  // Adjust subtitle font size
-        },
-
-        // Adjust the layout of the other containers
-        chartContainer: {
-            display: 'flex',
-            justifyContent: 'center', // Center the chart horizontally
-            alignItems: 'center', // Center the chart vertically
-            width: '100%', // Full width of the container
-            marginTop: '16px', // Margin between chart and other elements
-        },
-
-        customLegend: {
-            display: 'flex',
-            justifyContent: 'center',  // Center the legend items
-            gap: '16px',
-            marginTop: '16px',
-            padding: '8px', // Padding for the legend items
-        },
-        legendItem: {
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-        },
-        legendColor: {
-            width: '16px',
-            height: '16px',
-            borderRadius: '50%',  // Circle style for the legend
-        },
-        legendText: {
-            fontSize: '14px',
-            fontWeight: '500',
-        },
-
-        // Ensure the layout for all sections is adjusted for mobile
+      
         card: {
-            backgroundColor: 'white',
-            padding: '12px', // Adjust padding to make it more compact
-            borderRadius: '8px',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center', // Center content horizontally
-            justifyContent: 'center', // Center content vertically
-            textAlign: 'center',
-            minHeight: 'auto',  // Adjust height for mobile
+          padding: '12px',
+          borderRadius: '8px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          minHeight: 'auto',
+          textAlign: 'center',
         },
-    },
+      
+        metricsGrid: {
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gap: '12px',
+          width: '100%',
+        },
+      
+        progressContainer: {
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '12px',
+          width: '100%',
+        },
+      
+        sustainabilityContainer: {
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gap: '12px',
+          padding: '8px',
+          width: '100%',
+        },
+      
+        sustainabilityItem: {
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          gap: '8px',
+          width: '100%',
+        },
+      
+        sustainabilityText: {
+          alignItems: 'center',
+        },
+      
+        chartContainer: {
+          width: '100%',
+          height: '240px',
+        },
+      
+        customLegend: {
+          justifyContent: 'center',
+          gap: '12px',
+        },
+      
+        budgetContainer: {
+          gap: '12px',
+          width: '100%',
+        },
+      
+        budgetBar3D: {
+          width: '100%',
+          textAlign: 'center',
+          justifyContent: 'center',
+        },
+      
+        achievementsContainer: {
+          height: 'auto',
+          padding: '12px',
+          justifyContent: 'center',
+        },
+      }
+
+
+
+
+   
 
 };
 
