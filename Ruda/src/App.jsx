@@ -13,7 +13,7 @@ import bbox from '@turf/bbox';
 import RTWMap from './components/RTWMap';
 import GeoDataManager from './components/GeoDataManager';
 import Portfolio from "./components/Portfolio/Portfolio";
-
+import RUDADevelopmentPlan from './components/Gantt/RUDADevelopmentPlan';
 
 function getRandomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
@@ -186,6 +186,27 @@ const App = () => {
 )}
 
 
+
+
+<Button
+  variant="outlined"
+  size="small"
+  onClick={() => window.location.href = '/gantt'}
+  sx={{
+    ml: 1,
+    color: '#fff',
+    borderColor: '#fff',
+    textTransform: 'none',
+    fontSize: '0.75rem',
+    '&:hover': { backgroundColor: '#fff', color: '#000' }
+  }}
+>
+  Timeline
+</Button>
+
+
+
+
                 <Button
   variant="outlined"
   size="small"
@@ -219,6 +240,7 @@ const App = () => {
 >
   Proposed Roads
 </Button>
+
 
 
 
@@ -302,6 +324,7 @@ const App = () => {
        <Route path="/portfolio" element={<Portfolio/>} />
        <Route path="/crud" element={<GeoDataManager />} />
       <Route path="/details/:name" element={<DashboardRTWExact />} />
+      <Route path="/gantt" element={<RUDADevelopmentPlan />} />    
     </Routes>
   );
 };
