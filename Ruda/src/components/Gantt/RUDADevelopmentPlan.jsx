@@ -57,7 +57,8 @@ const RudaTimeline = () => {
     <div className="ruda-container">
       <div className="ruda-header-container">
         <h1 className="ruda-title">RUDA DEVELOPMENT PLAN - TIMELINE</h1>
-        <div className="ruda-logo">RAVI CITY</div>
+        <div className="ruda-logo" onClick={() => window.location.href = '/'}>HOME</div>
+
       </div>
 
       <div style={{ position: 'relative' }}>
