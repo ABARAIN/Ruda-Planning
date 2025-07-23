@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import {
-  Box, CircularProgress, Typography, Card, IconButton, Button, Divider
+  Box, CircularProgress, Typography, Card, IconButton, Button, Divider, FormControl, InputLabel, Select, MenuItem,
 } from '@mui/material';
 import axios from 'axios';
 import * as turf from '@turf/turf';
@@ -21,6 +21,12 @@ const RTWMap = () => {
   const [layerVisibility, setLayerVisibility] = useState({ rtw: true, available: true });
   const [showChart, setShowChart] = useState(false);
   const [showToggle, setShowToggle] = useState(false);
+  const [projectVisibility, setProjectVisibility] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState('Phases');
+  const [projectFeatures, setProjectFeatures] = useState([]);
+  const nameToId = (name) =>
+    name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+
 
   const toggleLayer = (layerIdPrefix, visible) => {
     const visibility = visible ? 'visible' : 'none';
@@ -49,44 +55,86 @@ const RTWMap = () => {
         let geojsonArea = 0;
 
         const res = await axios.get('https://ruda-backend-ny14.onrender.com/api/all');
-        const projectFeature = res.data.features.find(f => f.properties.name === 'RTW P-02');
+        const projectFeatures = res.data.features;
+        const features = res.data.features || [];
 
-        if (projectFeature) {
+        // Sanitize and tag each feature with a clean unique ID
+        const sanitizedFeatures = features.map((f, idx) => {
+          const rawName = f.properties?.name?.trim();
+          const fallbackName = `Project-${idx + 1}`;
+          const name = rawName || fallbackName;
+          const id = name.toLowerCase().replace(/[^a-z0-9-_]/gi, '-'); // Clean ID
+          return { ...f, properties: { ...f.properties, name, _layerId: id } };
+        });
+
+        setProjectFeatures(sanitizedFeatures);
+
+        // Create visibility map
+        const visMap = {};
+
+
+        sanitizedFeatures.forEach(f => { visMap[f.properties.name] = false; });
+
+        setProjectVisibility(visMap);
+
+
+        if (projectFeatures && projectFeatures.length > 0) {
           const projectGeo = {
             type: 'FeatureCollection',
-            features: [projectFeature],
+            features: projectFeatures,
           };
 
-          mapRef.current.addSource('rtw-p02', {
-            type: 'geojson',
-            data: projectGeo,
+
+          features.forEach((feature, idx) => {
+            const name = feature.properties?.name || `Project-${idx}`;
+            const id = name.replace(/\s+/g, '-').toLowerCase();
+
+            mapRef.current.addSource(`project-${id}`, {
+              type: 'geojson',
+              data: {
+                type: 'FeatureCollection',
+                features: [feature],
+              },
+            });
+
+            mapRef.current.addLayer({
+              id: `project-${id}-fill`,
+              type: 'fill',
+              source: `project-${id}`,
+              paint: {
+                'fill-color': '#ff0000',
+                'fill-opacity': 0.6,
+              },
+              layout: { visibility: 'none' },
+            });
+
+            mapRef.current.addLayer({
+              id: `project-${id}-line`,
+              type: 'line',
+              source: `project-${id}`,
+              paint: {
+                'line-color': '#ff0000',
+                'line-width': 2,
+              },
+              layout: { visibility: 'none' },
+            });
+
+            mapRef.current.on('click', `project-${id}-fill`, e => {
+              const areaAcre = (turf.area(feature) / 4046.8564224).toFixed(2);
+              new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(`<strong>${name}</strong><br>${areaAcre} acres`)
+                .addTo(mapRef.current);
+            });
           });
 
-          mapRef.current.addLayer({
-            id: 'rtw-p02-fill',
-            type: 'fill',
-            source: 'rtw-p02',
-            paint: {
-              'fill-color': '#ff0000',
-              'fill-opacity': 0.6,
-            },
-            layout: { visibility: 'visible' },
-          });
 
-          mapRef.current.addLayer({
-            id: 'rtw-p02-line',
-            type: 'line',
-            source: 'rtw-p02',
-            paint: {
-              'line-color': '#ff0000',
-              'line-width': 2,
-            },
-            layout: { visibility: 'visible' },
-          });
+          projectArea = projectFeatures.reduce((sum, f) => sum + turf.area(f), 0) / 4046.8564224;
 
-          projectArea = turf.area(projectFeature) / 4046.8564224;
+          const coords = projectFeatures
+            .map(f => f.geometry.coordinates)
+            .flat(3); // Flatten deeply in case of MultiPolygon
 
-          const coords = projectFeature.geometry.coordinates.flat(2);
           const bounds = coords.reduce(
             (b, [lng, lat]) => b.extend([lng, lat]),
             new mapboxgl.LngLatBounds(coords[0], coords[0])
@@ -94,15 +142,18 @@ const RTWMap = () => {
           mapRef.current.fitBounds(bounds, { padding: 50 });
 
           mapRef.current.on('click', 'rtw-p02-fill', e => {
-            const areaAcre = projectArea.toFixed(2);
+            const feature = e.features[0];
+            const name = feature.properties?.name || 'Unnamed';
+            const areaAcre = (turf.area(feature) / 4046.8564224).toFixed(2);
             new mapboxgl.Popup()
               .setLngLat(e.lngLat)
-              .setHTML(`<strong>RTW P-02 Area:</strong><br>${areaAcre} acres`)
+              .setHTML(`<strong>${name}:</strong><br>${areaAcre} acres`)
               .addTo(mapRef.current);
           });
+
         }
 
-        const response = await fetch('/rtw2.geojson');
+        const response = await fetch('/Final.geojson');
         const publicGeo = await response.json();
 
         mapRef.current.addSource('rtw2-public', {
@@ -118,7 +169,7 @@ const RTWMap = () => {
             'fill-color': '#00cc00',
             'fill-opacity': 0.7,
           },
-          layout: { visibility: 'visible' },
+          layout: { visibility: 'none' },
         });
 
         mapRef.current.addLayer({
@@ -129,7 +180,7 @@ const RTWMap = () => {
             'line-color': '#00cc00',
             'line-width': 2,
           },
-          layout: { visibility: 'visible' },
+          layout: { visibility: 'none' },
         });
 
         mapRef.current.on('click', 'rtw2-fill', e => {
@@ -159,8 +210,15 @@ const RTWMap = () => {
           total: projectArea,
           available: geojsonArea,
           unavailable: projectArea - geojsonArea,
-          polygons: perPolygonAreas,
+          polygons: [
+            ...projectFeatures.map((f, idx) => ({
+              id: f.properties?.name || `Project ${idx + 1}`,
+              area: turf.area(f) / 4046.8564224,
+            })),
+            ...perPolygonAreas,
+          ],
         });
+
 
         const styleTag = document.createElement('style');
         styleTag.innerHTML = '.mapboxgl-ctrl-attrib { display: none !important; }';
@@ -180,9 +238,9 @@ const RTWMap = () => {
 
   const chartData = areaStats
     ? [
-        { name: 'Available', value: areaStats.available },
-        { name: 'Unavailable', value: areaStats.unavailable },
-      ]
+      { name: 'Available', value: areaStats.available },
+      { name: 'Unavailable', value: areaStats.unavailable },
+    ]
     : [];
 
   return (
@@ -200,6 +258,8 @@ const RTWMap = () => {
           gap: 1,
         }}
       >
+
+
         <Button
           size="small"
           onClick={() => setShowChart(true)}
@@ -232,6 +292,7 @@ const RTWMap = () => {
         >
           Show Layers
         </Button>
+
       </Box>
 
       {/* Chart Panel */}
@@ -325,7 +386,7 @@ const RTWMap = () => {
           top: { md: 20 },
           right: { md: 50 },
           left: { xs: 10, md: 'auto' },
-          width: { xs: 240, md: 220 },
+          width: { xs: 260, md: 240 },
           zIndex: 1000,
           borderRadius: 3,
           bgcolor: 'rgba(25, 25, 25, 0.95)',
@@ -348,35 +409,182 @@ const RTWMap = () => {
             <CancelIcon />
           </IconButton>
         </Box>
-        <Typography
-          variant="subtitle2"
-          gutterBottom
-          sx={{ display: { xs: 'none', md: 'block' } }}
-        >
+
+        <Typography variant="subtitle2" gutterBottom sx={{ display: { xs: 'none', md: 'block' } }}>
           Layer Visibility
         </Typography>
-        <Box>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input
-              type="checkbox"
-              checked={layerVisibility.rtw}
-              onChange={(e) => {
-                const val = e.target.checked;
-                setLayerVisibility(prev => ({ ...prev, rtw: val }));
-                toggleLayer('rtw-p02', val);
-              }}
-            />
-            🔴 RTW P-02
-          </label>
-        </Box>
-        <Box sx={{ mt: 1 }}>
+
+        <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+          <InputLabel sx={{ color: '#ccc' }}>Category</InputLabel>
+          <Select
+            value={selectedCategory}
+            label="Category"
+            onChange={(e) => {
+              const value = e.target.value;
+              setSelectedCategory(value);
+
+              if (value === "Show All") {
+                const allVisible = {};
+                Object.keys(projectVisibility).forEach((name) => {
+                  allVisible[name] = true;
+                });
+                setProjectVisibility(allVisible);
+
+                // Also turn on all Map layers on the fly
+                Object.entries(allVisible).forEach(([name, visible]) => {
+                  ['fill', 'line'].forEach((type) => {
+                    const id = nameToId(name);
+                    const layerId = `project-${id}-${type}`;
+                    if (mapRef.current.getLayer(layerId)) {
+                      mapRef.current.setLayoutProperty(
+                        layerId,
+                        'visibility',
+                        visible ? 'visible' : 'none'
+                      );
+                    }
+                  });
+                });
+              }
+            }}
+
+            sx={{ color: 'white', '.MuiOutlinedInput-notchedOutline': { borderColor: '#777' } }}
+          >
+
+            <MenuItem value="Phases">Phases</MenuItem>
+            <MenuItem value="Packages">Packages</MenuItem>
+            <MenuItem value="Projects">Projects</MenuItem>
+            <MenuItem value="Show All">Show All</MenuItem>
+          </Select>
+
+        </FormControl>
+
+
+        <Button
+          variant="outlined"
+          size="small"
+          fullWidth
+          sx={{ color: 'white', borderColor: '#555', mb: 1 }}
+          onClick={() => {
+            // Filter names in current category
+            const filteredNames = Object.keys(projectVisibility).filter(name => {
+              if (selectedCategory === 'Projects' || selectedCategory === 'Show All') {
+                return name.startsWith('RTW P-') || name === 'Rakh Jhoke Left-P' || name === 'Rakh Jhoke Right-P';
+              }
+              if (selectedCategory === 'Packages' || selectedCategory === 'Show All') {
+                return name.includes('Package') || name === 'Rakh Jhoke Left' || name === 'Rakh Jhoke Right';
+              }
+
+              return !name.startsWith('RTW P-') && !name.includes('Package');
+            });
+
+            // Determine if we should show or hide based on any unchecked item
+            const show = filteredNames.some(name => !projectVisibility[name]);
+
+            // Build new visibility state for only filtered entries
+            const updatedVisibility = { ...projectVisibility };
+            filteredNames.forEach(name => {
+              updatedVisibility[name] = show;
+
+              const id = name.replace(/\s+/g, '-').toLowerCase();
+              ['fill', 'line'].forEach(type => {
+                const layerId = `project-${id}-${type}`;
+                if (mapRef.current.getLayer(layerId)) {
+                  mapRef.current.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none');
+                }
+              });
+            });
+
+            setProjectVisibility(updatedVisibility);
+          }}
+        >
+          Toggle All {selectedCategory}
+        </Button>
+
+
+
+
+        {(() => {
+          const allNames = Object.keys(projectVisibility).filter(name => {
+            if (selectedCategory === 'Projects') {
+              return name.startsWith('RTW P-') || name === 'Rakh Jhoke Left-P' || name === 'Rakh Jhoke Right-P';
+            }
+            if (selectedCategory === 'Packages') {
+              return name.includes('Package') || name === 'Rakh Jhoke Left' || name === 'Rakh Jhoke Right';
+            }
+            return (
+              !name.startsWith('RTW P-') &&
+              !name.includes('Package') &&
+              name !== 'Rakh Jhoke Left-P' &&
+              name !== 'Rakh Jhoke Right-P' &&
+              name !== 'Rakh Jhoke Left' &&
+              name !== 'Rakh Jhoke Right'
+            );
+          });
+
+          const specialEndItems =
+            selectedCategory === 'Projects'
+              ? ['Rakh Jhoke Left-P', 'Rakh Jhoke Right-P']
+              : selectedCategory === 'Packages'
+                ? ['Rakh Jhoke Left', 'Rakh Jhoke Right']
+                : [];
+
+          const sorted = allNames
+            .filter(name => !specialEndItems.includes(name))
+            .sort((a, b) => {
+              const aNum = parseInt(a.match(/\d+/)?.[0]);
+              const bNum = parseInt(b.match(/\d+/)?.[0]);
+              if (!isNaN(aNum) && !isNaN(bNum)) return aNum - bNum;
+              return a.localeCompare(b);
+            })
+            .concat(specialEndItems);
+
+          return sorted.map((name, idx) => {
+            const id = name.replace(/\s+/g, '-').toLowerCase();
+            return (
+              <Box key={idx} sx={{ mt: 1 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <input
+                    type="checkbox"
+                    checked={projectVisibility[name]}
+                    onChange={(e) => {
+                      const visible = e.target.checked;
+                      setProjectVisibility((prev) => ({ ...prev, [name]: visible }));
+
+                      ['fill', 'line'].forEach((type) => {
+                        const layerId = `project-${id}-${type}`;
+                        if (mapRef.current.getLayer(layerId)) {
+                          mapRef.current.setLayoutProperty(
+                            layerId,
+                            'visibility',
+                            visible ? 'visible' : 'none'
+                          );
+                        }
+                      });
+
+                      if (visible) {
+                        const feature = projectFeatures.find(f => f.properties.name === name);
+                        if (feature) {
+                          const bounds = turf.bbox(feature);
+                          mapRef.current.fitBounds(bounds, { padding: 40 });
+                        }
+                      }
+                    }}
+                  />
+                  🔴 {name}
+                </label>
+              </Box>
+            );
+          });
+        })()}
+
+        <Box sx={{ mt: 2 }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <input
               type="checkbox"
               checked={layerVisibility.available}
               onChange={(e) => {
                 const val = e.target.checked;
-                setLayerVisibility(prev => ({ ...prev, available: val }));
+                setLayerVisibility((prev) => ({ ...prev, available: val }));
                 toggleLayer('rtw2', val);
               }}
             />
@@ -384,6 +592,7 @@ const RTWMap = () => {
           </label>
         </Box>
       </Card>
+
 
       {/* Loading */}
       {loading && (
