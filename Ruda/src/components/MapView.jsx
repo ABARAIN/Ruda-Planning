@@ -46,7 +46,7 @@ const landmarks = [
 const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] }) => {
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
-  const [baseStyleKey, setBaseStyleKey] = useState('Light');
+  const [baseStyleKey, setBaseStyleKey] = useState('Streets');
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -60,8 +60,8 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: baseStyles[baseStyleKey],
-      center: [74.3, 31.45],
-      zoom: 10,
+      center: [74.20, 31.60],
+      zoom: 9,
       attributionControl: false
     });
 
