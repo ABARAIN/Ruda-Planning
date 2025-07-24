@@ -88,7 +88,9 @@ const RTWMap = () => {
       });
     
       // 🔁 Automatically show green layer only if data is not empty AND checkbox is ON
-      const visibility = matchingGreenFeatures.length > 0 && layerVisibility.available ? 'visible' : 'none';
+      // ✅ Always show available layer if green features exist
+const visibility = matchingGreenFeatures.length > 0 ? 'visible' : 'none';
+
       ['fill', 'line'].forEach((type) => {
         const layerId = `rtw2-${type}`;
         if (mapRef.current.getLayer(layerId)) {
@@ -317,6 +319,14 @@ const RTWMap = () => {
     ]
     : [];
 
+
+// 🔁 Recalculate area stats whenever red layer visibility changes
+useEffect(() => {
+  recalculateAreaStats();
+}, [projectVisibility]);
+
+
+
   return (
     <Box sx={{ position: 'relative', height: '100vh', width: '100vw' }}>
       <Box ref={mapContainer} sx={{ height: '100%', width: '100%' }} />
@@ -440,13 +450,32 @@ const RTWMap = () => {
           </Typography>
 
           <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>
-            ➤ Available Polygons:
-          </Typography>
-          {areaStats.polygons.map((p, idx) => (
-            <Typography key={idx} variant="body2" sx={{ ml: 2, color: '#90ee90' }}>
-              • {p.id}: {p.area.toFixed(2)} acres
-            </Typography>
-          ))}
+  ➤ Available Polygons:
+</Typography>
+{(() => {
+  const visibleRedNames = projectFeatures
+    .filter(f => projectVisibility[f.properties.name])
+    .map(f => f.properties.name.trim());
+
+  const matchingGreen = allAvailableFeaturesRef.current.filter(f =>
+    visibleRedNames.includes(f.properties?.name?.trim())
+  );
+
+  return matchingGreen
+  .map((f) => {
+    const name = f.properties?.name || `Unnamed`;
+    const area = turf.area(f) / 4046.8564224;
+    return { name, area };
+  })
+  .sort((a, b) => a.area - b.area) // ✅ Ascending by area
+  .map((p, idx) => (
+    <Typography key={idx} variant="body2" sx={{ ml: 2, color: '#90ee90' }}>
+      • {p.name}: {p.area.toFixed(2)} acres
+    </Typography>
+  ));
+
+})()}
+
         </Card>
       )}
 
@@ -489,48 +518,42 @@ const RTWMap = () => {
         </Typography>
 
         <FormControl fullWidth size="small" sx={{ mb: 2 }}>
-          <InputLabel sx={{ color: '#ccc' }}>Category</InputLabel>
-          <Select
-            value={selectedCategory}
-            label="Category"
-            onChange={(e) => {
-              const value = e.target.value;
-              setSelectedCategory(value);
+  <InputLabel sx={{ color: '#ccc' }}>Category</InputLabel>
+  <Select
+    value={selectedCategory}
+    label="Category"
+    onChange={(e) => {
+      const value = e.target.value;
+      setSelectedCategory(value);
+    
+      // ✅ If "Show All", turn on all layers
+      if (value === "Show All") {
+        const allVisible = {};
+        Object.keys(projectVisibility).forEach((name) => {
+          allVisible[name] = true;
+    
+          const id = name.replace(/\s+/g, '-').toLowerCase();
+          ['fill', 'line'].forEach((type) => {
+            const layerId = `project-${id}-${type}`;
+            if (mapRef.current.getLayer(layerId)) {
+              mapRef.current.setLayoutProperty(layerId, 'visibility', 'visible');
+            }
+          });
+        });
+    
+        setProjectVisibility(allVisible);
+      }
+    }}
+    
+    sx={{ color: 'white', '.MuiOutlinedInput-notchedOutline': { borderColor: '#777' } }}
+  >
+    <MenuItem value="Phases">Phases</MenuItem>
+    <MenuItem value="Packages">Packages</MenuItem>
+    <MenuItem value="Projects">Projects</MenuItem>
+    <MenuItem value="Show All">Show All</MenuItem>
+  </Select>
+</FormControl>
 
-              if (value === "Show All") {
-                const allVisible = {};
-                Object.keys(projectVisibility).forEach((name) => {
-                  allVisible[name] = true;
-                });
-                setProjectVisibility(allVisible);
-
-                // Also turn on all Map layers on the fly
-                Object.entries(allVisible).forEach(([name, visible]) => {
-                  ['fill', 'line'].forEach((type) => {
-                    const id = nameToId(name);
-                    const layerId = `project-${id}-${type}`;
-                    if (mapRef.current.getLayer(layerId)) {
-                      mapRef.current.setLayoutProperty(
-                        layerId,
-                        'visibility',
-                        visible ? 'visible' : 'none'
-                      );
-                    }
-                  });
-                });
-              }
-            }}
-
-            sx={{ color: 'white', '.MuiOutlinedInput-notchedOutline': { borderColor: '#777' } }}
-          >
-
-            <MenuItem value="Phases">Phases</MenuItem>
-            <MenuItem value="Packages">Packages</MenuItem>
-            <MenuItem value="Projects">Projects</MenuItem>
-            <MenuItem value="Show All">Show All</MenuItem>
-          </Select>
-
-        </FormControl>
 
 
         <Button
@@ -539,39 +562,59 @@ const RTWMap = () => {
           fullWidth
           sx={{ color: 'white', borderColor: '#555', mb: 1 }}
           onClick={() => {
-            // Filter names in current category
-            const filteredNames = Object.keys(projectVisibility).filter(name => {
-              if (selectedCategory === 'Projects' || selectedCategory === 'Show All') {
-                return name.startsWith('RTW P-') || name === 'Rakh Jhoke Left-P' || name === 'Rakh Jhoke Right-P';
-              }
-              if (selectedCategory === 'Packages' || selectedCategory === 'Show All') {
-                return name.includes('Package') || name === 'Rakh Jhoke Left' || name === 'Rakh Jhoke Right';
-              }
-
-              return !name.startsWith('RTW P-') && !name.includes('Package');
-            });
-
-            // Determine if we should show or hide based on any unchecked item
-            const show = filteredNames.some(name => !projectVisibility[name]);
-
-            // Build new visibility state for only filtered entries
+            const filteredNames =
+              selectedCategory === "Show All"
+                ? Object.keys(projectVisibility)
+                : Object.keys(projectVisibility).filter((name) => {
+                    if (selectedCategory === "Projects") {
+                      return (
+                        name.startsWith("RTW P-") ||
+                        name === "Rakh Jhoke Left-P" ||
+                        name === "Rakh Jhoke Right-P"
+                      );
+                    }
+                    if (selectedCategory === "Packages") {
+                      return (
+                        name.includes("Package") ||
+                        name === "Rakh Jhoke Left" ||
+                        name === "Rakh Jhoke Right"
+                      );
+                    }
+                    // Phases
+                    return (
+                      !name.startsWith("RTW P-") &&
+                      !name.includes("Package") &&
+                      name !== "Rakh Jhoke Left-P" &&
+                      name !== "Rakh Jhoke Right-P" &&
+                      name !== "Rakh Jhoke Left" &&
+                      name !== "Rakh Jhoke Right"
+                    );
+                  });
+          
+            const show = filteredNames.some((name) => !projectVisibility[name]);
+          
             const updatedVisibility = { ...projectVisibility };
-            filteredNames.forEach(name => {
+            filteredNames.forEach((name) => {
               updatedVisibility[name] = show;
-
-              const id = name.replace(/\s+/g, '-').toLowerCase();
-              ['fill', 'line'].forEach(type => {
+          
+              const id = name.replace(/\s+/g, "-").toLowerCase();
+              ["fill", "line"].forEach((type) => {
                 const layerId = `project-${id}-${type}`;
                 if (mapRef.current.getLayer(layerId)) {
-                  mapRef.current.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none');
+                  mapRef.current.setLayoutProperty(
+                    layerId,
+                    "visibility",
+                    show ? "visible" : "none"
+                  );
                 }
               });
             });
-
+          
             setProjectVisibility(updatedVisibility);
             recalculateAreaStats();
-
           }}
+          
+          
         >
           Toggle All {selectedCategory}
         </Button>
@@ -638,13 +681,28 @@ const RTWMap = () => {
                         }
                       });
 
-                      if (visible) {
-                        const feature = projectFeatures.find(f => f.properties.name === name);
-                        if (feature) {
-                          const bounds = turf.bbox(feature);
-                          mapRef.current.fitBounds(bounds, { padding: 40 });
-                        }
-                      }
+                     if (visible) {
+  // Match the green polygon with the same name
+  const matchingGreen = allAvailableFeaturesRef.current.filter(
+    f => f.properties?.name?.trim() === name.trim()
+  );
+
+  const greenLayerSource = mapRef.current.getSource('rtw2-public');
+  if (greenLayerSource && matchingGreen.length > 0) {
+    greenLayerSource.setData({
+      type: 'FeatureCollection',
+      features: matchingGreen,
+    });
+
+    ['fill', 'line'].forEach((type) => {
+      const layerId = `rtw2-${type}`;
+      if (mapRef.current.getLayer(layerId)) {
+        mapRef.current.setLayoutProperty(layerId, 'visibility', 'visible');
+      }
+    });
+  }
+}
+
                     }}
                   />
                   🔴 {name}
