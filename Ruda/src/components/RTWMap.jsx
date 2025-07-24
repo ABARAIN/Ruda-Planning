@@ -24,6 +24,9 @@ const RTWMap = () => {
   const [projectVisibility, setProjectVisibility] = useState({});
   const [selectedCategory, setSelectedCategory] = useState('Phases');
   const [projectFeatures, setProjectFeatures] = useState([]);
+  const allAvailableFeaturesRef = useRef([]);
+
+
   const nameToId = (name) =>
     name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
 
@@ -38,6 +41,74 @@ const RTWMap = () => {
       }
     });
   };
+
+
+
+
+  const recalculateAreaStats = () => {
+    const visibleRedFeatures = projectFeatures.filter(
+      (f) => projectVisibility[f.properties.name]
+    );
+  
+    const visibleRedNames = visibleRedFeatures.map((f) => f.properties.name.trim());
+  
+    const matchingGreenFeatures = allAvailableFeaturesRef.current.filter((f) => {
+
+      const name = f.properties?.name?.trim();
+      return visibleRedNames.includes(name);
+    });
+  
+    const projectArea = visibleRedFeatures.reduce((sum, f) => sum + turf.area(f), 0) / 4046.8564224;
+    const geojsonArea = matchingGreenFeatures.reduce((sum, f) => sum + turf.area(f), 0) / 4046.8564224;
+  
+    const polygons = [
+      ...visibleRedFeatures.map((f, idx) => ({
+        id: f.properties?.name || `Project ${idx + 1}`,
+        area: turf.area(f) / 4046.8564224,
+      })),
+      ...matchingGreenFeatures.map((f, idx) => ({
+        id: f.properties?.name || `Polygon ${idx + 1}`,
+        area: turf.area(f) / 4046.8564224,
+      })),
+    ];
+  
+    setAreaStats({
+      total: projectArea,
+      available: geojsonArea,
+      unavailable: projectArea - geojsonArea,
+      polygons,
+    });
+
+
+    const greenLayerSource = mapRef.current.getSource('rtw2-public');
+    if (greenLayerSource) {
+      greenLayerSource.setData({
+        type: 'FeatureCollection',
+        features: matchingGreenFeatures,
+      });
+    
+      // 🔁 Automatically show green layer only if data is not empty AND checkbox is ON
+      const visibility = matchingGreenFeatures.length > 0 && layerVisibility.available ? 'visible' : 'none';
+      ['fill', 'line'].forEach((type) => {
+        const layerId = `rtw2-${type}`;
+        if (mapRef.current.getLayer(layerId)) {
+          mapRef.current.setLayoutProperty(layerId, 'visibility', visibility);
+        }
+      });
+    }
+    
+
+  };
+  
+
+
+
+
+
+
+
+
+
 
   useEffect(() => {
     mapRef.current = new mapboxgl.Map({
@@ -155,6 +226,9 @@ const RTWMap = () => {
 
         const response = await fetch('/Final.geojson');
         const publicGeo = await response.json();
+        allAvailableFeaturesRef.current = publicGeo.features;
+ // ✅ Store green layer for filtering
+
 
         mapRef.current.addSource('rtw2-public', {
           type: 'geojson',
@@ -495,6 +569,8 @@ const RTWMap = () => {
             });
 
             setProjectVisibility(updatedVisibility);
+            recalculateAreaStats();
+
           }}
         >
           Toggle All {selectedCategory}
@@ -549,6 +625,7 @@ const RTWMap = () => {
                     onChange={(e) => {
                       const visible = e.target.checked;
                       setProjectVisibility((prev) => ({ ...prev, [name]: visible }));
+                      recalculateAreaStats();
 
                       ['fill', 'line'].forEach((type) => {
                         const layerId = `project-${id}-${type}`;
@@ -579,15 +656,17 @@ const RTWMap = () => {
 
         <Box sx={{ mt: 2 }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input
-              type="checkbox"
-              checked={layerVisibility.available}
-              onChange={(e) => {
-                const val = e.target.checked;
-                setLayerVisibility((prev) => ({ ...prev, available: val }));
-                toggleLayer('rtw2', val);
-              }}
-            />
+          <input
+  type="checkbox"
+  checked={layerVisibility.available}
+  onChange={(e) => {
+    const val = e.target.checked;
+    setLayerVisibility((prev) => ({ ...prev, available: val }));
+    toggleLayer('rtw2', val);
+    recalculateAreaStats(); // 🔁 Recalculate stats if visibility changes
+  }}
+/>
+
             🟢 Available Land
           </label>
         </Box>
