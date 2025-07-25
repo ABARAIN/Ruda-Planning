@@ -260,8 +260,8 @@ const LayerFilterPanel = ({
         </IconButton>
       )}
 
-      <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-        <span style={{ color: "#2196f3" }}>Layer Filters</span>
+      <Typography variant="h5" fontWeight="normal" sx={{ mb: 2, ml: 1, mt: 1 }}>
+        <span style={{ color: "white" }}>Layer Filters</span>
       </Typography>
 
       {renderDropdown(

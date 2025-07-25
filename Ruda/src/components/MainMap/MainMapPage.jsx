@@ -159,7 +159,7 @@ const MainMapPage = () => {
       <AppBar
         position="static"
         sx={{
-          backgroundColor: "#0d47a1", // Darker blue color
+          backgroundColor: "#083373", // Darker blue color
           boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
         }}
       >
