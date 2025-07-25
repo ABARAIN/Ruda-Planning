@@ -11,7 +11,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import ProposedRoadsLayer from "./MainMap/ProposedRoadsLayer";
+import ProposedRoadsLayer from "./ProposedRoadsLayer";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 

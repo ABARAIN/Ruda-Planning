@@ -12,15 +12,15 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useTheme } from "@mui/material/styles";
-import LayerFilterPanel from "./components/LayerFilterPanel";
-import MapView from "./components/MapView";
+import LayerFilterPanel from "./components/MainMap/LayerFilterPanel";
+import MapView from "./components/MainMap/MapView";
 import DashboardRTWExact from "./components/DashboardRTW";
 import { Routes, Route } from "react-router-dom";
 import bbox from "@turf/bbox";
 import RTWMap from "./components/RTWMap/RTWMap";
-import GeoDataManager from "./components/GeoDataManager";
-import Portfolio from "./components/Portfolio/Portfolio";
-import RUDADevelopmentPlan from "./components/Gantt/RUDADevelopmentPlan";
+import GeoDataManager from "./components/MainMap/GeoDataManager";
+import Portfolio from "./components/MainMap/Portfolio/Portfolio";
+import RUDADevelopmentPlan from "./components/MainMap/Gantt/RUDADevelopmentPlan";
 
 function getRandomColor() {
   return `#${Math.floor(Math.random() * 16777215)
@@ -267,6 +267,12 @@ const App = () => {
                   anchor="left"
                   open={drawerOpen}
                   onClose={() => setDrawerOpen(false)}
+                  PaperProps={{
+                    sx: {
+                      bgcolor: "#1a1a1a",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                    },
+                  }}
                 >
                   <Box sx={{ width: 255 }}>
                     <LayerFilterPanel
@@ -302,11 +308,13 @@ const App = () => {
                   sx={{
                     width: 335,
                     height: "100%",
-                    bgcolor: "#2a2a2a",
+                    bgcolor: "#1a1a1a",
                     color: "#fff",
                     px: 2,
                     py: 3,
                     overflow: "hidden",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderLeft: "none",
                   }}
                 >
                   <LayerFilterPanel

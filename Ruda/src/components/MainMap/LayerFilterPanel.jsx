@@ -1,40 +1,34 @@
-import React, { useMemo, useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Box,
   Typography,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
+  InputLabel,
+  OutlinedInput,
   Checkbox,
   ListItemText,
-  OutlinedInput,
-  useMediaQuery,
   IconButton,
+  useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 
-const normalize = (str) =>
-  (str || "")
-    .toLowerCase()
-    .replace(/ruda\s+/i, "")
-    .trim();
-
 const ColorSwatch = ({ color }) => (
-  <span
-    style={{
-      display: "inline-block",
-      width: 18,
-      height: 18,
-      borderRadius: 4,
-      background: color,
-      border: "1.5px solid #888",
-      marginRight: 8,
-      verticalAlign: "middle",
+  <Box
+    sx={{
+      width: 16,
+      height: 16,
+      borderRadius: "50%",
+      backgroundColor: color,
+      marginRight: 1,
+      border: "1px solid rgba(255,255,255,0.3)",
     }}
   />
 );
+
+const normalize = (str) => str?.toLowerCase().replace(/\s+/g, "");
 
 const LayerFilterPanel = ({
   features = [],
@@ -142,7 +136,7 @@ const LayerFilterPanel = ({
 
     return (
       <FormControl fullWidth sx={{ mt: 2 }}>
-        <InputLabel sx={{ color: "#ccc" }}>{label}</InputLabel>
+        <InputLabel sx={{ color: "rgba(255,255,255,0.7)" }}>{label}</InputLabel>
         <Select
           multiple
           open={openState}
@@ -156,40 +150,56 @@ const LayerFilterPanel = ({
             PaperProps: {
               sx: {
                 maxHeight: 300,
-                backgroundColor: "#121212",
+                backgroundColor: "#1a1a1a",
                 color: "#fff",
+                border: "1px solid rgba(255,255,255,0.1)",
                 "&::-webkit-scrollbar": { width: "6px" },
                 "&::-webkit-scrollbar-thumb": {
-                  backgroundColor: "#000",
+                  backgroundColor: "rgba(255,255,255,0.2)",
                   borderRadius: "4px",
                 },
-                "&::-webkit-scrollbar-track": { backgroundColor: "#222" },
-                scrollbarColor: "#000 #222",
+                "&::-webkit-scrollbar-track": { backgroundColor: "rgba(255,255,255,0.05)" },
+                scrollbarColor: "rgba(255,255,255,0.2) rgba(255,255,255,0.05)",
                 scrollbarWidth: "thin",
               },
             },
           }}
           sx={{
-            bgcolor: "#2a2a2a",
+            bgcolor: "rgba(255,255,255,0.05)",
             color: "#fff",
-            "& .MuiSvgIcon-root": { color: "#fff" },
-            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#555" },
+            borderRadius: 2,
+            "& .MuiSvgIcon-root": { color: "rgba(255,255,255,0.7)" },
+            "& .MuiOutlinedInput-notchedOutline": { 
+              borderColor: "rgba(255,255,255,0.3)" 
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": { 
+              borderColor: "rgba(255,255,255,0.5)" 
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { 
+              borderColor: "rgba(255,255,255,0.7)" 
+            },
           }}
         >
-          <MenuItem value="ALL">
+          <MenuItem value="ALL" sx={{ 
+            color: "white",
+            "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+          }}>
             <Checkbox
               checked={isAllSelected}
               indeterminate={value.length > 0 && value.length < options.length}
-              sx={{ color: "#ccc", "&.Mui-checked": { color: "#2196f3" } }}
+              sx={{ color: "rgba(255,255,255,0.7)", "&.Mui-checked": { color: "#4fc3f7" } }}
             />
             <ListItemText primary="Select All" />
           </MenuItem>
 
           {options.map((opt) => (
-            <MenuItem key={opt} value={opt}>
+            <MenuItem key={opt} value={opt} sx={{ 
+              color: "white",
+              "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+            }}>
               <Checkbox
                 checked={value.includes(opt)}
-                sx={{ color: "#ccc", "&.Mui-checked": { color: "#2196f3" } }}
+                sx={{ color: "rgba(255,255,255,0.7)", "&.Mui-checked": { color: "#4fc3f7" } }}
               />
               {allowColor && <ColorSwatch color={colorMap[opt] || "#999"} />}
               <ListItemText primary={opt} />
@@ -206,6 +216,7 @@ const LayerFilterPanel = ({
                     border: "none",
                     background: "none",
                     cursor: "pointer",
+                    borderRadius: "4px",
                   }}
                   onClick={(e) => e.stopPropagation()}
                   title="Change color"
@@ -224,20 +235,21 @@ const LayerFilterPanel = ({
         width: isMobile ? 260 : 320,
         height: isMobile ? "400%" : "100%",
         maxHeight: isMobile ? "100vh" : "100%",
-        bgcolor: "#2a2a2a",
+        bgcolor: "#1a1a1a",
         color: "#fff",
         px: 2,
         py: 3,
         overflowY: "auto",
         position: "relative",
+        border: "1px solid rgba(255,255,255,0.1)",
         "&::-webkit-scrollbar": { width: "6px" },
-        "&::-webkit-scrollbar-track": { backgroundColor: "#1a1a1a" },
+        "&::-webkit-scrollbar-track": { backgroundColor: "rgba(255,255,255,0.05)" },
         "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#000",
+          backgroundColor: "rgba(255,255,255,0.2)",
           borderRadius: "3px",
         },
         scrollbarWidth: "thin",
-        scrollbarColor: "#000 #1a1a1a",
+        scrollbarColor: "rgba(255,255,255,0.2) rgba(255,255,255,0.05)",
       }}
     >
       {isMobile && (
@@ -248,8 +260,8 @@ const LayerFilterPanel = ({
             top: 8,
             right: 8,
             color: "#fff",
-            backgroundColor: "#444",
-            "&:hover": { backgroundColor: "#666" },
+            backgroundColor: "rgba(255,255,255,0.1)",
+            "&:hover": { backgroundColor: "rgba(255,255,255,0.2)" },
           }}
           size="small"
         >
@@ -258,7 +270,7 @@ const LayerFilterPanel = ({
       )}
 
       <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-        <span style={{ color: "#2196f3" }}>Layer Filters</span>
+        <span style={{ color: "#4fc3f7" }}>Layer Filters</span>
       </Typography>
 
       {renderDropdown(
@@ -288,7 +300,7 @@ const LayerFilterPanel = ({
       )}
 
       <FormControl fullWidth sx={{ mt: 2 }}>
-        <InputLabel sx={{ color: "#ccc" }}>Projects</InputLabel>
+        <InputLabel sx={{ color: "rgba(255,255,255,0.7)" }}>Projects</InputLabel>
         <Select
           multiple
           open={openProject}
@@ -311,29 +323,43 @@ const LayerFilterPanel = ({
           input={<OutlinedInput label="Projects" />}
           renderValue={(selected) => selected.join(", ")}
           sx={{
+            bgcolor: "rgba(255,255,255,0.05)",
             color: "#fff",
-            "& .MuiSvgIcon-root": { color: "#fff" },
-            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#555" },
+            borderRadius: 2,
+            "& .MuiSvgIcon-root": { color: "rgba(255,255,255,0.7)" },
+            "& .MuiOutlinedInput-notchedOutline": { 
+              borderColor: "rgba(255,255,255,0.3)" 
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": { 
+              borderColor: "rgba(255,255,255,0.5)" 
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { 
+              borderColor: "rgba(255,255,255,0.7)" 
+            },
           }}
           MenuProps={{
             PaperProps: {
               sx: {
                 maxHeight: 300,
-                backgroundColor: "#121212",
+                backgroundColor: "#1a1a1a",
                 color: "#fff",
+                border: "1px solid rgba(255,255,255,0.1)",
                 "&::-webkit-scrollbar": { width: "6px" },
                 "&::-webkit-scrollbar-thumb": {
-                  backgroundColor: "#000",
+                  backgroundColor: "rgba(255,255,255,0.2)",
                   borderRadius: "4px",
                 },
-                "&::-webkit-scrollbar-track": { backgroundColor: "#222" },
-                scrollbarColor: "#000 #222",
+                "&::-webkit-scrollbar-track": { backgroundColor: "rgba(255,255,255,0.05)" },
+                scrollbarColor: "rgba(255,255,255,0.2) rgba(255,255,255,0.05)",
                 scrollbarWidth: "thin",
               },
             },
           }}
         >
-          <MenuItem value="ALL">
+          <MenuItem value="ALL" sx={{ 
+            color: "white",
+            "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+          }}>
             <Checkbox
               checked={
                 projectOptions.length > 0 &&
@@ -343,16 +369,19 @@ const LayerFilterPanel = ({
                 selectedProjects.length > 0 &&
                 selectedProjects.length < projectOptions.length
               }
-              sx={{ color: "#ccc", "&.Mui-checked": { color: "#2196f3" } }}
+              sx={{ color: "rgba(255,255,255,0.7)", "&.Mui-checked": { color: "#4fc3f7" } }}
             />
             <ListItemText primary="Select All" />
           </MenuItem>
 
           {projectOptions.map((name) => (
-            <MenuItem key={name} value={name}>
+            <MenuItem key={name} value={name} sx={{ 
+              color: "white",
+              "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+            }}>
               <Checkbox
                 checked={selectedProjects.includes(name)}
-                sx={{ color: "#ccc", "&.Mui-checked": { color: "#2196f3" } }}
+                sx={{ color: "rgba(255,255,255,0.7)", "&.Mui-checked": { color: "#4fc3f7" } }}
               />
               <ColorSwatch color={colorMap[name] || "#999"} />
               <ListItemText primary={name} />
@@ -368,6 +397,7 @@ const LayerFilterPanel = ({
                   border: "none",
                   background: "none",
                   cursor: "pointer",
+                  borderRadius: "4px",
                 }}
                 onClick={(e) => e.stopPropagation()}
                 title="Change color"
