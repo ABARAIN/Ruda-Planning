@@ -279,7 +279,7 @@ const RTWMap = () => {
         allAvailableFeaturesRef={allAvailableFeaturesRef}
       />
 
-      <RTWProjectList
+      {/* <RTWProjectList
         showToggle={showToggle}
         selectedCategory={selectedCategory}
         projectVisibility={projectVisibility}
@@ -287,7 +287,7 @@ const RTWMap = () => {
         mapRef={mapRef}
         recalculateAreaStats={recalculateAreaStats}
         allAvailableFeaturesRef={allAvailableFeaturesRef}
-      />
+      /> */}
 
       {loading && (
         <Box
