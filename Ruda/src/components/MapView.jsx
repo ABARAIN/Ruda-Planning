@@ -28,16 +28,16 @@ const baseStyles = {
 
 
 const landmarks = [
-  { name: 'Badshahi Mosque', coords: [74.3083, 31.5889] },
-  { name: 'Minar-e-Pakistan', coords: [74.3091, 31.5922] },
-  { name: 'Tomb of Jahangir', coords: [74.3003, 31.6242] },
-  { name: 'Tomb of Noor Jahan', coords: [74.2995, 31.6225] },
-  { name: 'Shahdara Town', coords: [74.2870, 31.6234] },
-  { name: 'Lahore Railway Station', coords: [74.3579, 31.5820] },
- 
-  
-  { name: 'Data Darbar', coords: [74.3130, 31.5823] },
-  { name: 'Jallo Park', coords: [74.4416, 31.5884] },
+  // { name: 'Badshahi Mosque', coords: [74.3083, 31.5889], icon: './badshahi-mosque.svg'  },
+  { name: 'Minar-e-Pakistan', coords: [74.3091, 31.5922], icon: './Minar-e-Pakistan.svg' },
+  { name: 'Tomb of Jahangir', coords: [74.3003, 31.6242], icon: './Tomb.svg' },
+  { name: 'Punjab University', coords: [74.2889, 31.5032], icon: './University.svg' },
+  { name: 'Punjab University', coords: [74.2889, 31.5032], icon: './University.svg' },
+  { name: 'Eiffel Tower Bahria Town', coords: [74.18424, 31.3559], icon: './Eiffel-Tower.svg' },
+  // { name: 'Shahdara Town', coords: [74.2870, 31.6234], icon: './badshahi-mosque.svg' },
+  { name: 'Lahore Railway Station', coords: [74.3579, 31.5820], icon: './train.svg' },
+  { name: 'Data Darbar', coords: [74.3130, 31.5823], icon: './badshahi-mosque.svg' },
+  { name: 'Jallo Park', coords: [74.4416, 31.5884] , icon: './Park.svg'},
 
 ];
 
@@ -277,7 +277,26 @@ map.on('draw.delete', removeDistancePopup);
       }, 'ruda-fill');
     }    // === Add Landmark Markers ===
     landmarks.forEach((landmark) => {
-      new mapboxgl.Marker({ color: '#d32f2f' }) // Red markers
+      const el = document.createElement('div');
+      
+      // Default size
+      let width = 32;
+      let height = 32;
+    
+      // Make Minar-e-Pakistan bigger
+      if (landmark.name === 'Minar-e-Pakistan') {
+        width = 50; // bigger size
+        height = 50;
+      }
+    
+      el.style.width = `${width}px`;
+      el.style.height = `${height}px`;
+      el.style.backgroundImage = `url("${landmark.icon}")`;
+
+      el.style.backgroundSize = 'contain';
+      el.style.backgroundRepeat = 'no-repeat';
+    
+      new mapboxgl.Marker(el)
         .setLngLat(landmark.coords)
         .setPopup(
           new mapboxgl.Popup({ offset: 12 }).setHTML(`
@@ -288,6 +307,8 @@ map.on('draw.delete', removeDistancePopup);
         )
         .addTo(map);
     });
+    
+    
 
   };
 
