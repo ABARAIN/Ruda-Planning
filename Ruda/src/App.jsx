@@ -306,12 +306,12 @@ const App = () => {
               >
                 <Box
                   sx={{
-                    width: 335,
+                    width: 300,
                     height: "100%",
                     bgcolor: "#1a1a1a",
                     color: "#fff",
-                    px: 2,
-                    py: 3,
+                    px: 0,
+                    py: 0,
                     overflow: "hidden",
                     border: "1px solid rgba(255,255,255,0.1)",
                     borderLeft: "none",

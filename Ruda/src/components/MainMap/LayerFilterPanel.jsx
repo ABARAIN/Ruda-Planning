@@ -221,24 +221,26 @@ const LayerFilterPanel = ({
   return (
     <Box
       sx={{
-        width: isMobile ? 260 : 300,
+        width: isMobile ? 220 : 300,
         height: isMobile ? "400%" : "100%",
         maxHeight: isMobile ? "100vh" : "100%",
         bgcolor: "#1a1a1a",
         color: "#fff",
-        pr: 1,
-        pl: 1,
-        py: 0,
+        px: 2,
+        py: 2,
         overflowY: "auto",
         position: "relative",
+        border: "1px solid rgba(255,255,255,0.1)",
         "&::-webkit-scrollbar": { width: "6px" },
-        "&::-webkit-scrollbar-track": { backgroundColor: "#1a1a1a" },
+        "&::-webkit-scrollbar-track": {
+          backgroundColor: "rgba(255,255,255,0.05)",
+        },
         "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#000",
+          backgroundColor: "rgba(255,255,255,0.2)",
           borderRadius: "3px",
         },
         scrollbarWidth: "thin",
-        scrollbarColor: "#000 #1a1a1a",
+        scrollbarColor: "rgba(255,255,255,0.2) rgba(255,255,255,0.05)",
       }}
     >
       {isMobile && (
