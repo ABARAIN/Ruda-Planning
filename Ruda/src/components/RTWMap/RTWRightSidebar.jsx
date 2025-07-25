@@ -287,8 +287,8 @@ const RTWRightSidebar = ({
           {/* Header */}
           <Box
             sx={{
-              p: 2.5,
-              pb: 2,
+              p: 2,
+              pb: 1,
               borderBottom: "1px solid rgba(255,255,255,0.1)",
               display: "flex",
               justifyContent: "space-between",
@@ -330,7 +330,7 @@ const RTWRightSidebar = ({
             }}
           >
             {/*--------------------  Category Filter -------------------- */}
-            <Box sx={{ mb: 2.5 }}>
+            <Box sx={{ mb: 1 }}>
               <Typography
                 variant="subtitle2"
                 sx={{
@@ -351,7 +351,7 @@ const RTWRightSidebar = ({
                     borderRadius: 2,
                     fontSize: "0.85rem",
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgba(255,255,255,0.2)",
+                      borderColor: "rgba(255,255,255,0.3)",
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
                       borderColor: "rgba(255,255,255,0.3)",
@@ -397,12 +397,12 @@ const RTWRightSidebar = ({
                 color: "white",
                 borderColor: "rgba(255,255,255,0.3)",
                 bgcolor: "rgba(255,255,255,0.05)",
-                mb: 2.5,
-                py: 1.2,
+                mb: 1,
+                py: 1,
                 borderRadius: 2,
                 textTransform: "none",
-                fontWeight: 500,
-                fontSize: "0.85rem",
+                fontWeight: 400,
+                fontSize: "0.75rem",
                 justifyContent: "flex-start",
                 "&:hover": {
                   borderColor: "rgba(255,255,255,0.5)",
@@ -416,7 +416,7 @@ const RTWRightSidebar = ({
             {/* Available Land Toggle */}
             <Box
               sx={{
-                p: 1.5,
+                p: 0,
                 borderRadius: 2,
                 bgcolor: layerVisibility.available
                   ? "rgba(74, 222, 128, 0.1)"
@@ -456,8 +456,8 @@ const RTWRightSidebar = ({
                   />
                 }
                 label={
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Box
+                  <Box sx={{ display: "flex", alignItems: "left", gap: 1 }}>
+                    {/* <Box
                       sx={{
                         width: 10,
                         height: 10,
@@ -465,7 +465,7 @@ const RTWRightSidebar = ({
                         bgcolor: "#4ade80",
                         opacity: layerVisibility.available ? 1 : 0.3,
                       }}
-                    />
+                    /> */}
                     <Typography
                       variant="body2"
                       sx={{
