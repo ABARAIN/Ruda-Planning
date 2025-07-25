@@ -430,12 +430,28 @@ const RTWLeftSidebar = ({
                             alignItems: "center",
                           }}
                         >
-                          <Typography
-                            variant="body2"
-                            sx={{ color: "#ffffff", fontSize: "0.8rem" }}
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
                           >
-                            {p.name}
-                          </Typography>
+                            <Box
+                              sx={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: "50%",
+                                bgcolor: "#37eb79",
+                              }}
+                            />
+                            <Typography
+                              variant="body2"
+                              sx={{ color: "#ffffff", fontSize: "0.8rem" }}
+                            >
+                              {p.name}
+                            </Typography>
+                          </Box>
                           <Chip
                             label={`${p.area.toFixed(2)} acres`}
                             size="small"

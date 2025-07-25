@@ -22,7 +22,7 @@ const RTWMap = () => {
   const [showChart, setShowChart] = useState(false); // Left sidebar closed initially
   const [showToggle, setShowToggle] = useState(true); // Right sidebar open initially
   const [projectVisibility, setProjectVisibility] = useState({});
-  const [selectedCategory, setSelectedCategory] = useState("Phases");
+  const [selectedCategory, setSelectedCategory] = useState("Select Category"); // Start with select category default
   const [projectFeatures, setProjectFeatures] = useState([]);
   const allAvailableFeaturesRef = useRef([]);
 
@@ -126,7 +126,7 @@ const RTWMap = () => {
       zoom: 11,
     });
 
-    mapRef.current.addControl(new mapboxgl.NavigationControl());
+    // mapRef.current.addControl(new mapboxgl.NavigationControl());
 
     mapRef.current.on("load", async () => {
       try {

@@ -109,7 +109,7 @@ const RTWRightSidebar = ({
       });
       setProjectVisibility(allVisible);
       setShowChart(true); // Open left sidebar
-    } else if (value === "Clear All") {
+    } else if (value === "Clear All" || value === "Select Category") {
       const allHidden = {};
       Object.keys(projectVisibility).forEach((name) => {
         allHidden[name] = false;
@@ -122,6 +122,7 @@ const RTWRightSidebar = ({
         });
       });
       setProjectVisibility(allHidden);
+      recalculateAreaStats(); // Clear project layers
     }
   };
 
@@ -273,7 +274,7 @@ const RTWRightSidebar = ({
             right: { xs: 16, md: 20 },
             width: { xs: "calc(100vw - 32px)", sm: 280, md: 280 },
             maxWidth: { xs: "none", md: 250 },
-            maxHeight: { xs: "calc(100vh - 120px)", md: "calc(100vh - 80px)" },
+            maxHeight: { xs: "calc(100vh - 120px)", md: "calc(100vh - 220px)" },
             zIndex: 1000,
             borderRadius: 3,
             bgcolor: "#000000",
@@ -378,6 +379,7 @@ const RTWRightSidebar = ({
                     },
                   }}
                 >
+                  <MenuItem value="Select Category">Select Category</MenuItem>
                   <MenuItem value="Phases">Phases</MenuItem>
                   <MenuItem value="Packages">Packages</MenuItem>
                   <MenuItem value="Projects">Projects</MenuItem>
