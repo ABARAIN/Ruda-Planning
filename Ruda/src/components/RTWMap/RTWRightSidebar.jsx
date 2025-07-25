@@ -416,6 +416,7 @@ const RTWRightSidebar = ({
             {/* Available Land Toggle */}
             <Box
               sx={{
+                color: "white",
                 p: 0,
                 borderRadius: 2,
                 bgcolor: layerVisibility.available
@@ -424,7 +425,7 @@ const RTWRightSidebar = ({
                 border: `1px solid ${
                   layerVisibility.available
                     ? "rgba(74, 222, 128, 0.3)"
-                    : "rgba(255,255,255,0.1)"
+                    : "rgba(255,255,255,0.3)"
                 }`,
                 mb: 2.5,
               }}
@@ -471,7 +472,7 @@ const RTWRightSidebar = ({
                       sx={{
                         color: layerVisibility.available
                           ? "#4ade80"
-                          : "rgba(255,255,255,0.7)",
+                          : "rgba(255, 255, 255, 0.811)",
                         fontWeight: layerVisibility.available ? 500 : 400,
                         fontSize: "0.85rem",
                       }}
@@ -490,7 +491,7 @@ const RTWRightSidebar = ({
                 variant="subtitle2"
                 sx={{
                   color: "rgba(255,255,255,0.8)",
-                  mb: 1.5,
+                  mb: 1,
                   fontSize: "0.85rem",
                 }}
               >
@@ -545,7 +546,10 @@ const RTWRightSidebar = ({
                       <Box
                         key={idx}
                         sx={{
-                          p: 1.2,
+                          pt: 0.5, // padding-top
+                          pb: 0.5, // padding-bottom
+                          pl: 1, // padding-left
+                          pr: 1, // padding-right
                           borderRadius: 2,
                           bgcolor: isVisible
                             ? "rgba(239, 68, 68, 0.1)"

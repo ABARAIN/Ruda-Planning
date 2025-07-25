@@ -81,7 +81,7 @@ const RTWLeftSidebar = ({
   return (
     <>
       {/*------------------- Mobile Toggle Button -------------------*/}
-      <Box
+      {/* <Box
         sx={{
           position: "absolute",
           top: 16,
@@ -111,10 +111,10 @@ const RTWLeftSidebar = ({
         >
           Analytics
         </Button>
-      </Box>
+      </Box> */}
 
       {/*------------------- Desktop Toggle Button ------------------ */}
-      <Box
+      {/* <Box
         sx={{
           position: "absolute",
           top: 30,
@@ -141,7 +141,7 @@ const RTWLeftSidebar = ({
         >
           {showChart ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
-      </Box>
+      </Box> */}
 
       {/*-------------------------- Chart Panel ---------------------- */}
       {areaStats && (
