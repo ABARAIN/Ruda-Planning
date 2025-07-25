@@ -156,14 +156,28 @@ const MainMapPage = () => {
   return (
     <>
       {/* Header */}
-      <AppBar position="static" color="primary">
-        <Toolbar sx={{ display: "flex", alignItems: "center" }}>
+      <AppBar
+        position="static"
+        sx={{
+          backgroundColor: "#0d47a1", // Darker blue color
+          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+        }}
+      >
+        <Toolbar
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            minHeight: "64px !important",
+            paddingLeft: "0 !important", // Set left margin to 0
+            paddingRight: "16px",
+          }}
+        >
           {isMobile && (
             <IconButton
               edge="start"
               color="inherit"
               onClick={() => setDrawerOpen(true)}
-              sx={{ mr: isMobile ? 0 : 2 }}
+              sx={{ mr: isMobile ? 0 : 2, ml: 1 }}
             >
               <MenuIcon />
             </IconButton>
@@ -178,6 +192,7 @@ const MainMapPage = () => {
               transform: "scale(2.8)",
               transformOrigin: "left center",
               mr: isMobile ? 6 : 7,
+              ml: isMobile ? 1 : 2, // Small left margin for logo
             }}
           />
           {!isMobile && (
@@ -198,55 +213,88 @@ const MainMapPage = () => {
             </Typography>
           )}
 
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => (window.location.href = "/gantt")}
-            sx={{
-              ml: 1,
-              color: "#fff",
-              borderColor: "#fff",
-              textTransform: "none",
-              fontSize: "0.75rem",
-              "&:hover": { backgroundColor: "#fff", color: "#000" },
-            }}
-          >
-            Timeline
-          </Button>
+          {/* Button Container */}
+          <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
+            <Button
+              variant="contained"
+              size="medium"
+              onClick={() => (window.location.href = "/gantt")}
+              sx={{
+                backgroundColor: "rgba(255,255,255,0.15)",
+                color: "#fff",
+                textTransform: "none",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                borderRadius: "8px",
+                padding: "8px 16px",
+                minWidth: "auto",
+                boxShadow: "none",
+                border: "1px solid rgba(255,255,255,0.3)",
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  transform: "translateY(-1px)",
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              Timeline
+            </Button>
 
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => (window.location.href = "/portfolio")}
-            sx={{
-              ml: 1,
-              color: "#fff",
-              borderColor: "#fff",
-              textTransform: "none",
-              fontSize: "0.75rem",
-              "&:hover": { backgroundColor: "#fff", color: "#000" },
-            }}
-          >
-            Portfolio
-          </Button>
+            <Button
+              variant="contained"
+              size="medium"
+              onClick={() => (window.location.href = "/portfolio")}
+              sx={{
+                backgroundColor: "rgba(255,255,255,0.15)",
+                color: "#fff",
+                textTransform: "none",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                borderRadius: "8px",
+                padding: "8px 16px",
+                minWidth: "auto",
+                boxShadow: "none",
+                border: "1px solid rgba(255,255,255,0.3)",
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  transform: "translateY(-1px)",
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              Portfolio
+            </Button>
 
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() =>
-              window.dispatchEvent(new CustomEvent("toggleProposedRoads"))
-            }
-            sx={{
-              ml: 2,
-              color: "#fff",
-              borderColor: "#fff",
-              textTransform: "none",
-              fontSize: "0.75rem",
-              "&:hover": { backgroundColor: "#fff", color: "#000" },
-            }}
-          >
-            Proposed Roads
-          </Button>
+            <Button
+              variant="contained"
+              size="medium"
+              onClick={() =>
+                window.dispatchEvent(new CustomEvent("toggleProposedRoads"))
+              }
+              sx={{
+                backgroundColor: "rgba(255,255,255,0.15)",
+                color: "#fff",
+                textTransform: "none",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                borderRadius: "8px",
+                padding: "8px 16px",
+                minWidth: "auto",
+                boxShadow: "none",
+                border: "1px solid rgba(255,255,255,0.3)",
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  transform: "translateY(-1px)",
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              Proposed Roads
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
 
