@@ -18,6 +18,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import * as turf from "@turf/turf";
 
 const RTWRightSidebar = ({
   showToggle,
@@ -32,7 +33,170 @@ const RTWRightSidebar = ({
   toggleLayer,
   recalculateAreaStats,
   allAvailableFeaturesRef,
+  projectFeatures,
+  setShowChart, // Add this prop
 }) => {
+  const handleProjectClick = (projectName) => {
+    const matchingFeature = projectFeatures.find(
+      (f) => f.properties?.name?.trim() === projectName.trim()
+    );
+
+    if (matchingFeature && mapRef.current) {
+      const bbox = turf.bbox(matchingFeature);
+      mapRef.current.fitBounds(bbox, {
+        padding: 50,
+        duration: 1000,
+      });
+    }
+  };
+
+  const handleProjectToggle = (name, visible) => {
+    const id = name.replace(/\s+/g, "-").toLowerCase();
+    setProjectVisibility((prev) => ({ ...prev, [name]: visible }));
+    recalculateAreaStats();
+
+    ["fill", "line"].forEach((type) => {
+      const layerId = `project-${id}-${type}`;
+      if (mapRef.current.getLayer(layerId)) {
+        mapRef.current.setLayoutProperty(
+          layerId,
+          "visibility",
+          visible ? "visible" : "none"
+        );
+      }
+    });
+
+    if (visible) {
+      const matchingGreen = allAvailableFeaturesRef.current.filter(
+        (f) => f.properties?.name?.trim() === name.trim()
+      );
+
+      const greenLayerSource = mapRef.current.getSource("rtw2-public");
+      if (greenLayerSource && matchingGreen.length > 0) {
+        greenLayerSource.setData({
+          type: "FeatureCollection",
+          features: matchingGreen,
+        });
+
+        ["fill", "line"].forEach((type) => {
+          const layerId = `rtw2-${type}`;
+          if (mapRef.current.getLayer(layerId)) {
+            mapRef.current.setLayoutProperty(layerId, "visibility", "visible");
+          }
+        });
+      }
+
+      // Open left sidebar when data is filtered/shown
+      setShowChart(true);
+      handleProjectClick(name);
+    }
+  };
+
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+
+    if (value === "Show All") {
+      const allVisible = {};
+      Object.keys(projectVisibility).forEach((name) => {
+        allVisible[name] = true;
+        const id = name.replace(/\s+/g, "-").toLowerCase();
+        ["fill", "line"].forEach((type) => {
+          const layerId = `project-${id}-${type}`;
+          if (mapRef.current.getLayer(layerId)) {
+            mapRef.current.setLayoutProperty(layerId, "visibility", "visible");
+          }
+        });
+      });
+      setProjectVisibility(allVisible);
+      setShowChart(true); // Open left sidebar
+    } else if (value === "Clear All") {
+      const allHidden = {};
+      Object.keys(projectVisibility).forEach((name) => {
+        allHidden[name] = false;
+        const id = name.replace(/\s+/g, "-").toLowerCase();
+        ["fill", "line"].forEach((type) => {
+          const layerId = `project-${id}-${type}`;
+          if (mapRef.current.getLayer(layerId)) {
+            mapRef.current.setLayoutProperty(layerId, "visibility", "none");
+          }
+        });
+      });
+      setProjectVisibility(allHidden);
+    }
+  };
+
+  const handleToggleAll = () => {
+    const filteredNames =
+      selectedCategory === "Show All"
+        ? Object.keys(projectVisibility)
+        : Object.keys(projectVisibility).filter((name) => {
+            if (selectedCategory === "Projects") {
+              return (
+                name.startsWith("RTW P-") ||
+                name === "Rakh Jhoke Left-P" ||
+                name === "Rakh Jhoke Right-P"
+              );
+            }
+            if (selectedCategory === "Packages") {
+              return (
+                name.includes("Package") ||
+                name === "Rakh Jhoke Left" ||
+                name === "Rakh Jhoke Right"
+              );
+            }
+            return (
+              !name.startsWith("RTW P-") &&
+              !name.includes("Package") &&
+              name !== "Rakh Jhoke Left-P" &&
+              name !== "Rakh Jhoke Right-P" &&
+              name !== "Rakh Jhoke Left" &&
+              name !== "Rakh Jhoke Right"
+            );
+          });
+
+    const show = filteredNames.some((name) => !projectVisibility[name]);
+    const updatedVisibility = { ...projectVisibility };
+
+    filteredNames.forEach((name) => {
+      updatedVisibility[name] = show;
+      const id = name.replace(/\s+/g, "-").toLowerCase();
+      ["fill", "line"].forEach((type) => {
+        const layerId = `project-${id}-${type}`;
+        if (mapRef.current.getLayer(layerId)) {
+          mapRef.current.setLayoutProperty(
+            layerId,
+            "visibility",
+            show ? "visible" : "none"
+          );
+        }
+      });
+    });
+
+    setProjectVisibility(updatedVisibility);
+    recalculateAreaStats();
+
+    if (show) {
+      setShowChart(true); // Open left sidebar when showing layers
+    }
+  };
+
+  const handleAvailableLandToggle = (isChecked) => {
+    const newVisibility = { ...layerVisibility, available: isChecked };
+    setLayerVisibility(newVisibility);
+
+    if (isChecked) {
+      recalculateAreaStats();
+      setShowChart(true); // Open left sidebar when showing available land
+    } else {
+      ["fill", "line"].forEach((type) => {
+        const layerId = `rtw2-${type}`;
+        if (mapRef.current.getLayer(layerId)) {
+          mapRef.current.setLayoutProperty(layerId, "visibility", "none");
+        }
+      });
+    }
+  };
+
   return (
     <>
       {/*-------------------  Mobile Toggle Button -------------------- */}
@@ -69,7 +233,7 @@ const RTWRightSidebar = ({
       </Box>
 
       {/*-------------------- Desktop Toggle Button ------------------- */}
-      <Box
+      {/* <Box
         sx={{
           position: "absolute",
           top: 30,
@@ -96,7 +260,7 @@ const RTWRightSidebar = ({
         >
           {showToggle ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </IconButton>
-      </Box>
+      </Box> */}
 
       {/*--------------------  Layer Control Panel -------------------- */}
       <Collapse in={showToggle} orientation="horizontal">
@@ -180,29 +344,7 @@ const RTWRightSidebar = ({
               <FormControl fullWidth size="small">
                 <Select
                   value={selectedCategory}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSelectedCategory(value);
-
-                    if (value === "Show All") {
-                      const allVisible = {};
-                      Object.keys(projectVisibility).forEach((name) => {
-                        allVisible[name] = true;
-                        const id = name.replace(/\s+/g, "-").toLowerCase();
-                        ["fill", "line"].forEach((type) => {
-                          const layerId = `project-${id}-${type}`;
-                          if (mapRef.current.getLayer(layerId)) {
-                            mapRef.current.setLayoutProperty(
-                              layerId,
-                              "visibility",
-                              "visible"
-                            );
-                          }
-                        });
-                      });
-                      setProjectVisibility(allVisible);
-                    }
-                  }}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
                   sx={{
                     color: "white",
                     bgcolor: "rgba(255,255,255,0.05)",
@@ -240,6 +382,7 @@ const RTWRightSidebar = ({
                   <MenuItem value="Packages">Packages</MenuItem>
                   <MenuItem value="Projects">Projects</MenuItem>
                   <MenuItem value="Show All">Show All</MenuItem>
+                  <MenuItem value="Clear All">Clear All</MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -249,69 +392,18 @@ const RTWRightSidebar = ({
               variant="outlined"
               fullWidth
               startIcon={<LayersIcon />}
-              onClick={() => {
-                const filteredNames =
-                  selectedCategory === "Show All"
-                    ? Object.keys(projectVisibility)
-                    : Object.keys(projectVisibility).filter((name) => {
-                        if (selectedCategory === "Projects") {
-                          return (
-                            name.startsWith("RTW P-") ||
-                            name === "Rakh Jhoke Left-P" ||
-                            name === "Rakh Jhoke Right-P"
-                          );
-                        }
-                        if (selectedCategory === "Packages") {
-                          return (
-                            name.includes("Package") ||
-                            name === "Rakh Jhoke Left" ||
-                            name === "Rakh Jhoke Right"
-                          );
-                        }
-                        return (
-                          !name.startsWith("RTW P-") &&
-                          !name.includes("Package") &&
-                          name !== "Rakh Jhoke Left-P" &&
-                          name !== "Rakh Jhoke Right-P" &&
-                          name !== "Rakh Jhoke Left" &&
-                          name !== "Rakh Jhoke Right"
-                        );
-                      });
-
-                const show = filteredNames.some(
-                  (name) => !projectVisibility[name]
-                );
-                const updatedVisibility = { ...projectVisibility };
-
-                filteredNames.forEach((name) => {
-                  updatedVisibility[name] = show;
-                  const id = name.replace(/\s+/g, "-").toLowerCase();
-                  ["fill", "line"].forEach((type) => {
-                    const layerId = `project-${id}-${type}`;
-                    if (mapRef.current.getLayer(layerId)) {
-                      mapRef.current.setLayoutProperty(
-                        layerId,
-                        "visibility",
-                        show ? "visible" : "none"
-                      );
-                    }
-                  });
-                });
-
-                setProjectVisibility(updatedVisibility);
-                recalculateAreaStats();
-              }}
+              onClick={handleToggleAll}
               sx={{
                 color: "white",
                 borderColor: "rgba(255,255,255,0.3)",
                 bgcolor: "rgba(255,255,255,0.05)",
-                mb: 1,
-                mt: -1,
-                py: 0.5,
+                mb: 2.5,
+                py: 1.2,
                 borderRadius: 2,
                 textTransform: "none",
                 fontWeight: 500,
                 fontSize: "0.85rem",
+                justifyContent: "flex-start",
                 "&:hover": {
                   borderColor: "rgba(255,255,255,0.5)",
                   bgcolor: "rgba(255,255,255,0.1)",
@@ -324,7 +416,7 @@ const RTWRightSidebar = ({
             {/* Available Land Toggle */}
             <Box
               sx={{
-                py: 0,
+                p: 1.5,
                 borderRadius: 2,
                 bgcolor: layerVisibility.available
                   ? "rgba(74, 222, 128, 0.1)"
@@ -341,54 +433,44 @@ const RTWRightSidebar = ({
                 control={
                   <Switch
                     checked={layerVisibility.available}
-                    onChange={(e) => {
-                      const isChecked = e.target.checked;
-                      const newVisibility = {
-                        ...layerVisibility,
-                        available: isChecked,
-                      };
-                      setLayerVisibility(newVisibility);
-
-                      if (isChecked) {
-                        recalculateAreaStats();
-                      } else {
-                        ["fill", "line"].forEach((type) => {
-                          const layerId = `rtw2-${type}`;
-                          if (mapRef.current.getLayer(layerId)) {
-                            mapRef.current.setLayoutProperty(
-                              layerId,
-                              "visibility",
-                              "none"
-                            );
-                          }
-                        });
-                      }
-                    }}
+                    onChange={(e) =>
+                      handleAvailableLandToggle(e.target.checked)
+                    }
                     sx={{
                       "& .MuiSwitch-switchBase.Mui-checked": {
-                        color: "#37eb79",
+                        color: "#4ade80",
                       },
                       "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                        { bgcolor: "#37eb79" },
+                        { bgcolor: "#4ade80" },
+                      "& .MuiSwitch-switchBase": {
+                        color: layerVisibility.available
+                          ? "#4ade80"
+                          : "rgba(255,255,255,0.5)",
+                      },
+                      "& .MuiSwitch-track": {
+                        bgcolor: layerVisibility.available
+                          ? "#4ade80"
+                          : "rgba(255,255,255,0.2)",
+                      },
                     }}
                   />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    {/* <Box
+                    <Box
                       sx={{
                         width: 10,
                         height: 10,
                         borderRadius: "50%",
-                        bgcolor: "#37eb79",
+                        bgcolor: "#4ade80",
                         opacity: layerVisibility.available ? 1 : 0.3,
                       }}
-                    /> */}
+                    />
                     <Typography
                       variant="body2"
                       sx={{
                         color: layerVisibility.available
-                          ? "#37eb79"
+                          ? "#4ade80"
                           : "rgba(255,255,255,0.7)",
                         fontWeight: layerVisibility.available ? 500 : 400,
                         fontSize: "0.85rem",
@@ -487,53 +569,7 @@ const RTWRightSidebar = ({
                               : "rgba(255,255,255,0.2)",
                           },
                         }}
-                        onClick={() => {
-                          const visible = !projectVisibility[name];
-                          setProjectVisibility((prev) => ({
-                            ...prev,
-                            [name]: visible,
-                          }));
-                          recalculateAreaStats();
-
-                          ["fill", "line"].forEach((type) => {
-                            const layerId = `project-${id}-${type}`;
-                            if (mapRef.current.getLayer(layerId)) {
-                              mapRef.current.setLayoutProperty(
-                                layerId,
-                                "visibility",
-                                visible ? "visible" : "none"
-                              );
-                            }
-                          });
-
-                          if (visible) {
-                            const matchingGreen =
-                              allAvailableFeaturesRef.current.filter(
-                                (f) =>
-                                  f.properties?.name?.trim() === name.trim()
-                              );
-
-                            const greenLayerSource =
-                              mapRef.current.getSource("rtw2-public");
-                            if (greenLayerSource && matchingGreen.length > 0) {
-                              greenLayerSource.setData({
-                                type: "FeatureCollection",
-                                features: matchingGreen,
-                              });
-
-                              ["fill", "line"].forEach((type) => {
-                                const layerId = `rtw2-${type}`;
-                                if (mapRef.current.getLayer(layerId)) {
-                                  mapRef.current.setLayoutProperty(
-                                    layerId,
-                                    "visibility",
-                                    "visible"
-                                  );
-                                }
-                              });
-                            }
-                          }
-                        }}
+                        onClick={() => handleProjectToggle(name, !isVisible)}
                       >
                         <Box
                           sx={{

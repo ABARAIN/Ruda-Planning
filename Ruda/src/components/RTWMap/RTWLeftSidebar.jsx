@@ -32,7 +32,15 @@ const RTWLeftSidebar = ({
   projectFeatures,
   projectVisibility,
   allAvailableFeaturesRef,
+  mapRef,
 }) => {
+  // Remove auto-open effect since it's now handled in parent
+  // useEffect(() => {
+  //   if (areaStats && !showChart) {
+  //     setShowChart(true);
+  //   }
+  // }, [areaStats, showChart, setShowChart]);
+
   const chartData = areaStats
     ? [
         { name: "Available", value: areaStats.available },

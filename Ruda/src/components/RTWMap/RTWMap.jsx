@@ -19,12 +19,19 @@ const RTWMap = () => {
     rtw: true,
     available: true,
   });
-  const [showChart, setShowChart] = useState(false);
-  const [showToggle, setShowToggle] = useState(false);
+  const [showChart, setShowChart] = useState(false); // Left sidebar closed initially
+  const [showToggle, setShowToggle] = useState(true); // Right sidebar open initially
   const [projectVisibility, setProjectVisibility] = useState({});
   const [selectedCategory, setSelectedCategory] = useState("Phases");
   const [projectFeatures, setProjectFeatures] = useState([]);
   const allAvailableFeaturesRef = useRef([]);
+
+  // REMOVE this useEffect completely - no auto-opening of left sidebar
+  // useEffect(() => {
+  //   if (areaStats) {
+  //     setShowChart(true);
+  //   }
+  // }, [areaStats]);
 
   const toggleLayer = (layerIdPrefix, visible) => {
     const visibility = visible ? "visible" : "none";
@@ -41,6 +48,28 @@ const RTWMap = () => {
     const visibleRedFeatures = projectFeatures.filter(
       (f) => projectVisibility[f.properties.name]
     );
+
+    // Only calculate and set stats if there are actually visible features
+    // This prevents auto-calculation on initial load
+    if (visibleRedFeatures.length === 0) {
+      setAreaStats(null);
+
+      const greenLayerSource = mapRef.current?.getSource("rtw2-public");
+      if (greenLayerSource) {
+        greenLayerSource.setData({
+          type: "FeatureCollection",
+          features: [],
+        });
+
+        ["fill", "line"].forEach((type) => {
+          const layerId = `rtw2-${type}`;
+          if (mapRef.current?.getLayer(layerId)) {
+            mapRef.current.setLayoutProperty(layerId, "visibility", "none");
+          }
+        });
+      }
+      return;
+    }
 
     const visibleRedNames = visibleRedFeatures.map((f) =>
       f.properties.name.trim()
@@ -76,7 +105,6 @@ const RTWMap = () => {
         features: matchingGreenFeatures,
       });
 
-      // Only show green layer if Available Land toggle is ON and there are matching features
       const shouldShowGreen =
         layerVisibility.available && matchingGreenFeatures.length > 0;
       const visibility = shouldShowGreen ? "visible" : "none";
@@ -277,6 +305,8 @@ const RTWMap = () => {
         toggleLayer={toggleLayer}
         recalculateAreaStats={recalculateAreaStats}
         allAvailableFeaturesRef={allAvailableFeaturesRef}
+        projectFeatures={projectFeatures}
+        setShowChart={setShowChart}
       />
 
       {/* <RTWProjectList
