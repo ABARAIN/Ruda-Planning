@@ -170,7 +170,7 @@ const LayerFilterPanel = ({
             },
           }}
           sx={{
-            bgcolor: "rgb(0 0 1)",
+            bgcolor: "#1a1a1a1d",
             color: "#ffffff",
             borderRadius: "8px",
             "& .MuiSvgIcon-root": { color: "#fff" },
@@ -233,7 +233,7 @@ const LayerFilterPanel = ({
         width: isMobile ? 220 : 300,
         height: isMobile ? "400%" : "100%",
         maxHeight: isMobile ? "100vh" : "100%",
-        bgcolor: "rgb(0 0 0)",
+        bgcolor: "#1a1a1a1d",
         color: "#fff",
         px: 2,
         py: 2,
