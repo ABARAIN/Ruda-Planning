@@ -214,19 +214,20 @@ const MainMapPage = () => {
           )}
 
           {/* Button Container */}
+          {/* Button Container */}
           <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
             <Button
               variant="contained"
-              size="medium"
+              size="small"
               onClick={() => (window.location.href = "/gantt")}
               sx={{
                 backgroundColor: "rgba(255,255,255,0.15)",
                 color: "#fff",
                 textTransform: "none",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                borderRadius: "8px",
-                padding: "8px 16px",
+                fontSize: "0.75rem", // Smaller font
+                fontWeight: 300,
+                borderRadius: "6px",
+                padding: "5px 10px",
                 minWidth: "auto",
                 boxShadow: "none",
                 border: "1px solid rgba(255,255,255,0.3)",
@@ -243,16 +244,16 @@ const MainMapPage = () => {
 
             <Button
               variant="contained"
-              size="medium"
+              size="small"
               onClick={() => (window.location.href = "/portfolio")}
               sx={{
                 backgroundColor: "rgba(255,255,255,0.15)",
                 color: "#fff",
                 textTransform: "none",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                borderRadius: "8px",
-                padding: "8px 16px",
+                fontSize: "0.75rem",
+                fontWeight: 300,
+                borderRadius: "6px",
+                padding: "5px 10px",
                 minWidth: "auto",
                 boxShadow: "none",
                 border: "1px solid rgba(255,255,255,0.3)",
@@ -269,7 +270,7 @@ const MainMapPage = () => {
 
             <Button
               variant="contained"
-              size="medium"
+              size="small"
               onClick={() =>
                 window.dispatchEvent(new CustomEvent("toggleProposedRoads"))
               }
@@ -277,10 +278,10 @@ const MainMapPage = () => {
                 backgroundColor: "rgba(255,255,255,0.15)",
                 color: "#fff",
                 textTransform: "none",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                borderRadius: "8px",
-                padding: "8px 16px",
+                fontSize: "0.75rem",
+                fontWeight: 300,
+                borderRadius: "6px",
+                padding: "5px 10px",
                 minWidth: "auto",
                 boxShadow: "none",
                 border: "1px solid rgba(255,255,255,0.3)",

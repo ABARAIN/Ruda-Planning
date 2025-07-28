@@ -170,17 +170,26 @@ const LayerFilterPanel = ({
             },
           }}
           sx={{
-            bgcolor: "#2a2a2a",
-            color: "#fff",
+            bgcolor: "rgb(0 0 1)",
+            color: "#ffffff",
+            borderRadius: "8px",
             "& .MuiSvgIcon-root": { color: "#fff" },
-            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#555" },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#555",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#555 !important",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#555 !important",
+            },
           }}
         >
           <MenuItem value="ALL">
             <Checkbox
               checked={isAllSelected}
               indeterminate={value.length > 0 && value.length < options.length}
-              sx={{ color: "#ccc", "&.Mui-checked": { color: "#2196f3" } }}
+              sx={{ color: "#ffffff", "&.Mui-checked": { color: "#2196f3" } }}
             />
             <ListItemText primary="Select All" />
           </MenuItem>
@@ -224,7 +233,7 @@ const LayerFilterPanel = ({
         width: isMobile ? 220 : 300,
         height: isMobile ? "400%" : "100%",
         maxHeight: isMobile ? "100vh" : "100%",
-        bgcolor: "#1a1a1a",
+        bgcolor: "rgb(0 0 0)",
         color: "#fff",
         px: 2,
         py: 2,
@@ -290,7 +299,21 @@ const LayerFilterPanel = ({
         false
       )}
 
-      <FormControl fullWidth sx={{ mt: 2 }}>
+      <FormControl
+        fullWidth
+        sx={{
+          mt: 2,
+          color: "#fff",
+          "& .MuiSvgIcon-root": { color: "#fff" },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#555",
+            borderRadius: "8px",
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#555",
+          },
+        }}
+      >
         <InputLabel sx={{ color: "#ccc" }}>Projects</InputLabel>
         <Select
           multiple
