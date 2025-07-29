@@ -12,9 +12,6 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ProposedRoadsLayer from './ProposedRoadsLayer';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -25,23 +22,6 @@ const baseStyles = {
   Streets: 'mapbox://styles/mapbox/streets-v12',
   Outdoors: 'mapbox://styles/mapbox/outdoors-v12'
 };
-
-
-const landmarks = [
-  { name: 'Badshahi Mosque', coords: [74.3083, 31.5889] },
-  { name: 'Minar-e-Pakistan', coords: [74.3091, 31.5922] },
-  { name: 'Tomb of Jahangir', coords: [74.3003, 31.6242] },
-  { name: 'Tomb of Noor Jahan', coords: [74.2995, 31.6225] },
-  { name: 'Shahdara Town', coords: [74.2870, 31.6234] },
-  { name: 'Lahore Railway Station', coords: [74.3579, 31.5820] },
- 
-  
-  { name: 'Data Darbar', coords: [74.3130, 31.5823] },
-  { name: 'Jallo Park', coords: [74.4416, 31.5884] },
-
-];
-
-
 
 const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] }) => {
   const mapRef = useRef(null);
@@ -69,24 +49,11 @@ const MapView = ({ features, colorMap, selectedNames, districtBoundaries = [] })
     window.__MAPBOX_INSTANCE__ = map;
 
     map.addControl(new mapboxgl.NavigationControl(), 'top-left');
-    const drawControl = new MapboxDraw({
-      displayControlsDefault: false,
-      controls: {
-        line_string: true,
-        trash: true
-      }
-    });
-    map.addControl(drawControl, 'top-left');
-    map.on('draw.create', updateDistancePopup);
-map.on('draw.update', updateDistancePopup);
-map.on('draw.delete', removeDistancePopup);
-
     map.addControl(new mapboxgl.ScaleControl({ unit: 'metric' }), 'bottom-left');
 
     map.on('load', () => addLayers(map));
 
     return () => map.remove();
-    
   }, []);
 
   useEffect(() => {
@@ -275,73 +242,8 @@ map.on('draw.delete', removeDistancePopup);
           'line-width': 2
         }
       }, 'ruda-fill');
-    }    // === Add Landmark Markers ===
-    landmarks.forEach((landmark) => {
-      new mapboxgl.Marker({ color: '#d32f2f' }) // Red markers
-        .setLngLat(landmark.coords)
-        .setPopup(
-          new mapboxgl.Popup({ offset: 12 }).setHTML(`
-            <div style="font-family: 'Segoe UI'; font-size: 14px;">
-              <strong>${landmark.name}</strong>
-            </div>
-          `)
-        )
-        .addTo(map);
-    });
-
-  };
-
-
-
-  let distancePopup = null;
-
-  function updateDistancePopup(e) {
-    const map = mapRef.current;
-    if (!map || !e.features?.length) return;
-  
-    const feature = e.features[0];
-    const coords = feature.geometry.coordinates;
-  
-    if (feature.geometry.type !== 'LineString' || coords.length < 2) return;
-  
-    const from = coords[0];
-    const to = coords[coords.length - 1];
-  
-    const R = 6371000; // radius of Earth in meters
-    const rad = (deg) => (deg * Math.PI) / 180;
-  
-    const dLat = rad(to[1] - from[1]);
-    const dLon = rad(to[0] - from[0]);
-  
-    const a =
-      Math.sin(dLat / 2) ** 2 +
-      Math.cos(rad(from[1])) *
-        Math.cos(rad(to[1])) *
-        Math.sin(dLon / 2) ** 2;
-  
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const dist = R * c;
-  
-    const midpoint = [
-      (from[0] + to[0]) / 2,
-      (from[1] + to[1]) / 2
-    ];
-  
-    if (distancePopup) distancePopup.remove();
-  
-    distancePopup = new mapboxgl.Popup({ closeOnClick: false })
-      .setLngLat(midpoint)
-      .setHTML(`<strong>Distance:</strong> ${(dist / 1000).toFixed(2)} km`)
-      .addTo(map);
-  }
-  
-  function removeDistancePopup() {
-    if (distancePopup) {
-      distancePopup.remove();
-      distancePopup = null;
     }
-  }
-  
+  };
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -372,11 +274,6 @@ map.on('draw.delete', removeDistancePopup);
           </Select>
         </FormControl>
       </Box>
-
-
-     
-
-
 
       <ProposedRoadsLayer />
       <div ref={mapContainerRef} style={{ width: '100%', height: '100%' }} />
