@@ -44,16 +44,17 @@ class GeoDataController {
 
   // Create a new record in 'all' table
   static async createRecord(req, res) {
-    const { name, category } = req.body;
+    const data = req.body;
 
-    if (!name || !category) {
+    // Validate required fields
+    if (!data.name || !data.layer || !data.map_name) {
       return res.status(400).json({ 
-        error: 'Name and category are required' 
+        error: 'Name, layer, and map_name are required' 
       });
     }
 
     try {
-      const newRecord = await GeoDataModel.createRecord(name, category);
+      const newRecord = await GeoDataModel.createRecord(data);
       res.status(201).json({ 
         message: 'Record added', 
         row: newRecord 
@@ -67,16 +68,17 @@ class GeoDataController {
   // Update a record in 'all' table
   static async updateRecord(req, res) {
     const { id } = req.params;
-    const { name, category } = req.body;
+    const data = req.body;
 
-    if (!name || !category) {
+    // Validate required fields
+    if (!data.name || !data.layer || !data.map_name) {
       return res.status(400).json({ 
-        error: 'Name and category are required' 
+        error: 'Name, layer, and map_name are required' 
       });
     }
 
     try {
-      const updatedRecord = await GeoDataModel.updateRecord(id, name, category);
+      const updatedRecord = await GeoDataModel.updateRecord(id, data);
       
       if (!updatedRecord) {
         return res.status(404).json({ error: 'Record not found' });

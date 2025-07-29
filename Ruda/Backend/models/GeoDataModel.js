@@ -26,7 +26,15 @@ class GeoDataModel {
 
   static async getAllRecords() {
     try {
-      const query = 'SELECT gid, name, category FROM "all" ORDER BY gid';
+      const query = `
+        SELECT gid, layer, map_name, name, area_sqkm, area_acres, ruda_phase, rtw_pkg, 
+               description, scope_of_work, land_available_pct, land_available_km, 
+               land_remaining_pct, land_remaining_km, awarded_cost, duration_months, 
+               commencement_date, completion_date, physical_actual_pct, work_done_million, 
+               certified_million, elapsed_months, firms, physical_chart, financial_chart, 
+               kpi_chart, curve_chart, category 
+        FROM "all" ORDER BY gid
+      `;
       console.log('Executing query:', query);
       const result = await pool.query(query);
       console.log('Query result:', result.rows);
@@ -37,15 +45,51 @@ class GeoDataModel {
     }
   }
 
-  static async createRecord(name, category) {
-    const query = `INSERT INTO "all" (name, category) VALUES ($1, $2) RETURNING gid, name, category`;
-    const result = await pool.query(query, [name, category]);
+  static async createRecord(data) {
+    const fields = [
+      'layer', 'map_name', 'name', 'area_sqkm', 'area_acres', 'ruda_phase', 'rtw_pkg',
+      'description', 'scope_of_work', 'land_available_pct', 'land_available_km',
+      'land_remaining_pct', 'land_remaining_km', 'awarded_cost', 'duration_months',
+      'commencement_date', 'completion_date', 'physical_actual_pct', 'work_done_million',
+      'certified_million', 'elapsed_months', 'firms', 'physical_chart', 'financial_chart',
+      'kpi_chart', 'curve_chart', 'category'
+    ];
+    
+    const values = fields.map(field => data[field] || null);
+    const placeholders = fields.map((_, index) => `$${index + 1}`).join(', ');
+    const returningFields = fields.map(field => field).join(', ');
+    
+    const query = `
+      INSERT INTO "all" (${fields.join(', ')}) 
+      VALUES (${placeholders}) 
+      RETURNING gid, ${returningFields}
+    `;
+    
+    const result = await pool.query(query, values);
     return result.rows[0];
   }
 
-  static async updateRecord(id, name, category) {
-    const query = `UPDATE "all" SET name = $1, category = $2 WHERE gid = $3 RETURNING gid, name, category`;
-    const result = await pool.query(query, [name, category, id]);
+  static async updateRecord(id, data) {
+    const fields = [
+      'layer', 'map_name', 'name', 'area_sqkm', 'area_acres', 'ruda_phase', 'rtw_pkg',
+      'description', 'scope_of_work', 'land_available_pct', 'land_available_km',
+      'land_remaining_pct', 'land_remaining_km', 'awarded_cost', 'duration_months',
+      'commencement_date', 'completion_date', 'physical_actual_pct', 'work_done_million',
+      'certified_million', 'elapsed_months', 'firms', 'physical_chart', 'financial_chart',
+      'kpi_chart', 'curve_chart', 'category'
+    ];
+    
+    const setClause = fields.map((field, index) => `${field} = $${index + 2}`).join(', ');
+    const values = [id, ...fields.map(field => data[field] || null)];
+    const returningFields = fields.map(field => field).join(', ');
+    
+    const query = `
+      UPDATE "all" SET ${setClause} 
+      WHERE gid = $1 
+      RETURNING gid, ${returningFields}
+    `;
+    
+    const result = await pool.query(query, values);
     return result.rows[0];
   }
 
