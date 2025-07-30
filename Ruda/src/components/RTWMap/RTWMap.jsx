@@ -263,6 +263,27 @@ const RTWMap = () => {
           mapRef.current.getCanvas().style.cursor = "";
         });
 
+        // --- Fix: If there's a selected param, trigger green layer logic again ---
+        const params = new URLSearchParams(window.location.search);
+        const selectedName = params.get("selected");
+        if (selectedName) {
+          const selectedNorm = selectedName.trim().toLowerCase();
+          const matchingGreen = allAvailableFeaturesRef.current.filter((f) => {
+            const n = (f.properties?.name || "").trim().toLowerCase();
+            return n === selectedNorm || n.includes(selectedNorm);
+          });
+          if (matchingGreen.length > 0) {
+            tryShowGreenLayer(matchingGreen);
+            setLayerVisibility((prev) => ({ ...prev, available: true }));
+            ["fill", "line"].forEach((type) => {
+              const layerId = `rtw2-${type}`;
+              if (mapRef.current.getLayer(layerId)) {
+                mapRef.current.setLayoutProperty(layerId, "visibility", "visible");
+              }
+            });
+          }
+        }
+
         setLoading(false);
       } catch (err) {
         console.error("Map load error:", err);
@@ -275,9 +296,131 @@ const RTWMap = () => {
     };
   }, []);
 
-  useEffect(() => {
+
+
+
+
+  const hasRunRef = useRef(false);
+
+// 🔧 Helper to retry showing green layer
+const tryShowGreenLayer = (features) => {
+  const map = mapRef.current;
+  const source = map.getSource("rtw2-public");
+
+  if (!source || !map.getLayer("rtw2-fill")) {
+    console.warn("🕒 Green layer not ready. Retrying...");
+    setTimeout(() => tryShowGreenLayer(features), 200);
+    return;
+  }
+
+  source.setData({
+    type: "FeatureCollection",
+    features,
+  });
+
+  ["fill", "line"].forEach((type) => {
+    const layerId = `rtw2-${type}`;
+    if (map.getLayer(layerId)) {
+      map.setLayoutProperty(layerId, "visibility", "visible");
+    }
+  });
+
+  console.log("✅ Green layer displayed");
+};
+
+// 🔁 Always recalculate stats on visibility change
+useEffect(() => {
+  recalculateAreaStats();
+}, [projectVisibility, layerVisibility]);
+
+// 🚀 Load project from URL param (?selected=...)
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const selectedName = params.get("selected");
+  console.log("📌 Query param selected:", selectedName);
+
+  if (
+    hasRunRef.current ||
+    !selectedName ||
+    projectFeatures.length === 0 ||
+    Object.keys(projectVisibility).length === 0
+  ) {
+    return;
+  }
+
+  hasRunRef.current = true;
+
+  const matchedFeature = projectFeatures.find(
+    (f) => f.properties?.name?.trim() === selectedName.trim()
+  );
+
+  if (!matchedFeature) {
+    console.warn("⚠️ Feature not found for:", selectedName);
+    return;
+  }
+
+  // 1. Show red layer
+  const id = selectedName.replace(/\s+/g, "-").toLowerCase();
+  ["fill", "line"].forEach((type) => {
+    const layerId = `project-${id}-${type}`;
+    if (mapRef.current.getLayer(layerId)) {
+      mapRef.current.setLayoutProperty(layerId, "visibility", "visible");
+    }
+  });
+
+  // 2. Show green layer (deferred if layer not yet ready)
+  const selectedNorm = selectedName.trim().toLowerCase();
+  console.log(
+    "Available green polygons:",
+    allAvailableFeaturesRef.current.map((f) => f.properties?.name)
+  );
+  const matchingGreen = allAvailableFeaturesRef.current.filter((f) => {
+    const n = (f.properties?.name || "").trim().toLowerCase();
+    // Match if name equals or contains the selected name
+    return n === selectedNorm || n.includes(selectedNorm);
+  });
+
+  if (matchingGreen.length > 0) {
+    tryShowGreenLayer(matchingGreen);
+    // Force green layer visibility ON immediately
+    setLayerVisibility((prev) => ({ ...prev, available: true }));
+    // Also, ensure the green layer is visible in the map (in case state is not enough)
+    ["fill", "line"].forEach((type) => {
+      const layerId = `rtw2-${type}`;
+      if (mapRef.current.getLayer(layerId)) {
+        mapRef.current.setLayoutProperty(layerId, "visibility", "visible");
+      }
+    });
+  }
+
+  // 3. Enable green layer toggle flag in state
+  setLayerVisibility((prev) => ({ ...prev, available: true }));
+
+  // 4. Set selected red project as visible in state
+  setProjectVisibility((prev) => ({
+    ...prev,
+    [selectedName]: true,
+  }));
+
+  // 5. Zoom and show chart
+  setShowChart(true);
+  const bounds = turf.bbox(matchedFeature);
+  mapRef.current.fitBounds(bounds, { padding: 60, duration: 1000 });
+}, [projectFeatures, projectVisibility]);
+
+// ✅ Optional: force recalculate stats after green layer toggle (in case needed)
+useEffect(() => {
+  if (!hasRunRef.current) return;
+  if (layerVisibility.available) {
+    console.log("✅ Recalculating stats after green layer toggled on");
     recalculateAreaStats();
-  }, [projectVisibility, layerVisibility]);
+  }
+}, [layerVisibility.available]);
+
+
+
+
+
 
   return (
     <Box sx={{ position: "relative", height: "100vh", width: "100vw" }}>
