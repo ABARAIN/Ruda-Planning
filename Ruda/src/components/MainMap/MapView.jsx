@@ -14,6 +14,7 @@ import { useTheme } from "@mui/material/styles";
 import ProposedRoadsLayer from "./ProposedRoadsLayer";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+import landmarks from "./Landmarks";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -24,43 +25,6 @@ const baseStyles = {
   Streets: "mapbox://styles/mapbox/streets-v12",
   Outdoors: "mapbox://styles/mapbox/outdoors-v12",
 };
-
-const landmarks = [
-  // { name: 'Badshahi Mosque', coords: [74.3083, 31.5889], icon: './badshahi-mosque.svg'  },
-  {
-    name: "Minar-e-Pakistan",
-    coords: [74.3091, 31.5922],
-    icon: "./Minar-e-Pakistan.svg",
-  },
-  { name: "Tomb of Jahangir", coords: [74.3003, 31.6242], icon: "./Tomb.svg" },
-  {
-    name: "Punjab University",
-    coords: [74.2889, 31.5032],
-    icon: "./University.svg",
-  },
-  {
-    name: "Punjab University",
-    coords: [74.2889, 31.5032],
-    icon: "./University.svg",
-  },
-  {
-    name: "Eiffel Tower Bahria Town",
-    coords: [74.18424, 31.3559],
-    icon: "./Eiffel-Tower.svg",
-  },
-  // { name: 'Shahdara Town', coords: [74.2870, 31.6234], icon: './badshahi-mosque.svg' },
-  {
-    name: "Lahore Railway Station",
-    coords: [74.3579, 31.582],
-    icon: "./train.svg",
-  },
-  {
-    name: "Data Darbar",
-    coords: [74.313, 31.5823],
-    icon: "./badshahi-mosque.svg",
-  },
-  { name: "Jallo Park", coords: [74.4416, 31.5884], icon: "./Park.svg" },
-];
 
 const MapView = ({
   features,
