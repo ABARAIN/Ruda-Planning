@@ -399,258 +399,343 @@ const GeoDataManager = () => {
           {editingRow ? "Edit Project" : "Add New Project"}
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ pt: 2 }}>
-            <Grid container spacing={2}>
-              {/* Basic Information */}
-              <Grid item xs={12}>
-                <Typography variant="h6" sx={{ mb: 2, color: "#1976d2" }}>
-                  Basic Information
-                </Typography>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                {renderFormField("name", "Project Name")}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField("layer", "Layer")}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField("map_name", "Map Name")}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField("category", "Category")}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField("ruda_phase", "RUDA Phase", "select")}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField("rtw_pkg", "RTW Package")}
-              </Grid>
-
-              {/* Area Information */}
+          <Box sx={{ pt: 0 }}>
+            <Grid container spacing={3}>
+              {/* Basic Information Section */}
               <Grid item xs={12}>
                 <Typography
                   variant="h6"
-                  sx={{ mb: 2, mt: 2, color: "#1976d2" }}
+                  sx={{
+                    mb: 3,
+                    color: "#1976d2",
+                    fontWeight: "bold",
+                    borderBottom: "2px solid #1976d2",
+                    paddingBottom: 1,
+                  }}
+                >
+                  Basic Information
+                </Typography>
+
+                <Grid container spacing={2}>
+                  {/* First row: Project Name, Layer, Map Name */}
+                  <Grid item xs={12} md={4}>
+                    {renderFormField("name", "Project Name")}
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    {renderFormField("layer", "Layer")}
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    {renderFormField("map_name", "Map Name")}
+                  </Grid>
+
+                  {/* Second row: Category, RUDA Phase, RTW Package */}
+                  <Grid item xs={12} md={4}>
+                    {renderFormField("category", "Category")}
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    {renderFormField("ruda_phase", "RUDA Phase", "select")}
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    {renderFormField("rtw_pkg", "RTW Package")}
+                  </Grid>
+                </Grid>
+              </Grid>
+
+              {/* Area Information Section */}
+              <Grid item xs={12}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 3,
+                    mt: 0,
+                    color: "#1976d2",
+                    fontWeight: "bold",
+                    borderBottom: "2px solid #1976d2",
+                    paddingBottom: 1,
+                  }}
                 >
                   Area Information
                 </Typography>
+
+                <Grid container spacing={2}>
+                  {/* First row: Area (sq km), Area (acres), Land Available (%) */}
+                  <Grid item xs={12} md={4}>
+                    {renderFormField("area_sqkm", "Area (sq km)", "number")}
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    {renderFormField("area_acres", "Area (acres)", "number")}
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    {renderFormField(
+                      "land_available_pct",
+                      "Land Available (%)",
+                      "number"
+                    )}
+                  </Grid>
+
+                  {/* Second row: Land Available (km), Land Remaining (%), Land Remaining (km) */}
+                  <Grid item xs={12} md={4}>
+                    {renderFormField(
+                      "land_available_km",
+                      "Land Available (km)",
+                      "number"
+                    )}
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    {renderFormField(
+                      "land_remaining_pct",
+                      "Land Remaining (%)",
+                      "number"
+                    )}
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    {renderFormField(
+                      "land_remaining_km",
+                      "Land Remaining (km)",
+                      "number"
+                    )}
+                  </Grid>
+                </Grid>
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                {renderFormField("area_sqkm", "Area (sq km)", "number")}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField("area_acres", "Area (acres)", "number")}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField(
-                  "land_available_pct",
-                  "Land Available (%)",
-                  "number"
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField(
-                  "land_available_km",
-                  "Land Available (km)",
-                  "number"
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField(
-                  "land_remaining_pct",
-                  "Land Remaining (%)",
-                  "number"
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField(
-                  "land_remaining_km",
-                  "Land Remaining (km)",
-                  "number"
-                )}
-              </Grid>
-
-              {/* Financial Information */}
+              {/* Financial Information Section */}
               <Grid item xs={12}>
                 <Typography
                   variant="h6"
-                  sx={{ mb: 2, mt: 2, color: "#1976d2" }}
+                  sx={{
+                    mb: 3,
+                    mt: 0,
+                    color: "#1976d2",
+                    fontWeight: "bold",
+                    borderBottom: "2px solid #1976d2",
+                    paddingBottom: 1,
+                  }}
                 >
                   Financial Information
                 </Typography>
+
+                <Grid container spacing={2}>
+                  {/* First row: Awarded Cost, Work Done, Certified */}
+                  <Grid item xs={12} md={4}>
+                    {renderFormField(
+                      "awarded_cost",
+                      "Awarded Cost (Million)",
+                      "number"
+                    )}
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    {renderFormField(
+                      "work_done_million",
+                      "Work Done (Million)",
+                      "number"
+                    )}
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    {renderFormField(
+                      "certified_million",
+                      "Certified (Million)",
+                      "number"
+                    )}
+                  </Grid>
+
+                  {/* Second row: Physical Actual (%) */}
+                  <Grid item xs={12} md={4}>
+                    {renderFormField(
+                      "physical_actual_pct",
+                      "Physical Actual (%)",
+                      "number"
+                    )}
+                  </Grid>
+                </Grid>
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                {renderFormField(
-                  "awarded_cost",
-                  "Awarded Cost (Million)",
-                  "number"
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField(
-                  "work_done_million",
-                  "Work Done (Million)",
-                  "number"
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField(
-                  "certified_million",
-                  "Certified (Million)",
-                  "number"
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField(
-                  "physical_actual_pct",
-                  "Physical Actual (%)",
-                  "number"
-                )}
-              </Grid>
-
-              {/* Timeline Information */}
+              {/* Timeline Information Section */}
               <Grid item xs={12}>
                 <Typography
                   variant="h6"
-                  sx={{ mb: 2, mt: 2, color: "#1976d2" }}
+                  sx={{
+                    mb: 3,
+                    mt: 0,
+                    color: "#1976d2",
+                    fontWeight: "bold",
+                    borderBottom: "2px solid #1976d2",
+                    paddingBottom: 1,
+                  }}
                 >
                   Timeline Information
                 </Typography>
+
+                <Grid container spacing={2}>
+                  {/* Timeline fields in one row */}
+                  <Grid item xs={12} md={3}>
+                    {renderFormField(
+                      "duration_months",
+                      "Duration (Months)",
+                      "number"
+                    )}
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    {renderFormField(
+                      "elapsed_months",
+                      "Elapsed (Months)",
+                      "number"
+                    )}
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    {renderFormField(
+                      "commencement_date",
+                      "Commencement Date",
+                      "date"
+                    )}
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    {renderFormField(
+                      "completion_date",
+                      "Completion Date",
+                      "date"
+                    )}
+                  </Grid>
+                </Grid>
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                {renderFormField(
-                  "duration_months",
-                  "Duration (Months)",
-                  "number"
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField(
-                  "elapsed_months",
-                  "Elapsed (Months)",
-                  "number"
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField(
-                  "commencement_date",
-                  "Commencement Date",
-                  "date"
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {renderFormField("completion_date", "Completion Date", "date")}
-              </Grid>
-
-              {/* Description */}
+              {/* Description Section */}
               <Grid item xs={12}>
                 <Typography
                   variant="h6"
-                  sx={{ mb: 2, mt: 2, color: "#1976d2" }}
+                  sx={{
+                    mb: 3,
+                    mt: 0,
+                    color: "#1976d2",
+                    fontWeight: "bold",
+                    borderBottom: "2px solid #1976d2",
+                    paddingBottom: 1,
+                  }}
                 >
                   Description
                 </Typography>
+
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    {renderFormField(
+                      "description",
+                      "Description",
+                      "text",
+                      true,
+                      4
+                    )}
+                  </Grid>
+                </Grid>
               </Grid>
 
-              <Grid item xs={12}>
-                {renderFormField("description", "Description", "text", true, 3)}
-              </Grid>
-
-              {/* JSON Fields */}
+              {/* JSON Data Section */}
               <Grid item xs={12}>
                 <Typography
                   variant="h6"
-                  sx={{ mb: 2, mt: 2, color: "#1976d2" }}
+                  sx={{
+                    mb: 3,
+                    mt: 0,
+                    color: "#1976d2",
+                    fontWeight: "bold",
+                    borderBottom: "2px solid #1976d2",
+                    paddingBottom: 1,
+                  }}
                 >
-                  JSON Data (Optional)
+                  Additional Data (JSON Format)
                 </Typography>
-              </Grid>
 
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Firms (JSON)"
-                  value={formData.firms || ""}
-                  onChange={(e) => handleInputChange("firms", e.target.value)}
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  helperText="Example: [{'img': '/Ruda.jpg', 'name': 'RUDA', 'title': 'Employer'}]"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Scope of Work (JSON)"
-                  value={formData.scope_of_work || ""}
-                  onChange={(e) =>
-                    handleInputChange("scope_of_work", e.target.value)
-                  }
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  helperText="Example: [{'name': 'Earth Work', 'value': 100}]"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Physical Chart (JSON)"
-                  value={formData.physical_chart || ""}
-                  onChange={(e) =>
-                    handleInputChange("physical_chart", e.target.value)
-                  }
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  helperText="Example: [{'month': 'Jul-24', 'actual': 1, 'planned': 2}]"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Financial Chart (JSON)"
-                  value={formData.financial_chart || ""}
-                  onChange={(e) =>
-                    handleInputChange("financial_chart", e.target.value)
-                  }
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  helperText="Example: [{'name': 'Contract Amount', 'value': 2520}]"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="KPI Chart (JSON)"
-                  value={formData.kpi_chart || ""}
-                  onChange={(e) =>
-                    handleInputChange("kpi_chart", e.target.value)
-                  }
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  helperText="Example: [{'name': 'Planned', 'value': 76}]"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Curve Chart (JSON)"
-                  value={formData.curve_chart || ""}
-                  onChange={(e) =>
-                    handleInputChange("curve_chart", e.target.value)
-                  }
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  helperText="Example: [{'name': 'S-Curve', 'value': 50}]"
-                />
+                <Grid container spacing={2}>
+                  {/* JSON fields in equal sizes */}
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Firms (JSON)"
+                      value={formData.firms || ""}
+                      onChange={(e) =>
+                        handleInputChange("firms", e.target.value)
+                      }
+                      multiline
+                      rows={3}
+                      variant="outlined"
+                      size="small"
+                      helperText="Example: [{'img': '/Ruda.jpg', 'name': 'RUDA', 'title': 'Employer'}]"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Scope of Work (JSON)"
+                      value={formData.scope_of_work || ""}
+                      onChange={(e) =>
+                        handleInputChange("scope_of_work", e.target.value)
+                      }
+                      multiline
+                      rows={3}
+                      variant="outlined"
+                      size="small"
+                      helperText="Example: [{'name': 'Earth Work', 'value': 100}]"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Physical Chart (JSON)"
+                      value={formData.physical_chart || ""}
+                      onChange={(e) =>
+                        handleInputChange("physical_chart", e.target.value)
+                      }
+                      multiline
+                      rows={3}
+                      variant="outlined"
+                      size="small"
+                      helperText="Example: [{'month': 'Jul-24', 'actual': 1, 'planned': 2}]"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Financial Chart (JSON)"
+                      value={formData.financial_chart || ""}
+                      onChange={(e) =>
+                        handleInputChange("financial_chart", e.target.value)
+                      }
+                      multiline
+                      rows={3}
+                      variant="outlined"
+                      size="small"
+                      helperText="Example: [{'name': 'Contract Amount', 'value': 2520}]"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="KPI Chart (JSON)"
+                      value={formData.kpi_chart || ""}
+                      onChange={(e) =>
+                        handleInputChange("kpi_chart", e.target.value)
+                      }
+                      multiline
+                      rows={3}
+                      variant="outlined"
+                      size="small"
+                      helperText="Example: [{'name': 'Planned', 'value': 76}]"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Curve Chart (JSON)"
+                      value={formData.curve_chart || ""}
+                      onChange={(e) =>
+                        handleInputChange("curve_chart", e.target.value)
+                      }
+                      multiline
+                      rows={3}
+                      variant="outlined"
+                      size="small"
+                      helperText="Example: [{'name': 'S-Curve', 'value': 50}]"
+                    />
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </Box>
