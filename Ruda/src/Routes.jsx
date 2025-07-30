@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import MainMapPage from "./components/MainMap/MainMapPage";
 import DashboardRTWExact from "./components/RTWMap/DashboardRTW";
 import RTWMap from "./components/RTWMap/RTWMap";
-import GeoDataManager from "./components/MainMap/GeoDataManager";
+import GeoDataManager from "./components/MainMap/CRUD/GeoDataManager";
 import Portfolio from "./components/MainMap/Portfolio/Portfolio";
 import RUDADevelopmentPlan from "./components/MainMap/Gantt/RUDADevelopmentPlan";
 

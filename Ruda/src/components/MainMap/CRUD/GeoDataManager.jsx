@@ -77,11 +77,13 @@ const GeoDataManager = () => {
     work_done_million: "",
     certified_million: "",
     elapsed_months: "",
-    firms: "",
-    physical_chart: "",
-    financial_chart: "",
-    kpi_chart: "",
-    curve_chart: "",
+    // JSON fields as arrays for easier manipulation
+    firms: [],
+    scope_of_work: [],
+    physical_chart: [],
+    financial_chart: [],
+    kpi_chart: [],
+    curve_chart: [],
     category: "",
   });
 
@@ -121,21 +123,19 @@ const GeoDataManager = () => {
       setFormData({
         ...initializeFormData(),
         ...row,
-        // Parse JSON fields
-        firms: row.firms ? JSON.stringify(row.firms, null, 2) : "",
-        scope_of_work: row.scope_of_work
-          ? JSON.stringify(row.scope_of_work, null, 2)
-          : "",
-        physical_chart: row.physical_chart
-          ? JSON.stringify(row.physical_chart, null, 2)
-          : "",
-        financial_chart: row.financial_chart
-          ? JSON.stringify(row.financial_chart, null, 2)
-          : "",
-        kpi_chart: row.kpi_chart ? JSON.stringify(row.kpi_chart, null, 2) : "",
-        curve_chart: row.curve_chart
-          ? JSON.stringify(row.curve_chart, null, 2)
-          : "",
+        // Parse JSON fields to arrays
+        firms: Array.isArray(row.firms) ? row.firms : [],
+        scope_of_work: Array.isArray(row.scope_of_work)
+          ? row.scope_of_work
+          : [],
+        physical_chart: Array.isArray(row.physical_chart)
+          ? row.physical_chart
+          : [],
+        financial_chart: Array.isArray(row.financial_chart)
+          ? row.financial_chart
+          : [],
+        kpi_chart: Array.isArray(row.kpi_chart) ? row.kpi_chart : [],
+        curve_chart: Array.isArray(row.curve_chart) ? row.curve_chart : [],
       });
     } else {
       setEditingRow(null);
@@ -180,13 +180,19 @@ const GeoDataManager = () => {
     const parsed = { ...data };
 
     jsonFields.forEach((field) => {
-      if (parsed[field] && typeof parsed[field] === "string") {
-        try {
-          parsed[field] = JSON.parse(parsed[field]);
-        } catch (e) {
-          console.warn(`Invalid JSON in ${field}:`, e);
-          parsed[field] = null;
-        }
+      // Arrays are already in the correct format, just ensure they're arrays
+      if (Array.isArray(parsed[field])) {
+        // Filter out empty entries
+        parsed[field] = parsed[field].filter((item) => {
+          if (typeof item === "object" && item !== null) {
+            return Object.values(item).some(
+              (value) => value && value.toString().trim() !== ""
+            );
+          }
+          return false;
+        });
+      } else {
+        parsed[field] = [];
       }
     });
 
@@ -231,6 +237,482 @@ const GeoDataManager = () => {
         showSnackbar("Error deleting record", "error");
       }
     }
+  };
+
+  // Dynamic form builders for JSON fields
+  const addItemToArray = (fieldName, newItem) => {
+    setFormData((prev) => ({
+      ...prev,
+      [fieldName]: [...prev[fieldName], newItem],
+    }));
+  };
+
+  const removeItemFromArray = (fieldName, index) => {
+    setFormData((prev) => ({
+      ...prev,
+      [fieldName]: prev[fieldName].filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateItemInArray = (fieldName, index, updatedItem) => {
+    setFormData((prev) => ({
+      ...prev,
+      [fieldName]: prev[fieldName].map((item, i) =>
+        i === index ? updatedItem : item
+      ),
+    }));
+  };
+
+  // Firms builder: {img, name, title}
+  const renderFirmsBuilder = () => {
+    const firms = formData.firms || [];
+
+    return (
+      <Box>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>
+          Firms
+        </Typography>
+        {firms.map((firm, index) => (
+          <Box
+            key={index}
+            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  label="Image Path"
+                  value={firm.img || ""}
+                  onChange={(e) =>
+                    updateItemInArray("firms", index, {
+                      ...firm,
+                      img: e.target.value,
+                    })
+                  }
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  label="Name"
+                  value={firm.name || ""}
+                  onChange={(e) =>
+                    updateItemInArray("firms", index, {
+                      ...firm,
+                      name: e.target.value,
+                    })
+                  }
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <TextField
+                  fullWidth
+                  label="Title"
+                  value={firm.title || ""}
+                  onChange={(e) =>
+                    updateItemInArray("firms", index, {
+                      ...firm,
+                      title: e.target.value,
+                    })
+                  }
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} md={1}>
+                <IconButton
+                  onClick={() => removeItemFromArray("firms", index)}
+                  color="error"
+                  size="small"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </Box>
+        ))}
+        <Button
+          startIcon={<AddIcon />}
+          onClick={() =>
+            addItemToArray("firms", { img: "", name: "", title: "" })
+          }
+          variant="outlined"
+          size="small"
+        >
+          Add Firm
+        </Button>
+      </Box>
+    );
+  };
+
+  // Scope of Work builder: {name, value}
+  const renderScopeOfWorkBuilder = () => {
+    const scopeItems = formData.scope_of_work || [];
+
+    return (
+      <Box>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>
+          Scope of Work
+        </Typography>
+        {scopeItems.map((item, index) => (
+          <Box
+            key={index}
+            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  fullWidth
+                  label="Work Name"
+                  value={item.name || ""}
+                  onChange={(e) =>
+                    updateItemInArray("scope_of_work", index, {
+                      ...item,
+                      name: e.target.value,
+                    })
+                  }
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  fullWidth
+                  label="Value"
+                  type="number"
+                  value={item.value || ""}
+                  onChange={(e) =>
+                    updateItemInArray("scope_of_work", index, {
+                      ...item,
+                      value: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <IconButton
+                  onClick={() => removeItemFromArray("scope_of_work", index)}
+                  color="error"
+                  size="small"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </Box>
+        ))}
+        <Button
+          startIcon={<AddIcon />}
+          onClick={() =>
+            addItemToArray("scope_of_work", { name: "", value: 0 })
+          }
+          variant="outlined"
+          size="small"
+        >
+          Add Scope Item
+        </Button>
+      </Box>
+    );
+  };
+
+  // Physical Chart builder: {month, actual, planned}
+  const renderPhysicalChartBuilder = () => {
+    const chartItems = formData.physical_chart || [];
+
+    return (
+      <Box>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>
+          Physical Chart
+        </Typography>
+        {chartItems.map((item, index) => (
+          <Box
+            key={index}
+            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  label="Month"
+                  value={item.month || ""}
+                  onChange={(e) =>
+                    updateItemInArray("physical_chart", index, {
+                      ...item,
+                      month: e.target.value,
+                    })
+                  }
+                  size="small"
+                  placeholder="e.g., Jul-24"
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <TextField
+                  fullWidth
+                  label="Actual"
+                  type="number"
+                  value={item.actual || ""}
+                  onChange={(e) =>
+                    updateItemInArray("physical_chart", index, {
+                      ...item,
+                      actual: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <TextField
+                  fullWidth
+                  label="Planned"
+                  type="number"
+                  value={item.planned || ""}
+                  onChange={(e) =>
+                    updateItemInArray("physical_chart", index, {
+                      ...item,
+                      planned: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <IconButton
+                  onClick={() => removeItemFromArray("physical_chart", index)}
+                  color="error"
+                  size="small"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </Box>
+        ))}
+        <Button
+          startIcon={<AddIcon />}
+          onClick={() =>
+            addItemToArray("physical_chart", {
+              month: "",
+              actual: 0,
+              planned: 0,
+            })
+          }
+          variant="outlined"
+          size="small"
+        >
+          Add Chart Data
+        </Button>
+      </Box>
+    );
+  };
+
+  // Financial Chart builder: {name, value}
+  const renderFinancialChartBuilder = () => {
+    const chartItems = formData.financial_chart || [];
+
+    return (
+      <Box>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>
+          Financial Chart
+        </Typography>
+        {chartItems.map((item, index) => (
+          <Box
+            key={index}
+            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  fullWidth
+                  label="Name"
+                  value={item.name || ""}
+                  onChange={(e) =>
+                    updateItemInArray("financial_chart", index, {
+                      ...item,
+                      name: e.target.value,
+                    })
+                  }
+                  size="small"
+                  placeholder="e.g., Contract Amount"
+                />
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  fullWidth
+                  label="Value"
+                  type="number"
+                  value={item.value || ""}
+                  onChange={(e) =>
+                    updateItemInArray("financial_chart", index, {
+                      ...item,
+                      value: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <IconButton
+                  onClick={() => removeItemFromArray("financial_chart", index)}
+                  color="error"
+                  size="small"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </Box>
+        ))}
+        <Button
+          startIcon={<AddIcon />}
+          onClick={() =>
+            addItemToArray("financial_chart", { name: "", value: 0 })
+          }
+          variant="outlined"
+          size="small"
+        >
+          Add Financial Data
+        </Button>
+      </Box>
+    );
+  };
+
+  // KPI Chart builder: {name, value}
+  const renderKpiChartBuilder = () => {
+    const chartItems = formData.kpi_chart || [];
+
+    return (
+      <Box>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>
+          KPI Chart
+        </Typography>
+        {chartItems.map((item, index) => (
+          <Box
+            key={index}
+            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  fullWidth
+                  label="Name"
+                  value={item.name || ""}
+                  onChange={(e) =>
+                    updateItemInArray("kpi_chart", index, {
+                      ...item,
+                      name: e.target.value,
+                    })
+                  }
+                  size="small"
+                  placeholder="e.g., Planned"
+                />
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  fullWidth
+                  label="Value"
+                  type="number"
+                  value={item.value || ""}
+                  onChange={(e) =>
+                    updateItemInArray("kpi_chart", index, {
+                      ...item,
+                      value: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <IconButton
+                  onClick={() => removeItemFromArray("kpi_chart", index)}
+                  color="error"
+                  size="small"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </Box>
+        ))}
+        <Button
+          startIcon={<AddIcon />}
+          onClick={() => addItemToArray("kpi_chart", { name: "", value: 0 })}
+          variant="outlined"
+          size="small"
+        >
+          Add KPI Data
+        </Button>
+      </Box>
+    );
+  };
+
+  // Curve Chart builder: {name, value}
+  const renderCurveChartBuilder = () => {
+    const chartItems = formData.curve_chart || [];
+
+    return (
+      <Box>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>
+          Curve Chart
+        </Typography>
+        {chartItems.map((item, index) => (
+          <Box
+            key={index}
+            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  fullWidth
+                  label="Name"
+                  value={item.name || ""}
+                  onChange={(e) =>
+                    updateItemInArray("curve_chart", index, {
+                      ...item,
+                      name: e.target.value,
+                    })
+                  }
+                  size="small"
+                  placeholder="e.g., S-Curve"
+                />
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  fullWidth
+                  label="Value"
+                  type="number"
+                  value={item.value || ""}
+                  onChange={(e) =>
+                    updateItemInArray("curve_chart", index, {
+                      ...item,
+                      value: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <IconButton
+                  onClick={() => removeItemFromArray("curve_chart", index)}
+                  color="error"
+                  size="small"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </Box>
+        ))}
+        <Button
+          startIcon={<AddIcon />}
+          onClick={() => addItemToArray("curve_chart", { name: "", value: 0 })}
+          variant="outlined"
+          size="small"
+        >
+          Add Curve Data
+        </Button>
+      </Box>
+    );
   };
 
   const renderFormField = (
@@ -416,7 +898,7 @@ const GeoDataManager = () => {
                   Basic Information
                 </Typography>
 
-                <Grid container spacing={2}>
+                <Grid container spacing={2} sx={{ width: "100%" }}>
                   {/* First row: Project Name, Layer, Map Name */}
                   <Grid item xs={12} md={4}>
                     {renderFormField("name", "Project Name")}
@@ -457,7 +939,7 @@ const GeoDataManager = () => {
                   Area Information
                 </Typography>
 
-                <Grid container spacing={2}>
+                <Grid container spacing={2} sx={{ width: "100%" }}>
                   {/* First row: Area (sq km), Area (acres), Land Available (%) */}
                   <Grid item xs={12} md={4}>
                     {renderFormField("area_sqkm", "Area (sq km)", "number")}
@@ -514,7 +996,7 @@ const GeoDataManager = () => {
                   Financial Information
                 </Typography>
 
-                <Grid container spacing={2}>
+                <Grid container spacing={2} sx={{ width: "100%" }}>
                   {/* First row: Awarded Cost, Work Done, Certified */}
                   <Grid item xs={12} md={4}>
                     {renderFormField(
@@ -627,113 +1109,51 @@ const GeoDataManager = () => {
                 </Grid>
               </Grid>
 
-              {/* JSON Data Section */}
+              {/* Additional Data Section */}
               <Grid item xs={12}>
                 <Typography
                   variant="h6"
                   sx={{
                     mb: 3,
-                    mt: 0,
+                    mt: 4,
                     color: "#1976d2",
                     fontWeight: "bold",
                     borderBottom: "2px solid #1976d2",
                     paddingBottom: 1,
                   }}
                 >
-                  Additional Data (JSON Format)
+                  Additional Data
                 </Typography>
 
-                <Grid container spacing={2}>
-                  {/* JSON fields in equal sizes */}
+                <Grid container spacing={3}>
+                  {/* Firms Section */}
                   <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Firms (JSON)"
-                      value={formData.firms || ""}
-                      onChange={(e) =>
-                        handleInputChange("firms", e.target.value)
-                      }
-                      multiline
-                      rows={3}
-                      variant="outlined"
-                      size="small"
-                      helperText="Example: [{'img': '/Ruda.jpg', 'name': 'RUDA', 'title': 'Employer'}]"
-                    />
+                    {renderFirmsBuilder()}
                   </Grid>
+
+                  {/* Scope of Work Section */}
                   <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Scope of Work (JSON)"
-                      value={formData.scope_of_work || ""}
-                      onChange={(e) =>
-                        handleInputChange("scope_of_work", e.target.value)
-                      }
-                      multiline
-                      rows={3}
-                      variant="outlined"
-                      size="small"
-                      helperText="Example: [{'name': 'Earth Work', 'value': 100}]"
-                    />
+                    {renderScopeOfWorkBuilder()}
                   </Grid>
+
+                  {/* Physical Chart Section */}
                   <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Physical Chart (JSON)"
-                      value={formData.physical_chart || ""}
-                      onChange={(e) =>
-                        handleInputChange("physical_chart", e.target.value)
-                      }
-                      multiline
-                      rows={3}
-                      variant="outlined"
-                      size="small"
-                      helperText="Example: [{'month': 'Jul-24', 'actual': 1, 'planned': 2}]"
-                    />
+                    {renderPhysicalChartBuilder()}
                   </Grid>
+
+                  {/* Financial Chart Section */}
                   <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Financial Chart (JSON)"
-                      value={formData.financial_chart || ""}
-                      onChange={(e) =>
-                        handleInputChange("financial_chart", e.target.value)
-                      }
-                      multiline
-                      rows={3}
-                      variant="outlined"
-                      size="small"
-                      helperText="Example: [{'name': 'Contract Amount', 'value': 2520}]"
-                    />
+                    {renderFinancialChartBuilder()}
                   </Grid>
+
+                  {/* KPI Chart Section */}
                   <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="KPI Chart (JSON)"
-                      value={formData.kpi_chart || ""}
-                      onChange={(e) =>
-                        handleInputChange("kpi_chart", e.target.value)
-                      }
-                      multiline
-                      rows={3}
-                      variant="outlined"
-                      size="small"
-                      helperText="Example: [{'name': 'Planned', 'value': 76}]"
-                    />
+                    {renderKpiChartBuilder()}
                   </Grid>
+
+                  {/* Curve Chart Section */}
                   <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Curve Chart (JSON)"
-                      value={formData.curve_chart || ""}
-                      onChange={(e) =>
-                        handleInputChange("curve_chart", e.target.value)
-                      }
-                      multiline
-                      rows={3}
-                      variant="outlined"
-                      size="small"
-                      helperText="Example: [{'name': 'S-Curve', 'value': 50}]"
-                    />
+                    {renderCurveChartBuilder()}
                   </Grid>
                 </Grid>
               </Grid>
