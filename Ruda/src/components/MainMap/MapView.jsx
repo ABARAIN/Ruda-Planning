@@ -35,6 +35,7 @@ const MapView = ({
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
   const [baseStyleKey, setBaseStyleKey] = useState("Streets");
+  const drawControlRef = useRef(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -57,14 +58,17 @@ const MapView = ({
     window.__MAPBOX_INSTANCE__ = map;
 
     map.addControl(new mapboxgl.NavigationControl(), "top-left");
-    const drawControl = new MapboxDraw({
-      displayControlsDefault: false,
-      controls: {
-        line_string: true,
-        trash: true,
-      },
-    });
-    map.addControl(drawControl, "top-left");
+const drawControl = new MapboxDraw({
+  displayControlsDefault: false,
+  controls: {
+    line_string: true,
+    trash: true,
+  },
+});
+drawControlRef.current = drawControl;
+map.addControl(drawControl, "top-left");
+
+   
     map.on("draw.create", updateDistancePopup);
     map.on("draw.update", updateDistancePopup);
     map.on("draw.delete", removeDistancePopup);
@@ -95,6 +99,11 @@ const MapView = ({
     map.setStyle(baseStyles[baseStyleKey]);
   }, [baseStyleKey]);
 
+
+
+
+
+  
   useEffect(() => {
     const map = mapRef.current;
     const source = map?.getSource("ruda");
@@ -191,49 +200,43 @@ const MapView = ({
     });
 
     map.on("click", "ruda-fill", (e) => {
+      const draw = drawControlRef.current;
+      const currentMode = draw?.getMode?.();
+    
+      // Avoid popup if drawing is active
+      if (currentMode !== "simple_select" && currentMode !== "direct_select") return;
+    
       const feature = e.features[0];
-      const { name, area_sqkm, land_available_pct, physical_actual_pct } =
-        feature.properties;
-
+      const { name, area_sqkm, land_available_pct, physical_actual_pct } = feature.properties;
+    
       const popupHTML = `
         <div style="font-family: 'Segoe UI', sans-serif; min-width:220px; padding:8px;">
-          <h3 style="margin:0 0 8px; font-size:16px; color:#1976d2;">${
-            name || "Unnamed"
-          }</h3>
-          <div style="font-size:14px; margin-bottom:8px;"><strong>Area:</strong> ${parseFloat(
-            area_sqkm || 0
-          ).toFixed(2)} sq.km</div>
+          <h3 style="margin:0 0 8px; font-size:16px; color:#1976d2;">${name || "Unnamed"}</h3>
+          <div style="font-size:14px; margin-bottom:8px;">
+            <strong>Area:</strong> ${parseFloat(area_sqkm || 0).toFixed(2)} sq.km
+          </div>
           <div style="display:flex; gap:6px; font-size:13px; margin-bottom:10px;">
-            ${
-              name === "RTW P-02"
-                ? `<a href="/map" target="_blank" rel="noopener noreferrer" style="flex:1;text-decoration:none;">
-                    <div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:6px;padding:6px;text-align:center;color:#1565c0;">
-                      <div style="font-weight:500;">Land Available</div>
-                      <div>${land_available_pct || 0}%</div>
-                    </div>
-                  </a>`
-                : `<div style="flex:1;background:#e3f2fd;border:1px solid #90caf9;border-radius:6px;padding:6px;text-align:center;color:#1565c0;">
-                    <div style="font-weight:500;">Land Available</div><div>${
-                      land_available_pct || 0
-                    }%</div>
-                   </div>`
-            }
+            <a href="/map?selected=${encodeURIComponent(name)}" target="_blank" rel="noopener noreferrer" style="flex:1;text-decoration:none;">
+              <div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:6px;padding:6px;text-align:center;color:#1565c0;">
+                <div style="font-weight:500;">Land Available</div>
+                <div>${land_available_pct || 0}%</div>
+              </div>
+            </a>
             <div style="flex:1;background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:6px;text-align:center;color:#f9a825;">
-              <div style="font-weight:500;">Physical Progress</div><div>${
-                physical_actual_pct || 0
-              }%</div>
+              <div style="font-weight:500;">Physical Progress</div>
+              <div>${physical_actual_pct || 0}%</div>
             </div>
           </div>
-          <a href="/details/${encodeURIComponent(
-            name
-          )}" target="_blank" style="font-size:13px;color:#388e3c;font-weight:500;text-decoration:none;">
+          <a href="/details/${encodeURIComponent(name)}" target="_blank"
+             style="font-size:13px;color:#388e3c;font-weight:500;text-decoration:none;">
             🔍 View Details
           </a>
         </div>
       `;
-
+    
       new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(popupHTML).addTo(map);
     });
+    
 
     map.addLayer({
       id: "ruda-outline",
