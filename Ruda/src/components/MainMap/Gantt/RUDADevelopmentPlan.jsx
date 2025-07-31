@@ -36,18 +36,49 @@ const styles = `
   .ruda-table {
     border-collapse: collapse;
     width: 100%;
-    min-width: 1400px;
+    min-width: 1600px;
+    border-radius: 0px;
+    overflow: hidden;
   }
   
   .ruda-header {
-    background-color: #1e3a5f;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c4a6b 100%);
     color: white;
     font-weight: bold;
-    font-size: 12px;
-    padding: 8px 4px;
+    font-size: 13px;
+    padding: 12px 8px;
     border: 1px solid #2c4a6b;
     text-align: center;
     vertical-align: middle;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  .ruda-header.phases-packages {
+    width: 365px;
+    min-width: 365px;
+    text-align: left;
+    padding-left: 16px;
+  }
+
+  .ruda-header.amount-column {
+    width: 120px;
+    min-width: 120px;
+  }
+
+  .ruda-header.duration-column {
+    width: 100px;
+    min-width: 100px;
+  }
+
+  .ruda-header.schedule-column {
+    width: 100px;
+    min-width: 100px;
+  }
+
+  .ruda-header.performance-column {
+    width: 120px;
+    min-width: 120px;
   }
   
   .ruda-month-header {
@@ -60,92 +91,126 @@ const styles = `
   }
   
   .ruda-phase-header {
-    background-color: #4a4a4a;
+    background: linear-gradient(135deg, #4a4a4a 0%, #5a5a5a 100%);
     color: white;
     font-weight: bold;
-    font-size: 13px;
-    padding: 6px 8px;
+    font-size: 14px;
+    padding: 10px 12px;
     border: 1px solid #5a5a5a;
     text-align: left;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
   }
-  
+
   .ruda-phase-row {
     cursor: pointer;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    transition: all 0.3s ease;
   }
-  
+
   .ruda-phase-row:hover {
-    background-color: #f0f0f0;
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   }
-  
+
   .ruda-package-row {
     cursor: pointer;
-    background-color: #f8f9fa;
+    background: linear-gradient(135deg, #e8f4fd 0%, #f1f8ff 100%);
+    border-left: 4px solid #3498db;
+    transition: all 0.3s ease;
   }
-  
+
   .ruda-package-row:hover {
-    background-color: #e9ecef;
+    background: linear-gradient(135deg, #d4edda 0%, #e8f4fd 100%);
+    border-left: 4px solid #2980b9;
+    transform: translateX(2px);
   }
-  
+
   .ruda-subpackage-row {
     cursor: pointer;
-    background-color: #fff3cd;
+    background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%);
+    border-left: 4px solid #f39c12;
+    transition: all 0.3s ease;
   }
-  
+
   .ruda-subpackage-row:hover {
-    background-color: #ffeaa7;
+    background: linear-gradient(135deg, #ffeaa7 0%, #fff8e1 100%);
+    border-left: 4px solid #e67e22;
+    transform: translateX(2px);
   }
   
   .ruda-activity-row {
     cursor: pointer;
-    background-color: #d1ecf1;
+    background: linear-gradient(135deg, #e8f6f3 0%, #f0f9ff 100%);
+    border-left: 3px solid #17a2b8;
+    transition: all 0.3s ease;
   }
-  
+
   .ruda-activity-row:hover {
-    background-color: #bee5eb;
+    background: linear-gradient(135deg, #bee5eb 0%, #e8f6f3 100%);
+    border-left: 3px solid #138496;
+    transform: translateX(1px);
   }
-  
+
   .package-cell {
-    padding-left: 16px;
+    padding-left: 20px;
     font-weight: bold;
     color: #2c5282;
+    font-size: 13px;
   }
-  
+
   .subpackage-cell {
-    padding-left: 32px;
+    padding-left: 36px;
     font-weight: bold;
     color: #b7791f;
+    font-size: 12px;
   }
-  
+
   .ruda-subsubpackage-row {
     cursor: pointer;
-    background-color: #e1f5fe;
+    background: linear-gradient(135deg, #f0f8ff 0%, #f8fbff 100%);
+    border-left: 3px solid #6c757d;
+    transition: all 0.3s ease;
   }
-  
+
   .ruda-subsubpackage-row:hover {
-    background-color: #b3e5fc;
+    background: linear-gradient(135deg, #b3e5fc 0%, #f0f8ff 100%);
+    border-left: 3px solid #495057;
+    transform: translateX(1px);
   }
-  
+
   .ruda-reach-row {
     cursor: pointer;
-    background-color: #f3e5f5;
+    background: linear-gradient(135deg, #fdf2f8 0%, #fef7ff 100%);
+    border-left: 3px solid #e83e8c;
+    transition: all 0.3s ease;
   }
-  
+
   .ruda-reach-row:hover {
-    background-color: #e1bee7;
+    background: linear-gradient(135deg, #e1bee7 0%, #fdf2f8 100%);
+    border-left: 3px solid #d91a72;
+    transform: translateX(1px);
   }
-  
+
   .ruda-material-row {
     cursor: pointer;
-    background-color: #e8f5e8;
+    background: linear-gradient(135deg, #f0fff4 0%, #f7fffa 100%);
+    border-left: 3px solid #28a745;
+    transition: all 0.3s ease;
   }
-  
+
   .ruda-material-row:hover {
-    background-color: #c8e6c9;
+    background: linear-gradient(135deg, #c8e6c9 0%, #f0fff4 100%);
+    border-left: 3px solid #1e7e34;
+    transform: translateX(1px);
   }
   
   .activity-cell {
-    padding-left: 48px;
+    padding-left: 52px;
     color: #2c5aa0;
+    font-size: 11px;
+    font-weight: 500;
   }
   
   .ruda-subsubpackage-row {
@@ -176,20 +241,24 @@ const styles = `
   }
   
   .subsubpackage-cell {
-    padding-left: 48px;
+    padding-left: 52px;
     font-weight: bold;
     color: #0277bd;
+    font-size: 12px;
   }
-  
+
   .reach-cell {
-    padding-left: 64px;
+    padding-left: 68px;
     font-weight: bold;
     color: #7b1fa2;
+    font-size: 11px;
   }
-  
+
   .material-cell {
-    padding-left: 80px;
+    padding-left: 84px;
     color: #2e7d32;
+    font-size: 10px;
+    font-weight: 500;
   }
   
   .ruda-separator-row {
@@ -204,11 +273,17 @@ const styles = `
   }
   
   .ruda-cell {
-    padding: 4px 8px;
+    padding: 6px 10px;
     font-size: 11px;
-    border: 1px solid #ddd;
+    border: 1px solid #e0e0e0;
     background-color: white;
     text-align: left;
+    transition: all 0.2s ease;
+  }
+
+  .ruda-cell:hover {
+    background-color: #f8f9fa;
+    border-color: #ced4da;
   }
   
   .ruda-bold {
@@ -217,18 +292,32 @@ const styles = `
   
   .ruda-timeline-cell {
     position: relative;
-    height: 20px;
-    border: 1px solid #ddd;
-    background-color: white;
+    height: 24px;
+    border: 1px solid #e0e0e0;
+    background-color: #fafafa;
+    transition: all 0.2s ease;
   }
-  
+
+  .ruda-timeline-cell:hover {
+    background-color: #f0f0f0;
+    border-color: #ced4da;
+  }
+
   .ruda-bar {
     position: absolute;
-    height: 14px;
-    background-color: #4caf50;
-    border-radius: 2px;
+    height: 16px;
+    background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+    border-radius: 3px;
     top: 50%;
     transform: translateY(-50%);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+  }
+
+  .ruda-bar:hover {
+    background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
   
   .ruda-total-cell {
@@ -242,21 +331,38 @@ const styles = `
   }
   
   .ruda-selected-info {
-    background-color: #f0f8ff;
+    background: linear-gradient(135deg, #f0f8ff 0%, #e8f4fd 100%);
     border: 2px solid #4caf50;
-    padding: 16px;
-    margin: 16px;
-    border-radius: 8px;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
   }
-  
+
+  .ruda-selected-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+
   .ruda-selected-info h3 {
-    margin: 0 0 8px 0;
+    margin: 0 0 12px 0;
     color: #1e3a5f;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
   }
-  
+
   .ruda-selected-info p {
-    margin: 0;
-    color: #666;
+    margin: 8px 0;
+    color: #555;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .ruda-selected-info strong {
+    color: #2c3e50;
+    font-weight: 600;
   }
   
   .right {
@@ -265,6 +371,51 @@ const styles = `
   
   .indent {
     padding-left: 12px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .ruda-container {
+      font-size: 10px;
+    }
+
+    .ruda-header.phases-packages {
+      width: 300px;
+      min-width: 300px;
+    }
+
+    .ruda-header.amount-column,
+    .ruda-header.duration-column,
+    .ruda-header.schedule-column,
+    .ruda-header.performance-column {
+      width: 80px;
+      min-width: 80px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .ruda-container {
+      font-size: 9px;
+    }
+
+    .ruda-table {
+      min-width: 1200px;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .ruda-container {
+      font-size: 8px;
+    }
+
+    .ruda-table {
+      min-width: auto;
+    }
+
+    .ruda-selected-info {
+      display: none;
+    }
   }
 `;
 
@@ -492,7 +643,7 @@ const RudaTimeline = () => {
               ],
             },
             {
-              name: "RUDA:Package-2.3 Submission and Approval of Documents",
+              name: "RUDA:Package-2.3 Submission & Approval of Documents",
               duration: "22",
               budgetedCost: "0.00",
               scheduleComplete: "0%",
@@ -1712,7 +1863,7 @@ const RudaTimeline = () => {
 
       <div style={{ position: "relative" }}>
         {/* Move vertical lines outside the table */}
-        {[263, 514, 763, 1014, 1264].map((left, i) => (
+        {/* {[263, 514, 763, 1014, 1264].map((left, i) => (
           <div
             key={i}
             style={{
@@ -1725,34 +1876,32 @@ const RudaTimeline = () => {
               zIndex: 10,
             }}
           />
-        ))}
+        ))} */}
         <table className="ruda-table">
           <thead>
             <tr>
-              <th
-                className="ruda-header"
-                style={{ width: "300px" }}
-                rowSpan="2"
-              >
+              <th className="ruda-header phases-packages" rowSpan="2">
                 PHASES / PACKAGES
               </th>
-              <th className="ruda-header" style={{ width: "80px" }} rowSpan="2">
+              <th className="ruda-header amount-column" rowSpan="2">
                 Amount
                 <br />
-                (PKR, M)
+                <small>(PKR, M)</small>
               </th>
-              <th className="ruda-header" style={{ width: "80px" }} rowSpan="2">
+              <th className="ruda-header duration-column" rowSpan="2">
                 Duration
                 <br />
-                (Days)
+                <small>(Days)</small>
               </th>
-              <th className="ruda-header" style={{ width: "70px" }} rowSpan="2">
+              <th className="ruda-header schedule-column" rowSpan="2">
                 Schedule
-                <br />%
+                <br />
+                <small>%</small>
               </th>
-              <th className="ruda-header" style={{ width: "70px" }} rowSpan="2">
+              <th className="ruda-header performance-column" rowSpan="2">
                 Performance
-                <br />%
+                <br />
+                <small>%</small>
               </th>
               {[...Array(5)].map((_, i) => (
                 <th key={i} className="ruda-header" colSpan="12">
@@ -2036,7 +2185,7 @@ const RudaTimeline = () => {
                                                       }
                                                     >
                                                       <td className="ruda-cell activity-cell">
-                                                        🔧 {activity.name}
+                                                        🟢 {activity.name}
                                                       </td>
                                                       <td className="ruda-cell right">
                                                         {formatAmount(
@@ -2088,7 +2237,7 @@ const RudaTimeline = () => {
                                             }
                                           >
                                             <td className="ruda-cell activity-cell">
-                                              🔧 {activity.name}
+                                              🟢 {activity.name}
                                             </td>
                                             <td className="ruda-cell right">
                                               {formatAmount(

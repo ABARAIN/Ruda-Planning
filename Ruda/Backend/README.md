@@ -83,7 +83,7 @@ npm run dev
 
 - `GET /` - Health check endpoint
 
-## 🔧 Features
+## 🟢 Features
 
 - **Clean Architecture**: Separated concerns with models, controllers, and routes
 - **Error Handling**: Comprehensive error handling middleware
