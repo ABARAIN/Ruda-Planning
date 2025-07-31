@@ -90,11 +90,57 @@ const GeoDataManager = () => {
 
   useEffect(() => {
     fetchData();
+    // Test backend connection
+    testBackendConnection();
   }, []);
+
+  // Test backend connection
+  const testBackendConnection = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/all");
+      console.log("✅ Backend connection successful");
+      console.log("API Response structure:", {
+        hasFeatures: !!response.data.features,
+        featuresCount: response.data.features?.length || 0,
+        sampleFeature: response.data.features?.[0]?.properties || null,
+      });
+
+      // Check how JSON fields are stored in the backend
+      const sampleFeature = response.data.features?.[0]?.properties;
+      if (sampleFeature) {
+        console.log("🔍 JSON field analysis:");
+        const jsonFields = [
+          "firms",
+          "scope_of_work",
+          "physical_chart",
+          "financial_chart",
+          "kpi_chart",
+          "curve_chart",
+        ];
+        jsonFields.forEach((field) => {
+          if (sampleFeature[field]) {
+            console.log(`${field}:`, {
+              type: typeof sampleFeature[field],
+              isArray: Array.isArray(sampleFeature[field]),
+              value: sampleFeature[field],
+            });
+          }
+        });
+      }
+    } catch (error) {
+      console.error("❌ Backend connection failed:", error.message);
+      console.error(
+        "Make sure your backend server is running on http://localhost:5000"
+      );
+    }
+  };
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const res = await axios.get("http://localhost:5000/api/all");
+      console.log("Fetched data:", res.data);
+
       const features = res.data.features || [];
       const propertiesList = features.map((f) => f.properties || {});
       const allKeys = [
@@ -105,6 +151,7 @@ const GeoDataManager = () => {
       setLoading(false);
     } catch (err) {
       console.error("Error fetching data:", err);
+      console.error("Error details:", err.response?.data);
       setLoading(false);
       showSnackbar("Error fetching data", "error");
     }
@@ -118,25 +165,36 @@ const GeoDataManager = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  // Helper function to safely parse JSON fields
+  const parseJsonField = (field) => {
+    if (Array.isArray(field)) {
+      return field;
+    }
+    if (typeof field === "string" && field.trim() !== "") {
+      try {
+        const parsed = JSON.parse(field);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        console.warn("Failed to parse JSON field:", field, e);
+        return [];
+      }
+    }
+    return [];
+  };
+
   const handleOpenDialog = (row = null) => {
     if (row) {
       setEditingRow(row);
       setFormData({
         ...initializeFormData(),
         ...row,
-        // Parse JSON fields to arrays
-        firms: Array.isArray(row.firms) ? row.firms : [],
-        scope_of_work: Array.isArray(row.scope_of_work)
-          ? row.scope_of_work
-          : [],
-        physical_chart: Array.isArray(row.physical_chart)
-          ? row.physical_chart
-          : [],
-        financial_chart: Array.isArray(row.financial_chart)
-          ? row.financial_chart
-          : [],
-        kpi_chart: Array.isArray(row.kpi_chart) ? row.kpi_chart : [],
-        curve_chart: Array.isArray(row.curve_chart) ? row.curve_chart : [],
+        // Parse JSON fields to arrays with proper error handling
+        firms: parseJsonField(row.firms),
+        scope_of_work: parseJsonField(row.scope_of_work),
+        physical_chart: parseJsonField(row.physical_chart),
+        financial_chart: parseJsonField(row.financial_chart),
+        kpi_chart: parseJsonField(row.kpi_chart),
+        curve_chart: parseJsonField(row.curve_chart),
       });
     } else {
       setEditingRow(null);
@@ -181,10 +239,10 @@ const GeoDataManager = () => {
     const parsed = { ...data };
 
     jsonFields.forEach((field) => {
-      // Arrays are already in the correct format, just ensure they're arrays
+      // Ensure arrays are properly formatted and filter out empty entries
       if (Array.isArray(parsed[field])) {
         // Filter out empty entries
-        parsed[field] = parsed[field].filter((item) => {
+        const filteredArray = parsed[field].filter((item) => {
           if (typeof item === "object" && item !== null) {
             return Object.values(item).some(
               (value) => value && value.toString().trim() !== ""
@@ -192,8 +250,21 @@ const GeoDataManager = () => {
           }
           return false;
         });
+
+        // Convert to JSON string for backend compatibility
+        // Most backends expect JSON fields as strings, not arrays
+        if (filteredArray.length > 0) {
+          try {
+            parsed[field] = JSON.stringify(filteredArray);
+          } catch (e) {
+            console.error(`Error stringifying ${field}:`, e);
+            parsed[field] = null;
+          }
+        } else {
+          parsed[field] = null;
+        }
       } else {
-        parsed[field] = [];
+        parsed[field] = null;
       }
     });
 
@@ -206,16 +277,32 @@ const GeoDataManager = () => {
     try {
       const parsedData = parseJsonFields(formData);
 
+      // Log the data being sent for debugging
+      console.log("Sending data to backend:", parsedData);
+      console.log("JSON fields in data:", {
+        firms: parsedData.firms,
+        scope_of_work: parsedData.scope_of_work,
+        physical_chart: parsedData.physical_chart,
+        financial_chart: parsedData.financial_chart,
+        kpi_chart: parsedData.kpi_chart,
+        curve_chart: parsedData.curve_chart,
+      });
+
       if (editingRow) {
         // Update existing record
-        await axios.put(
+        const response = await axios.put(
           `http://localhost:5000/api/manage/all/${editingRow.gid}`,
           parsedData
         );
+        console.log("Update response:", response.data);
         showSnackbar("Record updated successfully");
       } else {
         // Create new record
-        await axios.post("http://localhost:5000/api/manage/all", parsedData);
+        const response = await axios.post(
+          "http://localhost:5000/api/manage/all",
+          parsedData
+        );
+        console.log("Create response:", response.data);
         showSnackbar("Record created successfully");
       }
 
@@ -223,7 +310,28 @@ const GeoDataManager = () => {
       fetchData(); // Refresh the data
     } catch (error) {
       console.error("Error saving record:", error);
-      showSnackbar("Error saving record", "error");
+      console.error("Error details:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      console.error("Full error response:", error.response);
+
+      // Show detailed error information
+      let errorMessage = "Error saving record";
+      if (error.response?.data) {
+        if (typeof error.response.data === "string") {
+          errorMessage = error.response.data;
+        } else if (error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.data.error) {
+          errorMessage = error.response.data.error;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      showSnackbar(
+        `${errorMessage} (Status: ${error.response?.status || "Unknown"})`,
+        "error"
+      );
     }
   };
 

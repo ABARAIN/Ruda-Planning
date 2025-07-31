@@ -14,21 +14,21 @@ const JSONData = ({ formData, setFormData }) => {
   const addItemToArray = (fieldName, newItem) => {
     setFormData((prev) => ({
       ...prev,
-      [fieldName]: [...prev[fieldName], newItem],
+      [fieldName]: [...(prev[fieldName] || []), newItem],
     }));
   };
 
   const removeItemFromArray = (fieldName, index) => {
     setFormData((prev) => ({
       ...prev,
-      [fieldName]: prev[fieldName].filter((_, i) => i !== index),
+      [fieldName]: (prev[fieldName] || []).filter((_, i) => i !== index),
     }));
   };
 
   const updateItemInArray = (fieldName, index, updatedItem) => {
     setFormData((prev) => ({
       ...prev,
-      [fieldName]: prev[fieldName].map((item, i) =>
+      [fieldName]: (prev[fieldName] || []).map((item, i) =>
         i === index ? updatedItem : item
       ),
     }));
