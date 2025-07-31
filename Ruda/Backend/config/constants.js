@@ -1,6 +1,7 @@
 // Whitelisted tables for GeoJSON API
 const ALLOWED_TABLES = {
   all: "all",
+  allcrud: "allcrud",
   lahore: "lahore",
   sheikhpura: "sheikhpura",
   purposed_ruda_road_network: "purposed_ruda_road_network gcs",

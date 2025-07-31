@@ -38,6 +38,7 @@ router.delete("/manage/all/:id", validateId, GeoDataController.deleteRecord);
 
 // GeoJSON API endpoint for specific tables
 router.get("/all", GeoDataController.getGeoJSON);
+router.get("/allcrud", GeoDataController.getGeoJSON);
 router.get("/lahore", GeoDataController.getGeoJSON);
 router.get("/sheikhpura", GeoDataController.getGeoJSON);
 router.get("/purposed_ruda_road_network", GeoDataController.getGeoJSON);
