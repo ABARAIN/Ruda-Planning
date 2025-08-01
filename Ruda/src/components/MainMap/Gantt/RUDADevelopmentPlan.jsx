@@ -87,6 +87,26 @@ const styles = `
     width: 80px;
     min-width: 80px;
   }
+
+  .ruda-header.planned-value-column {
+    width: 80px;
+    min-width: 80px;
+  }
+
+  .ruda-header.earned-value-column {
+    width: 80px;
+    min-width: 80px;
+  }
+
+  .ruda-header.actual-start-column {
+    width: 80px;
+    min-width: 80px;
+  }
+
+  .ruda-header.actual-finish-column {
+    width: 80px;
+    min-width: 80px;
+  }
   
   .ruda-month-header {
     background-color: #1e3a5f;
@@ -514,7 +534,10 @@ const RudaTimeline = () => {
         {
           name: "RUDA:Package-2 UP-River Training Works & Barrage Left Embankment (RD 0+000 to RD 10+500)",
           budgetedCost: "1,963,944,060.01",
+          plannedValue: "1,962,814,361.55",
           earnedValue: "912,053,647.82",
+          actualStart: "22-Jul-24",
+          actualFinish: "22-Jul-25",
           scheduleComplete: "99.94%",
           performanceComplete: "46.44%",
           timeline: [
@@ -527,6 +550,10 @@ const RudaTimeline = () => {
               name: "RUDA:Package-2.1 Contract Startup",
               duration: "16",
               budgetedCost: "0.00",
+              plannedValue: "0.00",
+              earnedValue: "0.00",
+              actualStart: "22-Jul-24",
+              actualFinish: "08-Aug-24",
               scheduleComplete: "0%",
               performanceComplete: "0%",
               timeline: [
@@ -539,6 +566,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.1.1 General Requirements",
                   duration: "16",
                   budgetedCost: "0.00",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "08-Aug-24",
                   scheduleComplete: "0%",
                   performanceComplete: "0%",
                   timeline: [
@@ -550,6 +581,10 @@ const RudaTimeline = () => {
                     {
                       name: "Provision of Performance Security",
                       duration: "3",
+                      plannedValue: "-",
+                      earnedValue: "-",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "24-Jul-24",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -562,6 +597,10 @@ const RudaTimeline = () => {
                     {
                       name: "Effective access to and possession of site",
                       duration: "4",
+                      plannedValue: "-",
+                      earnedValue: "-",
+                      actualStart: "23-Jul-24",
+                      actualFinish: "26-Jul-24",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -574,6 +613,10 @@ const RudaTimeline = () => {
                     {
                       name: "Start of Initial Survey",
                       duration: "14",
+                      plannedValue: "-",
+                      earnedValue: "-",
+                      actualStart: "24-Jul-24",
+                      actualFinish: "08-Aug-24",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -589,6 +632,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.1.2 Contract Requirements",
                   duration: "0",
                   budgetedCost: "0.00",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-24",
                   scheduleComplete: "0%",
                   performanceComplete: "0%",
                   timeline: [
@@ -600,6 +647,10 @@ const RudaTimeline = () => {
                     {
                       name: "Date of Commencement",
                       duration: "0",
+                      plannedValue: "-",
+                      earnedValue: "-",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-24",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -617,6 +668,10 @@ const RudaTimeline = () => {
               name: "RUDA:Package-2.2 Mobilization",
               duration: "10",
               budgetedCost: "0.00",
+              plannedValue: "0.00",
+              earnedValue: "0.00",
+              actualStart: "26-Jul-24",
+              actualFinish: "06-Aug-24",
               scheduleComplete: "0%",
               performanceComplete: "0%",
               timeline: [
@@ -628,6 +683,10 @@ const RudaTimeline = () => {
                 {
                   name: "Establishment of Site boundaries, Compound, Offices, etc",
                   duration: "7",
+                  plannedValue: "-",
+                  earnedValue: "-",
+                  actualStart: "26-Jul-24",
+                  actualFinish: "02-Aug-24",
                   scheduleComplete: "100%",
                   performanceComplete: "100%",
                   timeline: [
@@ -639,6 +698,10 @@ const RudaTimeline = () => {
                 {
                   name: "Mobilization of Contractor's Equipment",
                   duration: "8",
+                  plannedValue: "-",
+                  earnedValue: "-",
+                  actualStart: "29-Jul-24",
+                  actualFinish: "06-Aug-24",
                   scheduleComplete: "100%",
                   performanceComplete: "100%",
                   timeline: [
@@ -653,6 +716,10 @@ const RudaTimeline = () => {
               name: "RUDA:Package-2.3 Submission & Approval of Documents",
               duration: "22",
               budgetedCost: "0.00",
+              plannedValue: "0.00",
+              earnedValue: "0.00",
+              actualStart: "22-Jul-24",
+              actualFinish: "22-Jul-25",
               scheduleComplete: "0%",
               performanceComplete: "0%",
               timeline: [
@@ -665,6 +732,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.3.1 Design Engineering(Drawings)",
                   duration: "0",
                   budgetedCost: "0.00",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "0%",
                   performanceComplete: "0%",
                   timeline: [
@@ -676,6 +747,10 @@ const RudaTimeline = () => {
                     {
                       name: "Issuance of Construction Drawings(Cross section) IFC's",
                       duration: "0",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -688,6 +763,10 @@ const RudaTimeline = () => {
                     {
                       name: "Prepare and submission Shop Drawings",
                       duration: "0",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -703,6 +782,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.3.2 Submission of Method Statement",
                   duration: "7",
                   budgetedCost: "0.00",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "0%",
                   performanceComplete: "0%",
                   timeline: [
@@ -714,6 +797,10 @@ const RudaTimeline = () => {
                     {
                       name: "Prepare & Submission method statements and approval",
                       duration: "7",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -729,6 +816,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.3.3 HSE Protocols",
                   duration: "15",
                   budgetedCost: "0.00",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "0%",
                   performanceComplete: "0%",
                   timeline: [
@@ -740,6 +831,10 @@ const RudaTimeline = () => {
                     {
                       name: "Submission of HSE Plans",
                       duration: "5",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -752,6 +847,10 @@ const RudaTimeline = () => {
                     {
                       name: "Submission of all Possible Critical Activities M/S",
                       duration: "7",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -764,6 +863,10 @@ const RudaTimeline = () => {
                     {
                       name: "Induction training to upcoming workforce",
                       duration: "8",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -781,6 +884,10 @@ const RudaTimeline = () => {
               name: "RUDA:Package-2.4 Material Procurement",
               duration: "289",
               budgetedCost: "0.00",
+              plannedValue: "0.00",
+              earnedValue: "0.00",
+              actualStart: "22-Jul-24",
+              actualFinish: "22-Jul-25",
               scheduleComplete: "0%",
               performanceComplete: "0%",
               timeline: [
@@ -793,6 +900,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.4.1 Material Delivery",
                   duration: "273",
                   budgetedCost: "0.00",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "0%",
                   performanceComplete: "0%",
                   timeline: [
@@ -805,6 +916,10 @@ const RudaTimeline = () => {
                       name: "RUDA:Package-2.4.1.1 Coffer Dam",
                       duration: "16",
                       budgetedCost: "0.00",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "0%",
                       performanceComplete: "0%",
                       timeline: [
@@ -817,6 +932,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Coarse Filter)",
                           duration: "14",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "50%",
                           timeline: [
@@ -829,6 +948,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Stone)",
                           duration: "14",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -844,6 +967,10 @@ const RudaTimeline = () => {
                       name: "RUDA:Package-2.4.1.2 Reach-1",
                       duration: "132",
                       budgetedCost: "0.00",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "0%",
                       performanceComplete: "0%",
                       timeline: [
@@ -856,6 +983,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(A-4)",
                           duration: "60",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -868,6 +999,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Fine)",
                           duration: "60",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -880,6 +1015,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Coarse)",
                           duration: "60",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -892,6 +1031,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Stone)",
                           duration: "73",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -907,6 +1050,10 @@ const RudaTimeline = () => {
                       name: "RUDA:Package-2.4.1.3 Reach-2",
                       duration: "68",
                       budgetedCost: "0.00",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "0%",
                       performanceComplete: "0%",
                       timeline: [
@@ -919,6 +1066,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(A-4)",
                           duration: "35",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -931,6 +1082,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Fine)",
                           duration: "15",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -943,6 +1098,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Coarse)",
                           duration: "15",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -955,6 +1114,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Stone)",
                           duration: "20",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -970,6 +1133,10 @@ const RudaTimeline = () => {
                       name: "RUDA:Package-2.4.1.4 Reach-3",
                       duration: "87",
                       budgetedCost: "0.00",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "0%",
                       performanceComplete: "0%",
                       timeline: [
@@ -982,6 +1149,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(A-4)",
                           duration: "45",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -994,6 +1165,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Fine)",
                           duration: "35",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "60.4%",
                           timeline: [
@@ -1006,6 +1181,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Coarse)",
                           duration: "35",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "60.4%",
                           timeline: [
@@ -1018,6 +1197,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Stone)",
                           duration: "30",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "60.4%",
                           timeline: [
@@ -1033,6 +1216,10 @@ const RudaTimeline = () => {
                       name: "RUDA:Package-2.4.1.5 Reach-4",
                       duration: "73",
                       budgetedCost: "0.00",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "0%",
                       performanceComplete: "0%",
                       timeline: [
@@ -1045,6 +1232,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(A-4)",
                           duration: "35",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "0%",
                           timeline: [
@@ -1057,6 +1248,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Fine)",
                           duration: "28",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "0%",
                           timeline: [
@@ -1069,6 +1264,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Coarse)",
                           duration: "28",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "0%",
                           timeline: [
@@ -1081,6 +1280,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Stone)",
                           duration: "24",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "0%",
                           timeline: [
@@ -1096,6 +1299,10 @@ const RudaTimeline = () => {
                       name: "RUDA:Package-2.4.1.6 Reach-5",
                       duration: "60",
                       budgetedCost: "0.00",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "0%",
                       performanceComplete: "0%",
                       timeline: [
@@ -1108,6 +1315,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(A-4)",
                           duration: "15",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "0%",
                           timeline: [
@@ -1120,6 +1331,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Fine)",
                           duration: "30",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -1132,6 +1347,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Coarse)",
                           duration: "30",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "100%",
                           timeline: [
@@ -1144,6 +1363,10 @@ const RudaTimeline = () => {
                         {
                           name: "Material Delivery(Stone)",
                           duration: "40",
+                          plannedValue: "0.00",
+                          earnedValue: "0.00",
+                          actualStart: "22-Jul-24",
+                          actualFinish: "22-Jul-25",
                           scheduleComplete: "100%",
                           performanceComplete: "60%",
                           timeline: [
@@ -1162,6 +1385,10 @@ const RudaTimeline = () => {
                 {
                   name: "Submit Source of material(Stone)",
                   duration: "0",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
                   performanceComplete: "100%",
                   timeline: [
@@ -1173,6 +1400,10 @@ const RudaTimeline = () => {
                 {
                   name: "Approval of Material Source",
                   duration: "3",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
                   performanceComplete: "100%",
                   timeline: [
@@ -1187,7 +1418,10 @@ const RudaTimeline = () => {
               name: "RUDA:Package-2.5 Construction Works",
               duration: "300",
               budgetedCost: "1,963,944,060.01",
+              plannedValue: "1,962,814,361.55",
               earnedValue: "912,053,647.82",
+              actualStart: "22-Jul-24",
+              actualFinish: "22-Jul-25",
               scheduleComplete: "99.94%",
               performanceComplete: "46.44%",
               timeline: [
@@ -1200,7 +1434,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.5.1 Reach-1(0+900 to 3+000)",
                   duration: "145",
                   budgetedCost: "357,952,088.13",
+                  plannedValue: "357,952,088.13",
                   earnedValue: "357,952,088.13",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
                   performanceComplete: "100%",
                   timeline: [
@@ -1213,7 +1450,10 @@ const RudaTimeline = () => {
                       name: "Bill No.1 EarthWork Reach-1(0+900 to 3+000)",
                       duration: "141",
                       budgetedCost: "130,681,828.13",
+                      plannedValue: "130,681,828.13",
                       earnedValue: "130,681,828.13",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -1227,7 +1467,10 @@ const RudaTimeline = () => {
                       name: "Bill No.2 StoneWork Reach-1(0+900 to 3+000)",
                       duration: "94",
                       budgetedCost: "227,270,260.00",
+                      plannedValue: "227,270,260.00",
                       earnedValue: "227,270,260.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "100%",
                       timeline: [
@@ -1243,7 +1486,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.5.2 Coffer Dam",
                   duration: "75",
                   budgetedCost: "219,795,585.00",
+                  plannedValue: "0.00",
                   earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "99.65%",
                   performanceComplete: "0%",
                   timeline: [
@@ -1256,7 +1502,10 @@ const RudaTimeline = () => {
                       name: "Cofferdam(EarthWork)",
                       duration: "73",
                       budgetedCost: "64,446,045.00",
-                      earnedValue: "64,446,045.00",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "0%",
                       timeline: [
@@ -1270,7 +1519,10 @@ const RudaTimeline = () => {
                       name: "Cofferdam(StoneWork)",
                       duration: "67",
                       budgetedCost: "155,349,540.00",
-                      earnedValue: "154,590,572.31",
+                      plannedValue: "0.00",
+                      earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "99.51%",
                       performanceComplete: "0%",
                       timeline: [
@@ -1286,7 +1538,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.5.4 Cut off Channel",
                   duration: "43",
                   budgetedCost: "18,480,000.00",
+                  plannedValue: "0.00",
                   earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
                   performanceComplete: "0%",
                   timeline: [
@@ -1299,7 +1554,10 @@ const RudaTimeline = () => {
                       name: "Cut Channel - Earthwork Excavation",
                       duration: "43",
                       budgetedCost: "18,480,000.00",
+                      plannedValue: "0.00",
                       earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "0%",
                       timeline: [
@@ -1315,9 +1573,12 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.5.5 Reach-2(3+000 to 5+250)",
                   duration: "87",
                   budgetedCost: "341,929,096.72",
-                  earnedValue: "281,114,831.67",
+                  plannedValue: "281,114,831.67",
+                  earnedValue: "272,986,728.02",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
-                  performanceComplete: "82.21%",
+                  performanceComplete: "79.84%",
                   timeline: [
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1328,9 +1589,12 @@ const RudaTimeline = () => {
                       name: "Bill No.1 EarthWork Reach-2(3+000 to 5+250)",
                       duration: "69",
                       budgetedCost: "114,658,836.72",
-                      earnedValue: "101,261,444.55",
+                      plannedValue: "101,261,444.55",
+                      earnedValue: "103,102,355.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
-                      performanceComplete: "88.32%",
+                      performanceComplete: "89.92%",
                       timeline: [
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1342,9 +1606,12 @@ const RudaTimeline = () => {
                       name: "Bill No.2 StoneWork Reach-2(3+000 to 5+250)",
                       duration: "50",
                       budgetedCost: "227,270,260.00",
-                      earnedValue: "179,853,387.12",
+                      plannedValue: "179,853,387.12",
+                      earnedValue: "169,884,373.02",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
-                      performanceComplete: "79.14%",
+                      performanceComplete: "74.75%",
                       timeline: [
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1358,7 +1625,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.5.6 Reach-3(5+250 to 7+000)",
                   duration: "89",
                   budgetedCost: "341,929,096.72",
+                  plannedValue: "272,986,728.02",
                   earnedValue: "272,986,728.02",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
                   performanceComplete: "79.84%",
                   timeline: [
@@ -1371,7 +1641,10 @@ const RudaTimeline = () => {
                       name: "Bill No.1 EarthWork Reach-3(5+250 to 7+000)",
                       duration: "77",
                       budgetedCost: "114,658,836.72",
+                      plannedValue: "101,261,444.55",
                       earnedValue: "103,102,355.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "89.92%",
                       timeline: [
@@ -1385,7 +1658,10 @@ const RudaTimeline = () => {
                       name: "Bill No.2 StoneWork Reach-3(5+250 to 7+000)",
                       duration: "53",
                       budgetedCost: "227,270,260.00",
+                      plannedValue: "169,884,373.02",
                       earnedValue: "169,884,373.02",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "74.75%",
                       timeline: [
@@ -1401,7 +1677,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.5.7 Reach-4(7+000 to 10+500)",
                   duration: "88",
                   budgetedCost: "341,929,096.72",
+                  plannedValue: "0.00",
                   earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
                   performanceComplete: "0%",
                   timeline: [
@@ -1414,7 +1693,10 @@ const RudaTimeline = () => {
                       name: "Bill No.1 EarthWork Reach-4(7+000 to 10+500)",
                       duration: "66",
                       budgetedCost: "114,658,836.72",
+                      plannedValue: "0.00",
                       earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "0%",
                       timeline: [
@@ -1428,7 +1710,10 @@ const RudaTimeline = () => {
                       name: "Bill No.2 StoneWork Reach-4(7+000 to 10+500)",
                       duration: "51",
                       budgetedCost: "227,270,260.00",
+                      plannedValue: "0.00",
                       earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "0%",
                       timeline: [
@@ -1444,7 +1729,10 @@ const RudaTimeline = () => {
                   name: "RUDA:Package-2.5.8 Reach-5(0+000 to 0+900)",
                   duration: "73",
                   budgetedCost: "341,929,096.72",
+                  plannedValue: "0.00",
                   earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "99.89%",
                   performanceComplete: "0%",
                   timeline: [
@@ -1457,7 +1745,10 @@ const RudaTimeline = () => {
                       name: "Bill No.1 EarthWork Reach-5(0+000 to 0+900)",
                       duration: "41",
                       budgetedCost: "114,658,836.72",
+                      plannedValue: "0.00",
                       earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "100%",
                       performanceComplete: "0%",
                       timeline: [
@@ -1471,7 +1762,10 @@ const RudaTimeline = () => {
                       name: "Bill No.2 StoneWork Reach-5(0+000 to 0+900)",
                       duration: "61",
                       budgetedCost: "227,270,260.00",
+                      plannedValue: "0.00",
                       earnedValue: "0.00",
+                      actualStart: "22-Jul-24",
+                      actualFinish: "22-Jul-25",
                       scheduleComplete: "99.84%",
                       performanceComplete: "0%",
                       timeline: [
@@ -1489,6 +1783,10 @@ const RudaTimeline = () => {
               name: "RUDA:Package-2.6 Project Finish",
               duration: "0",
               budgetedCost: "0.00",
+              plannedValue: "0.00",
+              earnedValue: "0.00",
+              actualStart: "22-Jul-24",
+              actualFinish: "22-Jul-25",
               scheduleComplete: "0%",
               performanceComplete: "0%",
               timeline: [
@@ -1500,6 +1798,10 @@ const RudaTimeline = () => {
                 {
                   name: "Project End",
                   duration: "0",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "0%",
                   performanceComplete: "0%",
                   timeline: [
@@ -1514,6 +1816,10 @@ const RudaTimeline = () => {
               name: "RUDA:Package-2.7 Finish Milestone",
               duration: "146",
               budgetedCost: "0.00",
+              plannedValue: "0.00",
+              earnedValue: "0.00",
+              actualStart: "22-Jul-24",
+              actualFinish: "22-Jul-25",
               scheduleComplete: "0%",
               performanceComplete: "0%",
               timeline: [
@@ -1525,6 +1831,10 @@ const RudaTimeline = () => {
                 {
                   name: "Reach-1(0+900 to 3+000)",
                   duration: "0",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
                   performanceComplete: "0%",
                   timeline: [
@@ -1536,6 +1846,10 @@ const RudaTimeline = () => {
                 {
                   name: "Reach-02(3+000 to 5+250)",
                   duration: "0",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
                   performanceComplete: "0%",
                   timeline: [
@@ -1548,6 +1862,10 @@ const RudaTimeline = () => {
                 {
                   name: "Cut off Channel",
                   duration: "0",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "0%",
                   performanceComplete: "0%",
                   timeline: [
@@ -1559,6 +1877,10 @@ const RudaTimeline = () => {
                 {
                   name: "Reach-3(5+250 to 7+500)",
                   duration: "0",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
                   performanceComplete: "0%",
                   timeline: [
@@ -1570,6 +1892,10 @@ const RudaTimeline = () => {
                 {
                   name: "Reach-5(0+000 to 0+900)",
                   duration: "0",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "0%",
                   performanceComplete: "0%",
                   timeline: [
@@ -1581,6 +1907,10 @@ const RudaTimeline = () => {
                 {
                   name: "Reach-4(7+500 to 10+500)",
                   duration: "0",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
                   performanceComplete: "100%",
                   timeline: [
@@ -1592,6 +1922,10 @@ const RudaTimeline = () => {
                 {
                   name: "Coffer Dam",
                   duration: "0",
+                  plannedValue: "0.00",
+                  earnedValue: "0.00",
+                  actualStart: "22-Jul-24",
+                  actualFinish: "22-Jul-25",
                   scheduleComplete: "100%",
                   performanceComplete: "0%",
                   timeline: [
@@ -1910,6 +2244,22 @@ const RudaTimeline = () => {
                   <br />
                   <small>%</small>
                 </th>
+                <th className="ruda-header planned-value-column" rowSpan="2">
+                  Planned Value
+                  <br />
+                  <small>(PKR, M)</small>
+                </th>
+                <th className="ruda-header earned-value-column" rowSpan="2">
+                  Earned Value
+                  <br />
+                  <small>(PKR, M)</small>
+                </th>
+                <th className="ruda-header actual-start-column" rowSpan="2">
+                  Actual Start
+                </th>
+                <th className="ruda-header actual-finish-column" rowSpan="2">
+                  Actual Finish
+                </th>
                 {[...Array(5)].map((_, i) => (
                   <th key={i} className="ruda-header" colSpan="12">
                     FY {25 + i}-{26 + i}
@@ -1938,6 +2288,11 @@ const RudaTimeline = () => {
                     <td className="ruda-phase-header right">-</td>
                     <td className="ruda-phase-header right">-</td>
                     <td className="ruda-phase-header right">-</td>
+                    <td className="ruda-phase-header right">-</td>
+                    <td className="ruda-phase-header right">-</td>
+                    <td className="ruda-phase-header right">-</td>
+                    <td className="ruda-phase-header right">-</td>
+                    <td className="ruda-phase-header right">-</td>
                     <td colSpan={60} className="ruda-phase-header"></td>
                   </tr>
 
@@ -1954,7 +2309,7 @@ const RudaTimeline = () => {
                                 onClick={() => togglePackage(packageKey)}
                               >
                                 <td className="ruda-cell package-cell">
-                                  📦 {pkg.name}{" "}
+                                  {pkg.name}{" "}
                                   {expandedPackages.has(packageKey) ? "▲" : "▼"}
                                 </td>
                                 <td className="ruda-cell ruda-bold right">
@@ -1966,6 +2321,18 @@ const RudaTimeline = () => {
                                 </td>
                                 <td className="ruda-cell right">
                                   {pkg.performanceComplete || "-"}
+                                </td>
+                                <td className="ruda-cell right">
+                                  {formatAmount(pkg.plannedValue) || "-"}
+                                </td>
+                                <td className="ruda-cell right">
+                                  {formatAmount(pkg.earnedValue) || "-"}
+                                </td>
+                                <td className="ruda-cell right">
+                                  {pkg.actualStart || "-"}
+                                </td>
+                                <td className="ruda-cell right">
+                                  {pkg.actualFinish || "-"}
                                 </td>
                                 <td colSpan={60} className="ruda-timeline-cell">
                                   {renderTimeline(pkg)}
@@ -1985,7 +2352,7 @@ const RudaTimeline = () => {
                                         }
                                       >
                                         <td className="ruda-cell subpackage-cell">
-                                          📋 {subpkg.name}{" "}
+                                          {subpkg.name}{" "}
                                           {expandedSubpackages.has(
                                             subpackageKey
                                           )
@@ -2003,6 +2370,20 @@ const RudaTimeline = () => {
                                         </td>
                                         <td className="ruda-cell right">
                                           {subpkg.performanceComplete || "-"}
+                                        </td>
+                                        <td className="ruda-cell right">
+                                          {formatAmount(subpkg.plannedValue) ||
+                                            "-"}
+                                        </td>
+                                        <td className="ruda-cell right">
+                                          {formatAmount(subpkg.earnedValue) ||
+                                            "-"}
+                                        </td>
+                                        <td className="ruda-cell right">
+                                          {subpkg.actualStart || "-"}
+                                        </td>
+                                        <td className="ruda-cell right">
+                                          {subpkg.actualFinish || "-"}
                                         </td>
                                         <td
                                           colSpan={60}
@@ -2054,6 +2435,24 @@ const RudaTimeline = () => {
                                                     {subsubpkg.performanceComplete ||
                                                       "-"}
                                                   </td>
+                                                  <td className="ruda-cell right">
+                                                    {formatAmount(
+                                                      subsubpkg.plannedValue
+                                                    ) || "-"}
+                                                  </td>
+                                                  <td className="ruda-cell right">
+                                                    {formatAmount(
+                                                      subsubpkg.earnedValue
+                                                    ) || "-"}
+                                                  </td>
+                                                  <td className="ruda-cell right">
+                                                    {subsubpkg.actualStart ||
+                                                      "-"}
+                                                  </td>
+                                                  <td className="ruda-cell right">
+                                                    {subsubpkg.actualFinish ||
+                                                      "-"}
+                                                  </td>
                                                   <td
                                                     colSpan={60}
                                                     className="ruda-timeline-cell"
@@ -2083,7 +2482,7 @@ const RudaTimeline = () => {
                                                             }
                                                           >
                                                             <td className="ruda-cell reach-cell">
-                                                              🎯 {reach.name}{" "}
+                                                              {reach.name}{" "}
                                                               {expandedReaches.has(
                                                                 reachKey
                                                               )
@@ -2105,6 +2504,24 @@ const RudaTimeline = () => {
                                                             </td>
                                                             <td className="ruda-cell right">
                                                               {reach.performanceComplete ||
+                                                                "-"}
+                                                            </td>
+                                                            <td className="ruda-cell right">
+                                                              {formatAmount(
+                                                                reach.plannedValue
+                                                              ) || "-"}
+                                                            </td>
+                                                            <td className="ruda-cell right">
+                                                              {formatAmount(
+                                                                reach.earnedValue
+                                                              ) || "-"}
+                                                            </td>
+                                                            <td className="ruda-cell right">
+                                                              {reach.actualStart ||
+                                                                "-"}
+                                                            </td>
+                                                            <td className="ruda-cell right">
+                                                              {reach.actualFinish ||
                                                                 "-"}
                                                             </td>
                                                             <td
@@ -2160,6 +2577,24 @@ const RudaTimeline = () => {
                                                                     {material.performanceComplete ||
                                                                       "-"}
                                                                   </td>
+                                                                  <td className="ruda-cell right">
+                                                                    {formatAmount(
+                                                                      material.plannedValue
+                                                                    ) || "-"}
+                                                                  </td>
+                                                                  <td className="ruda-cell right">
+                                                                    {formatAmount(
+                                                                      material.earnedValue
+                                                                    ) || "-"}
+                                                                  </td>
+                                                                  <td className="ruda-cell right">
+                                                                    {material.actualStart ||
+                                                                      "-"}
+                                                                  </td>
+                                                                  <td className="ruda-cell right">
+                                                                    {material.actualFinish ||
+                                                                      "-"}
+                                                                  </td>
                                                                   <td
                                                                     colSpan={60}
                                                                     className="ruda-timeline-cell"
@@ -2213,6 +2648,24 @@ const RudaTimeline = () => {
                                                           {activity.performanceComplete ||
                                                             "-"}
                                                         </td>
+                                                        <td className="ruda-cell right">
+                                                          {formatAmount(
+                                                            activity.plannedValue
+                                                          ) || "-"}
+                                                        </td>
+                                                        <td className="ruda-cell right">
+                                                          {formatAmount(
+                                                            activity.earnedValue
+                                                          ) || "-"}
+                                                        </td>
+                                                        <td className="ruda-cell right">
+                                                          {activity.actualStart ||
+                                                            "-"}
+                                                        </td>
+                                                        <td className="ruda-cell right">
+                                                          {activity.actualFinish ||
+                                                            "-"}
+                                                        </td>
                                                         <td
                                                           colSpan={60}
                                                           className="ruda-timeline-cell"
@@ -2264,6 +2717,22 @@ const RudaTimeline = () => {
                                                 {activity.performanceComplete ||
                                                   "-"}
                                               </td>
+                                              <td className="ruda-cell right">
+                                                {formatAmount(
+                                                  activity.plannedValue
+                                                ) || "-"}
+                                              </td>
+                                              <td className="ruda-cell right">
+                                                {formatAmount(
+                                                  activity.earnedValue
+                                                ) || "-"}
+                                              </td>
+                                              <td className="ruda-cell right">
+                                                {activity.actualStart || "-"}
+                                              </td>
+                                              <td className="ruda-cell right">
+                                                {activity.actualFinish || "-"}
+                                              </td>
                                               <td
                                                 colSpan={60}
                                                 className="ruda-timeline-cell"
@@ -2292,6 +2761,11 @@ const RudaTimeline = () => {
                             <td className="ruda-cell ruda-bold right">
                               {item.amount}
                             </td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
                             <td className="ruda-cell right">-</td>
                             <td className="ruda-cell right">-</td>
                             <td className="ruda-cell right">-</td>
@@ -2324,6 +2798,11 @@ const RudaTimeline = () => {
                             <td className="ruda-cell right">-</td>
                             <td className="ruda-cell right">-</td>
                             <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
                             <td colSpan={60} className="ruda-timeline-cell">
                               {renderTimeline(item)}
                             </td>
@@ -2336,6 +2815,11 @@ const RudaTimeline = () => {
               <tr>
                 <td className="ruda-total-cell">Total</td>
                 <td className="ruda-total-cell right">399,175</td>
+                <td className="ruda-total-cell right">-</td>
+                <td className="ruda-total-cell right">-</td>
+                <td className="ruda-total-cell right">-</td>
+                <td className="ruda-total-cell right">-</td>
+                <td className="ruda-total-cell right">-</td>
                 <td className="ruda-total-cell right">-</td>
                 <td className="ruda-total-cell right">-</td>
                 <td className="ruda-total-cell right">-</td>
