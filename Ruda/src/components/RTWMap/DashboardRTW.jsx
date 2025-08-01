@@ -31,6 +31,7 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import TimerIcon from "@mui/icons-material/Timer";
 import axios from "axios";
 import { useTheme } from "@mui/material/styles";
+import { useParams } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import PrintIcon from "@mui/icons-material/Print";
@@ -79,23 +80,77 @@ const SectionCard = ({ title, children, noStrip }) => (
 export default function DashboardRTWExact() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { name } = useParams(); // Get the name parameter from URL
 
   useEffect(() => {
+    if (!name) {
+      setError("No project name provided in URL");
+      setLoading(false);
+      return;
+    }
+
+    const decodedName = decodeURIComponent(name);
+    console.log("🔍 Looking for project:", decodedName);
+
     axios
-      .get("https://ruda-backend-ny14.onrender.com/api/all")
+      .get("http://localhost:5000/api/all")
       .then((res) => {
-        const pkg = res.data.features.find(
-          (f) => f.properties.name === "RTW Package-02"
+        console.log(
+          "📊 Available projects:",
+          res.data.features.map((f) => f.properties.name)
         );
+
+        const pkg = res.data.features.find(
+          (f) => f.properties.name === decodedName
+        );
+
         if (pkg) {
-          setData(pkg.properties);
+          console.log("✅ Found project data:", pkg.properties);
+          console.log(
+            "🔍 Scope of work data type:",
+            typeof pkg.properties.scope_of_work
+          );
+          console.log("🔍 Scope of work data:", pkg.properties.scope_of_work);
+
+          // Ensure required arrays exist and are properly formatted
+          const processedData = {
+            ...pkg.properties,
+            scope_of_work: Array.isArray(pkg.properties.scope_of_work)
+              ? pkg.properties.scope_of_work
+              : [],
+            firms: Array.isArray(pkg.properties.firms)
+              ? pkg.properties.firms
+              : [],
+            physical_chart: Array.isArray(pkg.properties.physical_chart)
+              ? pkg.properties.physical_chart
+              : [],
+            financial_chart: Array.isArray(pkg.properties.financial_chart)
+              ? pkg.properties.financial_chart
+              : [],
+            kpi_chart: Array.isArray(pkg.properties.kpi_chart)
+              ? pkg.properties.kpi_chart
+              : [],
+            curve_chart: Array.isArray(pkg.properties.curve_chart)
+              ? pkg.properties.curve_chart
+              : [],
+          };
+
+          setData(processedData);
+        } else {
+          console.warn("⚠️ Project not found:", decodedName);
+          setError(`Project "${decodedName}" not found`);
         }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
-  }, []);
+      .catch((err) => {
+        console.error("❌ Error fetching data:", err);
+        setError("Failed to fetch project data");
+        setLoading(false);
+      });
+  }, [name]);
 
   if (loading) {
     return (
@@ -115,6 +170,37 @@ export default function DashboardRTWExact() {
           alt="Loading..."
           sx={{ width: 180, animation: "bounce 1.5s infinite ease-in-out" }}
         />
+        <Typography sx={{ color: "white", mt: 2 }}>
+          Loading project data for: {decodeURIComponent(name || "")}
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box
+        sx={{
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#121212",
+          flexDirection: "column",
+          color: "white",
+          textAlign: "center",
+          p: 4,
+        }}
+      >
+        <Typography variant="h4" sx={{ mb: 2, color: "#f44336" }}>
+          ⚠️ Project Not Found
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          {error}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#aaa" }}>
+          Please check the project name and try again.
+        </Typography>
       </Box>
     );
   }
@@ -190,21 +276,28 @@ function MobileView({ data }) {
       />
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <SectionCard title="Scope of Work">
-          {data.scope_of_work.map((item, i) => {
-            const match = item.match(/^(.+?)\s*\((.+)\)$/);
-            return (
-              <Box key={i}>
-                <Typography variant="body1" fontWeight="bold">
-                  ➤ {match ? match[1] : item}
-                </Typography>
-                {match && (
-                  <Typography variant="body2" sx={{ color: "gray", ml: 2 }}>
-                    ({match[2]})
+          {data.scope_of_work && data.scope_of_work.length > 0 ? (
+            data.scope_of_work.map((item, i) => {
+              const itemStr = typeof item === "string" ? item : item.name || "";
+              const match = itemStr.match(/^(.+?)\s*\((.+)\)$/);
+              return (
+                <Box key={i}>
+                  <Typography variant="body1" fontWeight="bold">
+                    ➤ {match ? match[1] : itemStr}
                   </Typography>
-                )}
-              </Box>
-            );
-          })}
+                  {match && (
+                    <Typography variant="body2" sx={{ color: "gray", ml: 2 }}>
+                      ({match[2]})
+                    </Typography>
+                  )}
+                </Box>
+              );
+            })
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No scope of work data available
+            </Typography>
+          )}
         </SectionCard>
 
         <SectionCard title="Land Status">
@@ -346,18 +439,30 @@ function MobileView({ data }) {
               textAlign: "center",
             }}
           >
-            {data.firms.map((firm, index) => (
-              <Box key={index}>
-                <Avatar
-                  src={firm.img}
-                  sx={{ width: 56, height: 56, mx: "auto", mb: 0 }}
-                />
-                <Typography variant="caption" fontWeight="bold">
-                  {firm.title}
-                </Typography>
-                <Typography variant="body2">{firm.name}</Typography>
-              </Box>
-            ))}
+            {data.firms && data.firms.length > 0 ? (
+              data.firms.map((firm, index) => (
+                <Box key={index}>
+                  <Avatar
+                    src={firm.img || ""}
+                    sx={{ width: 56, height: 56, mx: "auto", mb: 0 }}
+                  />
+                  <Typography variant="caption" fontWeight="bold">
+                    {firm.title || "No title"}
+                  </Typography>
+                  <Typography variant="body2">
+                    {firm.name || "Unknown"}
+                  </Typography>
+                </Box>
+              ))
+            ) : (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                textAlign="center"
+              >
+                No firms data available
+              </Typography>
+            )}
           </Box>
         </SectionCard>
 
@@ -482,24 +587,44 @@ function DesktopView({ data }) {
               <Box
                 sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
               >
-                {data.scope_of_work.map((item, i) => {
-                  const match = item.match(/^(.+?)\s*\((.+)\)$/);
-                  return (
-                    <Box key={i}>
-                      <Typography variant="body1" fontWeight="bold">
-                        ➤ {match ? match[1] : item}
-                      </Typography>
-                      {match && (
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "gray", ml: 3 }}
-                        >
-                          ({match[2]})
+                {data.scope_of_work && data.scope_of_work.length > 0 ? (
+                  data.scope_of_work.map((item, i) => {
+                    // Handle both string and object formats
+                    let displayName = "";
+                    let displayValue = "";
+
+                    if (typeof item === "string") {
+                      // String format: "Earth Work (100)" or just "Earth Work"
+                      const match = item.match(/^(.+?)\s*\((.+)\)$/);
+                      displayName = match ? match[1] : item;
+                      displayValue = match ? match[2] : "";
+                    } else if (typeof item === "object" && item !== null) {
+                      // Object format: {name: "Earth Work", value: 100}
+                      displayName = item.name || "";
+                      displayValue = item.value ? String(item.value) : "";
+                    }
+
+                    return (
+                      <Box key={i}>
+                        <Typography variant="body1" fontWeight="bold">
+                          ➤ {displayName}
                         </Typography>
-                      )}
-                    </Box>
-                  );
-                })}
+                        {displayValue && (
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "gray", ml: 3 }}
+                          >
+                            ({displayValue})
+                          </Typography>
+                        )}
+                      </Box>
+                    );
+                  })
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No scope of work data available
+                  </Typography>
+                )}
               </Box>
             </Paper>
           </Grid>
@@ -664,18 +789,30 @@ function DesktopView({ data }) {
                   textAlign: "center",
                 }}
               >
-                {data.firms.map((firm, index) => (
-                  <Box key={index}>
-                    <Avatar
-                      src={firm.img}
-                      sx={{ width: 56, height: 56, mx: "auto", mb: 0 }}
-                    />
-                    <Typography variant="caption" fontWeight="bold">
-                      {firm.title}
-                    </Typography>
-                    <Typography variant="body2">{firm.name}</Typography>
-                  </Box>
-                ))}
+                {data.firms && data.firms.length > 0 ? (
+                  data.firms.map((firm, index) => (
+                    <Box key={index}>
+                      <Avatar
+                        src={firm.img || ""}
+                        sx={{ width: 56, height: 56, mx: "auto", mb: 0 }}
+                      />
+                      <Typography variant="caption" fontWeight="bold">
+                        {firm.title || "No title"}
+                      </Typography>
+                      <Typography variant="body2">
+                        {firm.name || "Unknown"}
+                      </Typography>
+                    </Box>
+                  ))
+                ) : (
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    textAlign="center"
+                  >
+                    No firms data available
+                  </Typography>
+                )}
               </Box>
             </SectionCard>
           </Grid>
