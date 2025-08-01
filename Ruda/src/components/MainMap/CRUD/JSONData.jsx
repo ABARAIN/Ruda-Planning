@@ -203,15 +203,15 @@ const JSONData = ({ formData, setFormData }) => {
                 <TextField
                   fullWidth
                   label="Value"
-                  type="number"
                   value={item.value || ""}
                   onChange={(e) =>
                     updateItemInArray("scope_of_work", index, {
                       ...item,
-                      value: parseFloat(e.target.value) || 0,
+                      value: e.target.value,
                     })
                   }
                   size="small"
+                  placeholder="e.g., Description or details"
                 />
               </Grid>
               <Grid item xs={12} md={2}>
@@ -229,7 +229,7 @@ const JSONData = ({ formData, setFormData }) => {
         <Button
           startIcon={<AddIcon />}
           onClick={() =>
-            addItemToArray("scope_of_work", { name: "", value: 0 })
+            addItemToArray("scope_of_work", { name: "", value: "" })
           }
           variant="outlined"
           size="small"
@@ -261,46 +261,31 @@ const JSONData = ({ formData, setFormData }) => {
             }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={5}>
                 <TextField
                   fullWidth
-                  label="Month"
-                  value={item.month || ""}
+                  label="Name"
+                  value={item.name || ""}
                   onChange={(e) =>
                     updateItemInArray("physical_chart", index, {
                       ...item,
-                      month: e.target.value,
+                      name: e.target.value,
                     })
                   }
                   size="small"
-                  placeholder="e.g., Jul-24"
+                  placeholder="e.g., Progress"
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={5}>
                 <TextField
                   fullWidth
-                  label="Actual"
+                  label="Value"
                   type="number"
-                  value={item.actual || ""}
+                  value={item.value || ""}
                   onChange={(e) =>
                     updateItemInArray("physical_chart", index, {
                       ...item,
-                      actual: parseFloat(e.target.value) || 0,
-                    })
-                  }
-                  size="small"
-                />
-              </Grid>
-              <Grid item xs={12} md={3}>
-                <TextField
-                  fullWidth
-                  label="Planned"
-                  type="number"
-                  value={item.planned || ""}
-                  onChange={(e) =>
-                    updateItemInArray("physical_chart", index, {
-                      ...item,
-                      planned: parseFloat(e.target.value) || 0,
+                      value: parseFloat(e.target.value) || 0,
                     })
                   }
                   size="small"
@@ -321,11 +306,7 @@ const JSONData = ({ formData, setFormData }) => {
         <Button
           startIcon={<AddIcon />}
           onClick={() =>
-            addItemToArray("physical_chart", {
-              month: "",
-              actual: 0,
-              planned: 0,
-            })
+            addItemToArray("physical_chart", { name: "", value: 0 })
           }
           variant="outlined"
           size="small"
@@ -347,7 +328,14 @@ const JSONData = ({ formData, setFormData }) => {
         {chartItems.map((item, index) => (
           <Box
             key={index}
-            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+            sx={{
+              mb: 2,
+              p: 2,
+              border: "1px solid #e0e0e0",
+              borderRadius: 2,
+              backgroundColor: "rgba(76, 175, 80, 0.02)",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+            }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} md={5}>
@@ -417,7 +405,14 @@ const JSONData = ({ formData, setFormData }) => {
         {chartItems.map((item, index) => (
           <Box
             key={index}
-            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+            sx={{
+              mb: 2,
+              p: 2,
+              border: "1px solid #e0e0e0",
+              borderRadius: 2,
+              backgroundColor: "rgba(76, 175, 80, 0.02)",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+            }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} md={5}>
@@ -485,34 +480,56 @@ const JSONData = ({ formData, setFormData }) => {
         {chartItems.map((item, index) => (
           <Box
             key={index}
-            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+            sx={{
+              mb: 2,
+              p: 2,
+              border: "1px solid #e0e0e0",
+              borderRadius: 2,
+              backgroundColor: "rgba(76, 175, 80, 0.02)",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+            }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={12} md={5}>
+              <Grid item xs={12} md={4}>
                 <TextField
                   fullWidth
-                  label="Name"
-                  value={item.name || ""}
+                  label="Month"
+                  value={item.month || ""}
                   onChange={(e) =>
                     updateItemInArray("curve_chart", index, {
                       ...item,
-                      name: e.target.value,
+                      month: e.target.value,
                     })
                   }
                   size="small"
-                  placeholder="e.g., S-Curve"
+                  placeholder="e.g., Jul-24"
                 />
               </Grid>
-              <Grid item xs={12} md={5}>
+              <Grid item xs={12} md={3}>
                 <TextField
                   fullWidth
-                  label="Value"
+                  label="Actual"
                   type="number"
-                  value={item.value || ""}
+                  value={item.actual || ""}
                   onChange={(e) =>
                     updateItemInArray("curve_chart", index, {
                       ...item,
-                      value: parseFloat(e.target.value) || 0,
+                      actual: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <TextField
+                  fullWidth
+                  label="Planned"
+                  type="number"
+                  value={item.planned || ""}
+                  onChange={(e) =>
+                    updateItemInArray("curve_chart", index, {
+                      ...item,
+                      planned: parseFloat(e.target.value) || 0,
                     })
                   }
                   size="small"
@@ -532,7 +549,9 @@ const JSONData = ({ formData, setFormData }) => {
         ))}
         <Button
           startIcon={<AddIcon />}
-          onClick={() => addItemToArray("curve_chart", { name: "", value: 0 })}
+          onClick={() =>
+            addItemToArray("curve_chart", { month: "", actual: 0, planned: 0 })
+          }
           variant="outlined"
           size="small"
         >
