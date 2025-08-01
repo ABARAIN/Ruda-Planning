@@ -34,6 +34,7 @@ import {
   Visibility as ViewIcon,
 } from "@mui/icons-material";
 import axios from "axios";
+import JSONData from "./JSONData";
 
 // RUDA Theme Styles
 const rudaStyles = `
@@ -200,7 +201,6 @@ const GeoDataManager = () => {
     ruda_phase: "",
     rtw_pkg: "",
     description: "",
-    scope_of_work: "",
     land_available_pct: "",
     land_available_km: "",
     land_remaining_pct: "",
@@ -213,12 +213,14 @@ const GeoDataManager = () => {
     work_done_million: "",
     certified_million: "",
     elapsed_months: "",
-    firms: "",
-    physical_chart: "",
-    financial_chart: "",
-    kpi_chart: "",
-    curve_chart: "",
     category: "",
+    // JSON fields as arrays
+    firms: [],
+    scope_of_work: [],
+    physical_chart: [],
+    financial_chart: [],
+    kpi_chart: [],
+    curve_chart: [],
   });
 
   useEffect(() => {
@@ -257,21 +259,37 @@ const GeoDataManager = () => {
       setFormData({
         ...initializeFormData(),
         ...row,
-        // Parse JSON fields
-        firms: row.firms ? JSON.stringify(row.firms, null, 2) : "",
-        scope_of_work: row.scope_of_work
-          ? JSON.stringify(row.scope_of_work, null, 2)
-          : "",
-        physical_chart: row.physical_chart
-          ? JSON.stringify(row.physical_chart, null, 2)
-          : "",
-        financial_chart: row.financial_chart
-          ? JSON.stringify(row.financial_chart, null, 2)
-          : "",
-        kpi_chart: row.kpi_chart ? JSON.stringify(row.kpi_chart, null, 2) : "",
-        curve_chart: row.curve_chart
-          ? JSON.stringify(row.curve_chart, null, 2)
-          : "",
+        // Parse JSON fields to arrays
+        firms: Array.isArray(row.firms)
+          ? row.firms
+          : row.firms
+          ? JSON.parse(row.firms)
+          : [],
+        scope_of_work: Array.isArray(row.scope_of_work)
+          ? row.scope_of_work
+          : row.scope_of_work
+          ? JSON.parse(row.scope_of_work)
+          : [],
+        physical_chart: Array.isArray(row.physical_chart)
+          ? row.physical_chart
+          : row.physical_chart
+          ? JSON.parse(row.physical_chart)
+          : [],
+        financial_chart: Array.isArray(row.financial_chart)
+          ? row.financial_chart
+          : row.financial_chart
+          ? JSON.parse(row.financial_chart)
+          : [],
+        kpi_chart: Array.isArray(row.kpi_chart)
+          ? row.kpi_chart
+          : row.kpi_chart
+          ? JSON.parse(row.kpi_chart)
+          : [],
+        curve_chart: Array.isArray(row.curve_chart)
+          ? row.curve_chart
+          : row.curve_chart
+          ? JSON.parse(row.curve_chart)
+          : [],
       });
     } else {
       setEditingRow(null);
@@ -316,13 +334,25 @@ const GeoDataManager = () => {
     const parsed = { ...data };
 
     jsonFields.forEach((field) => {
-      if (parsed[field] && typeof parsed[field] === "string") {
-        try {
-          parsed[field] = JSON.parse(parsed[field]);
-        } catch (e) {
-          console.warn(`Invalid JSON in ${field}:`, e);
-          parsed[field] = null;
+      if (parsed[field]) {
+        // If it's already an array, keep it as is
+        if (Array.isArray(parsed[field])) {
+          // Keep the array as is
+        } else if (typeof parsed[field] === "string") {
+          // If it's a string, try to parse it
+          try {
+            parsed[field] = JSON.parse(parsed[field]);
+          } catch (e) {
+            console.warn(`Invalid JSON in ${field}:`, e);
+            parsed[field] = [];
+          }
+        } else {
+          // If it's neither array nor string, set to empty array
+          parsed[field] = [];
         }
+      } else {
+        // If field is null/undefined, set to empty array
+        parsed[field] = [];
       }
     });
 
@@ -334,17 +364,31 @@ const GeoDataManager = () => {
 
     try {
       const parsedData = parseJsonFields(formData);
+      console.log("Sending data to backend:", parsedData);
+      console.log("JSON fields in data:", {
+        firms: parsedData.firms,
+        scope_of_work: parsedData.scope_of_work,
+        physical_chart: parsedData.physical_chart,
+        financial_chart: parsedData.financial_chart,
+        kpi_chart: parsedData.kpi_chart,
+        curve_chart: parsedData.curve_chart,
+      });
 
       if (editingRow) {
         // Update existing record
-        await axios.put(
+        const response = await axios.put(
           `http://localhost:5000/api/manage/all/${editingRow.gid}`,
           parsedData
         );
+        console.log("Update response:", response.data);
         showSnackbar("Record updated successfully");
       } else {
         // Create new record
-        await axios.post("http://localhost:5000/api/manage/all", parsedData);
+        const response = await axios.post(
+          "http://localhost:5000/api/manage/all",
+          parsedData
+        );
+        console.log("Create response:", response.data);
         showSnackbar("Record created successfully");
       }
 
@@ -352,6 +396,7 @@ const GeoDataManager = () => {
       fetchData(); // Refresh the data
     } catch (error) {
       console.error("Error saving record:", error);
+      console.error("Error details:", error.response?.data);
       showSnackbar("Error saving record", "error");
     }
   };
@@ -905,189 +950,8 @@ const GeoDataManager = () => {
                   </Grid>
                 </Grid>
 
-                {/* JSON Data Section */}
-                <Grid item xs={12}>
-                  <div className="ruda-geo-section-header">
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        margin: 0,
-                        color: "#1e3a5f",
-                        fontWeight: "bold",
-                        fontSize: "16px",
-                        textShadow: "0 1px 2px rgba(0,0,0,0.1)",
-                      }}
-                    >
-                      Additional Data (JSON Format)
-                    </Typography>
-                  </div>
-
-                  <Grid container spacing={2}>
-                    {/* JSON fields - all 50% width */}
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        label="Firms (JSON)"
-                        value={formData.firms || ""}
-                        onChange={(e) =>
-                          handleInputChange("firms", e.target.value)
-                        }
-                        multiline
-                        rows={3}
-                        variant="outlined"
-                        size="small"
-                        className="ruda-geo-text-field"
-                        sx={{
-                          mb: 1,
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: "8px",
-                            backgroundColor: "rgba(76, 175, 80, 0.05)",
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "#1e3a5f",
-                            fontWeight: "500",
-                          },
-                        }}
-                        helperText="Example: [{'img': '/Ruda.jpg', 'name': 'RUDA', 'title': 'Employer'}]"
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        label="Scope of Work (JSON)"
-                        value={formData.scope_of_work || ""}
-                        onChange={(e) =>
-                          handleInputChange("scope_of_work", e.target.value)
-                        }
-                        multiline
-                        rows={3}
-                        variant="outlined"
-                        size="small"
-                        className="ruda-geo-text-field"
-                        sx={{
-                          mb: 1,
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: "8px",
-                            backgroundColor: "rgba(76, 175, 80, 0.05)",
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "#1e3a5f",
-                            fontWeight: "500",
-                          },
-                        }}
-                        helperText="Example: [{'name': 'Earth Work', 'value': 100}]"
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        label="Physical Chart (JSON)"
-                        value={formData.physical_chart || ""}
-                        onChange={(e) =>
-                          handleInputChange("physical_chart", e.target.value)
-                        }
-                        multiline
-                        rows={3}
-                        variant="outlined"
-                        size="small"
-                        className="ruda-geo-text-field"
-                        sx={{
-                          mb: 1,
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: "8px",
-                            backgroundColor: "rgba(76, 175, 80, 0.05)",
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "#1e3a5f",
-                            fontWeight: "500",
-                          },
-                        }}
-                        helperText="Example: [{'month': 'Jul-24', 'actual': 1, 'planned': 2}]"
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        label="Financial Chart (JSON)"
-                        value={formData.financial_chart || ""}
-                        onChange={(e) =>
-                          handleInputChange("financial_chart", e.target.value)
-                        }
-                        multiline
-                        rows={3}
-                        variant="outlined"
-                        size="small"
-                        className="ruda-geo-text-field"
-                        sx={{
-                          mb: 1,
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: "8px",
-                            backgroundColor: "rgba(76, 175, 80, 0.05)",
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "#1e3a5f",
-                            fontWeight: "500",
-                          },
-                        }}
-                        helperText="Example: [{'name': 'Contract Amount', 'value': 2520}]"
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        label="KPI Chart (JSON)"
-                        value={formData.kpi_chart || ""}
-                        onChange={(e) =>
-                          handleInputChange("kpi_chart", e.target.value)
-                        }
-                        multiline
-                        rows={3}
-                        variant="outlined"
-                        size="small"
-                        className="ruda-geo-text-field"
-                        sx={{
-                          mb: 1,
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: "8px",
-                            backgroundColor: "rgba(76, 175, 80, 0.05)",
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "#1e3a5f",
-                            fontWeight: "500",
-                          },
-                        }}
-                        helperText="Example: [{'name': 'Planned', 'value': 76}]"
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        label="Curve Chart (JSON)"
-                        value={formData.curve_chart || ""}
-                        onChange={(e) =>
-                          handleInputChange("curve_chart", e.target.value)
-                        }
-                        multiline
-                        rows={3}
-                        variant="outlined"
-                        size="small"
-                        className="ruda-geo-text-field"
-                        sx={{
-                          mb: 1,
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: "8px",
-                            backgroundColor: "rgba(76, 175, 80, 0.05)",
-                          },
-                          "& .MuiInputLabel-root": {
-                            color: "#1e3a5f",
-                            fontWeight: "500",
-                          },
-                        }}
-                        helperText="Example: [{'name': 'S-Curve', 'value': 50}]"
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
+                {/* JSON Data Section - Using JSONData Component */}
+                <JSONData formData={formData} setFormData={setFormData} />
               </Grid>
             </Box>
           </DialogContent>

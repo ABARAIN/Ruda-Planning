@@ -10,7 +10,6 @@ import {
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 
 const JSONData = ({ formData, setFormData }) => {
-  // Dynamic form builders for JSON fields
   const addItemToArray = (fieldName, newItem) => {
     setFormData((prev) => ({
       ...prev,
@@ -34,7 +33,6 @@ const JSONData = ({ formData, setFormData }) => {
     }));
   };
 
-  // Firms builder: {img, name, title}
   const renderFirmsBuilder = () => {
     const firms = formData.firms || [];
 
@@ -46,7 +44,14 @@ const JSONData = ({ formData, setFormData }) => {
         {firms.map((firm, index) => (
           <Box
             key={index}
-            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+            sx={{
+              mb: 2,
+              p: 2,
+              border: "1px solid #e0e0e0",
+              borderRadius: 2,
+              backgroundColor: "rgba(76, 175, 80, 0.02)",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+            }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
@@ -61,6 +66,17 @@ const JSONData = ({ formData, setFormData }) => {
                     })
                   }
                   size="small"
+                  sx={{
+                    mb: 1,
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "8px",
+                      backgroundColor: "rgba(76, 175, 80, 0.05)",
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "#1e3a5f",
+                      fontWeight: "500",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -75,6 +91,17 @@ const JSONData = ({ formData, setFormData }) => {
                     })
                   }
                   size="small"
+                  sx={{
+                    mb: 1,
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "8px",
+                      backgroundColor: "rgba(76, 175, 80, 0.05)",
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "#1e3a5f",
+                      fontWeight: "500",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12} md={3}>
@@ -89,6 +116,17 @@ const JSONData = ({ formData, setFormData }) => {
                     })
                   }
                   size="small"
+                  sx={{
+                    mb: 1,
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "8px",
+                      backgroundColor: "rgba(76, 175, 80, 0.05)",
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "#1e3a5f",
+                      fontWeight: "500",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12} md={1}>
@@ -110,6 +148,15 @@ const JSONData = ({ formData, setFormData }) => {
           }
           variant="outlined"
           size="small"
+          sx={{
+            borderRadius: "8px",
+            borderColor: "#4caf50",
+            color: "#4caf50",
+            "&:hover": {
+              backgroundColor: "rgba(76, 175, 80, 0.1)",
+              borderColor: "#66bb6a",
+            },
+          }}
         >
           Add Firm
         </Button>
@@ -117,7 +164,6 @@ const JSONData = ({ formData, setFormData }) => {
     );
   };
 
-  // Scope of Work builder: {name, value}
   const renderScopeOfWorkBuilder = () => {
     const scopeItems = formData.scope_of_work || [];
 
@@ -129,7 +175,14 @@ const JSONData = ({ formData, setFormData }) => {
         {scopeItems.map((item, index) => (
           <Box
             key={index}
-            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+            sx={{
+              mb: 2,
+              p: 2,
+              border: "1px solid #e0e0e0",
+              borderRadius: 2,
+              backgroundColor: "rgba(76, 175, 80, 0.02)",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+            }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} md={5}>
@@ -187,7 +240,6 @@ const JSONData = ({ formData, setFormData }) => {
     );
   };
 
-  // Physical Chart builder: {month, actual, planned}
   const renderPhysicalChartBuilder = () => {
     const chartItems = formData.physical_chart || [];
 
@@ -199,7 +251,14 @@ const JSONData = ({ formData, setFormData }) => {
         {chartItems.map((item, index) => (
           <Box
             key={index}
-            sx={{ mb: 2, p: 2, border: "1px solid #ddd", borderRadius: 1 }}
+            sx={{
+              mb: 2,
+              p: 2,
+              border: "1px solid #e0e0e0",
+              borderRadius: 2,
+              backgroundColor: "rgba(76, 175, 80, 0.02)",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+            }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
@@ -277,58 +336,7 @@ const JSONData = ({ formData, setFormData }) => {
     );
   };
 
-  return (
-    <Grid item xs={12}>
-      <Typography
-        variant="h6"
-        sx={{
-          mb: 3,
-          mt: 4,
-          color: "#1976d2",
-          fontWeight: "bold",
-          borderBottom: "2px solid #1976d2",
-          paddingBottom: 1,
-        }}
-      >
-        Additional Data
-      </Typography>
-
-      <Grid container spacing={3}>
-        {/* Firms Section */}
-        <Grid item xs={12} md={6}>
-          {renderFirmsBuilder()}
-        </Grid>
-
-        {/* Scope of Work Section */}
-        <Grid item xs={12} md={6}>
-          {renderScopeOfWorkBuilder()}
-        </Grid>
-
-        {/* Physical Chart Section */}
-        <Grid item xs={12} md={6}>
-          {renderPhysicalChartBuilder()}
-        </Grid>
-
-        {/* Financial Chart Section */}
-        <Grid item xs={12} md={6}>
-          {renderFinancialChartBuilder()}
-        </Grid>
-
-        {/* KPI Chart Section */}
-        <Grid item xs={12} md={6}>
-          {renderKpiChartBuilder()}
-        </Grid>
-
-        {/* Curve Chart Section */}
-        <Grid item xs={12} md={6}>
-          {renderCurveChartBuilder()}
-        </Grid>
-      </Grid>
-    </Grid>
-  );
-
-  // Financial Chart builder: {name, value}
-  function renderFinancialChartBuilder() {
+  const renderFinancialChartBuilder = () => {
     const chartItems = formData.financial_chart || [];
 
     return (
@@ -396,10 +404,9 @@ const JSONData = ({ formData, setFormData }) => {
         </Button>
       </Box>
     );
-  }
+  };
 
-  // KPI Chart builder: {name, value}
-  function renderKpiChartBuilder() {
+  const renderKpiChartBuilder = () => {
     const chartItems = formData.kpi_chart || [];
 
     return (
@@ -465,10 +472,9 @@ const JSONData = ({ formData, setFormData }) => {
         </Button>
       </Box>
     );
-  }
+  };
 
-  // Curve Chart builder: {name, value}
-  function renderCurveChartBuilder() {
+  const renderCurveChartBuilder = () => {
     const chartItems = formData.curve_chart || [];
 
     return (
@@ -534,7 +540,47 @@ const JSONData = ({ formData, setFormData }) => {
         </Button>
       </Box>
     );
-  }
+  };
+
+  return (
+    <Grid item xs={12}>
+      <div className="ruda-geo-section-header">
+        <Typography
+          variant="h6"
+          sx={{
+            margin: 0,
+            color: "#1e3a5f",
+            fontWeight: "bold",
+            fontSize: "16px",
+            textShadow: "0 1px 2px rgba(0,0,0,0.1)",
+          }}
+        >
+          Additional Data
+        </Typography>
+      </div>
+
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          {renderFirmsBuilder()}
+        </Grid>
+        <Grid item xs={12}>
+          {renderScopeOfWorkBuilder()}
+        </Grid>
+        <Grid item xs={12}>
+          {renderPhysicalChartBuilder()}
+        </Grid>
+        <Grid item xs={12}>
+          {renderFinancialChartBuilder()}
+        </Grid>
+        <Grid item xs={12}>
+          {renderKpiChartBuilder()}
+        </Grid>
+        <Grid item xs={12}>
+          {renderCurveChartBuilder()}
+        </Grid>
+      </Grid>
+    </Grid>
+  );
 };
 
 export default JSONData;
