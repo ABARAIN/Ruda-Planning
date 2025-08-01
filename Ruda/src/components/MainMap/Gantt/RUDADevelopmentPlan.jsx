@@ -62,23 +62,23 @@ const styles = `
   }
 
   .ruda-header.amount-column {
-    width: 120px;
-    min-width: 120px;
+    width: 80px;
+    min-width: 80px;
   }
 
   .ruda-header.duration-column {
-    width: 100px;
-    min-width: 100px;
+    width: 80px;
+    min-width: 80px;
   }
 
   .ruda-header.schedule-column {
-    width: 100px;
-    min-width: 100px;
+    width: 80px;
+    min-width: 80px;
   }
 
   .ruda-header.performance-column {
-    width: 120px;
-    min-width: 120px;
+    width: 80px;
+    min-width: 80px;
   }
   
   .ruda-month-header {
@@ -163,7 +163,7 @@ const styles = `
   .subpackage-cell {
     padding-left: 36px;
     font-weight: bold;
-    color: #b7791f;
+    color: #d36c2c;
     font-size: 12px;
   }
 
@@ -208,7 +208,7 @@ const styles = `
   
   .activity-cell {
     padding-left: 52px;
-    color: #2c5aa0;
+    color: #1c17aa;
     font-size: 11px;
     font-weight: 500;
   }
@@ -243,7 +243,7 @@ const styles = `
   .subsubpackage-cell {
     padding-left: 52px;
     font-weight: bold;
-    color: #0277bd;
+    color: #0253bd;
     font-size: 12px;
   }
 
