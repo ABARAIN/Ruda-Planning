@@ -3,9 +3,16 @@ import React, { useState } from "react";
 const styles = `
 .ruda-container {
     width: 100%;
-    overflow-x: auto;
+    height: 100vh;
     font-family: Arial, sans-serif;
     font-size: 12px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ruda-content {
+    flex: 1;
+    overflow: auto;
   }
   
   .ruda-header-container {
@@ -1860,10 +1867,10 @@ const RudaTimeline = () => {
           HOME
         </div>
       </div>
-
-      <div style={{ position: "relative" }}>
-        {/* Move vertical lines outside the table */}
-        {/* {[263, 514, 763, 1014, 1264].map((left, i) => (
+      <div className="ruda-content">
+        <div style={{ position: "relative" }}>
+          {/* Move vertical lines outside the table */}
+          {/* {[263, 514, 763, 1014, 1264].map((left, i) => (
           <div
             key={i}
             style={{
@@ -1877,470 +1884,474 @@ const RudaTimeline = () => {
             }}
           />
         ))} */}
-        <table className="ruda-table">
-          <thead>
-            <tr>
-              <th className="ruda-header phases-packages" rowSpan="2">
-                PHASES / PACKAGES
-              </th>
-              <th className="ruda-header amount-column" rowSpan="2">
-                Amount
-                <br />
-                <small>(PKR, M)</small>
-              </th>
-              <th className="ruda-header duration-column" rowSpan="2">
-                Duration
-                <br />
-                <small>(Days)</small>
-              </th>
-              <th className="ruda-header schedule-column" rowSpan="2">
-                Schedule
-                <br />
-                <small>%</small>
-              </th>
-              <th className="ruda-header performance-column" rowSpan="2">
-                Performance
-                <br />
-                <small>%</small>
-              </th>
-              {[...Array(5)].map((_, i) => (
-                <th key={i} className="ruda-header" colSpan="12">
-                  FY {25 + i}-{26 + i}
+          <table className="ruda-table">
+            <thead>
+              <tr>
+                <th className="ruda-header phases-packages" rowSpan="2">
+                  PHASES / PACKAGES
                 </th>
-              ))}
-            </tr>
-            <tr>
-              {months.map((month, index) => (
-                <th key={index} className="ruda-month-header">
-                  {month}
+                <th className="ruda-header amount-column" rowSpan="2">
+                  Amount
+                  <br />
+                  <small>(PKR, M)</small>
                 </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((phase, phaseIndex) => (
-              <React.Fragment key={phaseIndex}>
-                <tr
-                  className="ruda-phase-row"
-                  onClick={() => togglePhase(phaseIndex)}
-                >
-                  <td className="ruda-phase-header">
-                    {phase.phase} {expandedPhases.has(phaseIndex) ? "▲" : "▼"}
-                  </td>
-                  <td className="ruda-phase-header right">{phase.amount}</td>
-                  <td className="ruda-phase-header right">-</td>
-                  <td className="ruda-phase-header right">-</td>
-                  <td className="ruda-phase-header right">-</td>
-                  <td colSpan={60} className="ruda-phase-header"></td>
-                </tr>
+                <th className="ruda-header duration-column" rowSpan="2">
+                  Duration
+                  <br />
+                  <small>(Days)</small>
+                </th>
+                <th className="ruda-header schedule-column" rowSpan="2">
+                  Schedule
+                  <br />
+                  <small>%</small>
+                </th>
+                <th className="ruda-header performance-column" rowSpan="2">
+                  Performance
+                  <br />
+                  <small>%</small>
+                </th>
+                {[...Array(5)].map((_, i) => (
+                  <th key={i} className="ruda-header" colSpan="12">
+                    FY {25 + i}-{26 + i}
+                  </th>
+                ))}
+              </tr>
+              <tr>
+                {months.map((month, index) => (
+                  <th key={index} className="ruda-month-header">
+                    {month}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((phase, phaseIndex) => (
+                <React.Fragment key={phaseIndex}>
+                  <tr
+                    className="ruda-phase-row"
+                    onClick={() => togglePhase(phaseIndex)}
+                  >
+                    <td className="ruda-phase-header">
+                      {phase.phase} {expandedPhases.has(phaseIndex) ? "▲" : "▼"}
+                    </td>
+                    <td className="ruda-phase-header right">{phase.amount}</td>
+                    <td className="ruda-phase-header right">-</td>
+                    <td className="ruda-phase-header right">-</td>
+                    <td className="ruda-phase-header right">-</td>
+                    <td colSpan={60} className="ruda-phase-header"></td>
+                  </tr>
 
-                {expandedPhases.has(phaseIndex) && (
-                  <>
-                    {/* Render packages if they exist (Phase 2 enhanced structure) */}
-                    {phase.packages &&
-                      phase.packages.map((pkg, pkgIndex) => {
-                        const packageKey = `${phaseIndex}-${pkgIndex}`;
-                        return (
-                          <React.Fragment key={packageKey}>
-                            <tr
-                              className="ruda-package-row"
-                              onClick={() => togglePackage(packageKey)}
-                            >
-                              <td className="ruda-cell package-cell">
-                                📦 {pkg.name}{" "}
-                                {expandedPackages.has(packageKey) ? "▲" : "▼"}
-                              </td>
-                              <td className="ruda-cell ruda-bold right">
-                                {formatAmount(pkg.budgetedCost)}
-                              </td>
-                              <td className="ruda-cell right">-</td>
-                              <td className="ruda-cell right">
-                                {pkg.scheduleComplete || "-"}
-                              </td>
-                              <td className="ruda-cell right">
-                                {pkg.performanceComplete || "-"}
-                              </td>
-                              <td colSpan={60} className="ruda-timeline-cell">
-                                {renderTimeline(pkg)}
-                              </td>
-                            </tr>
+                  {expandedPhases.has(phaseIndex) && (
+                    <>
+                      {/* Render packages if they exist (Phase 2 enhanced structure) */}
+                      {phase.packages &&
+                        phase.packages.map((pkg, pkgIndex) => {
+                          const packageKey = `${phaseIndex}-${pkgIndex}`;
+                          return (
+                            <React.Fragment key={packageKey}>
+                              <tr
+                                className="ruda-package-row"
+                                onClick={() => togglePackage(packageKey)}
+                              >
+                                <td className="ruda-cell package-cell">
+                                  📦 {pkg.name}{" "}
+                                  {expandedPackages.has(packageKey) ? "▲" : "▼"}
+                                </td>
+                                <td className="ruda-cell ruda-bold right">
+                                  {formatAmount(pkg.budgetedCost)}
+                                </td>
+                                <td className="ruda-cell right">-</td>
+                                <td className="ruda-cell right">
+                                  {pkg.scheduleComplete || "-"}
+                                </td>
+                                <td className="ruda-cell right">
+                                  {pkg.performanceComplete || "-"}
+                                </td>
+                                <td colSpan={60} className="ruda-timeline-cell">
+                                  {renderTimeline(pkg)}
+                                </td>
+                              </tr>
 
-                            {expandedPackages.has(packageKey) &&
-                              pkg.subpackages &&
-                              pkg.subpackages.map((subpkg, subIndex) => {
-                                const subpackageKey = `${packageKey}-${subIndex}`;
-                                return (
-                                  <React.Fragment key={subpackageKey}>
-                                    <tr
-                                      className="ruda-subpackage-row"
-                                      onClick={() =>
-                                        toggleSubpackage(subpackageKey)
-                                      }
-                                    >
-                                      <td className="ruda-cell subpackage-cell">
-                                        📋 {subpkg.name}{" "}
-                                        {expandedSubpackages.has(subpackageKey)
-                                          ? "▲"
-                                          : "▼"}
-                                      </td>
-                                      <td className="ruda-cell right">
-                                        {formatAmount(subpkg.budgetedCost)}
-                                      </td>
-                                      <td className="ruda-cell right">
-                                        {subpkg.duration || "-"}
-                                      </td>
-                                      <td className="ruda-cell right">
-                                        {subpkg.scheduleComplete || "-"}
-                                      </td>
-                                      <td className="ruda-cell right">
-                                        {subpkg.performanceComplete || "-"}
-                                      </td>
-                                      <td
-                                        colSpan={60}
-                                        className="ruda-timeline-cell"
-                                      >
-                                        {renderTimeline(subpkg)}
-                                      </td>
-                                    </tr>
-
-                                    {/* Render subsubpackages if they exist */}
-                                    {expandedSubpackages.has(subpackageKey) &&
-                                      subpkg.subsubpackages &&
-                                      subpkg.subsubpackages.map(
-                                        (subsubpkg, subsubIndex) => {
-                                          const subsubpackageKey = `${subpackageKey}-${subsubIndex}`;
-                                          return (
-                                            <React.Fragment
-                                              key={subsubpackageKey}
-                                            >
-                                              <tr
-                                                className="ruda-subsubpackage-row"
-                                                onClick={() =>
-                                                  toggleSubsubpackage(
-                                                    subsubpackageKey
-                                                  )
-                                                }
-                                              >
-                                                <td className="ruda-cell subsubpackage-cell">
-                                                  🔷 {subsubpkg.name}{" "}
-                                                  {expandedSubsubpackages.has(
-                                                    subsubpackageKey
-                                                  )
-                                                    ? "▲"
-                                                    : "▼"}
-                                                </td>
-                                                <td className="ruda-cell right">
-                                                  {formatAmount(
-                                                    subsubpkg.budgetedCost
-                                                  )}
-                                                </td>
-                                                <td className="ruda-cell right">
-                                                  {subsubpkg.duration || "-"}
-                                                </td>
-                                                <td className="ruda-cell right">
-                                                  {subsubpkg.scheduleComplete ||
-                                                    "-"}
-                                                </td>
-                                                <td className="ruda-cell right">
-                                                  {subsubpkg.performanceComplete ||
-                                                    "-"}
-                                                </td>
-                                                <td
-                                                  colSpan={60}
-                                                  className="ruda-timeline-cell"
-                                                >
-                                                  {renderTimeline(subsubpkg)}
-                                                </td>
-                                              </tr>
-
-                                              {/* Render reaches if they exist (for Material Delivery) */}
-                                              {expandedSubsubpackages.has(
-                                                subsubpackageKey
-                                              ) &&
-                                                subsubpkg.reaches &&
-                                                subsubpkg.reaches.map(
-                                                  (reach, reachIndex) => {
-                                                    const reachKey = `${subsubpackageKey}-${reachIndex}`;
-                                                    return (
-                                                      <React.Fragment
-                                                        key={reachKey}
-                                                      >
-                                                        <tr
-                                                          className="ruda-reach-row"
-                                                          onClick={() =>
-                                                            toggleReach(
-                                                              reachKey
-                                                            )
-                                                          }
-                                                        >
-                                                          <td className="ruda-cell reach-cell">
-                                                            🎯 {reach.name}{" "}
-                                                            {expandedReaches.has(
-                                                              reachKey
-                                                            )
-                                                              ? "▲"
-                                                              : "▼"}
-                                                          </td>
-                                                          <td className="ruda-cell right">
-                                                            {formatAmount(
-                                                              reach.budgetedCost
-                                                            )}
-                                                          </td>
-                                                          <td className="ruda-cell right">
-                                                            {reach.duration ||
-                                                              "-"}
-                                                          </td>
-                                                          <td className="ruda-cell right">
-                                                            {reach.scheduleComplete ||
-                                                              "-"}
-                                                          </td>
-                                                          <td className="ruda-cell right">
-                                                            {reach.performanceComplete ||
-                                                              "-"}
-                                                          </td>
-                                                          <td
-                                                            colSpan={60}
-                                                            className="ruda-timeline-cell"
-                                                          >
-                                                            {renderTimeline(
-                                                              reach
-                                                            )}
-                                                          </td>
-                                                        </tr>
-
-                                                        {/* Render materials */}
-                                                        {expandedReaches.has(
-                                                          reachKey
-                                                        ) &&
-                                                          reach.materials &&
-                                                          reach.materials.map(
-                                                            (
-                                                              material,
-                                                              materialIndex
-                                                            ) => (
-                                                              <tr
-                                                                key={
-                                                                  materialIndex
-                                                                }
-                                                                className="ruda-material-row"
-                                                                onClick={() =>
-                                                                  handleItemClick(
-                                                                    material,
-                                                                    "material"
-                                                                  )
-                                                                }
-                                                              >
-                                                                <td className="ruda-cell material-cell">
-                                                                  🧱{" "}
-                                                                  {
-                                                                    material.name
-                                                                  }
-                                                                </td>
-                                                                <td className="ruda-cell right">
-                                                                  -
-                                                                </td>
-                                                                <td className="ruda-cell right">
-                                                                  {material.duration ||
-                                                                    "-"}
-                                                                </td>
-                                                                <td className="ruda-cell right">
-                                                                  {material.scheduleComplete ||
-                                                                    "-"}
-                                                                </td>
-                                                                <td className="ruda-cell right">
-                                                                  {material.performanceComplete ||
-                                                                    "-"}
-                                                                </td>
-                                                                <td
-                                                                  colSpan={60}
-                                                                  className="ruda-timeline-cell"
-                                                                >
-                                                                  {renderTimeline(
-                                                                    material
-                                                                  )}
-                                                                </td>
-                                                              </tr>
-                                                            )
-                                                          )}
-                                                      </React.Fragment>
-                                                    );
-                                                  }
-                                                )}
-
-                                              {/* Render activities for subsubpackages */}
-                                              {expandedSubsubpackages.has(
-                                                subsubpackageKey
-                                              ) &&
-                                                subsubpkg.activities &&
-                                                subsubpkg.activities.map(
-                                                  (activity, actIndex) => (
-                                                    <tr
-                                                      key={actIndex}
-                                                      className="ruda-activity-row"
-                                                      onClick={() =>
-                                                        handleItemClick(
-                                                          activity,
-                                                          "activity"
-                                                        )
-                                                      }
-                                                    >
-                                                      <td className="ruda-cell activity-cell">
-                                                        🟢 {activity.name}
-                                                      </td>
-                                                      <td className="ruda-cell right">
-                                                        {formatAmount(
-                                                          activity.budgetedCost
-                                                        )}
-                                                      </td>
-                                                      <td className="ruda-cell right">
-                                                        {activity.duration ||
-                                                          "-"}
-                                                      </td>
-                                                      <td className="ruda-cell right">
-                                                        {activity.scheduleComplete ||
-                                                          "-"}
-                                                      </td>
-                                                      <td className="ruda-cell right">
-                                                        {activity.performanceComplete ||
-                                                          "-"}
-                                                      </td>
-                                                      <td
-                                                        colSpan={60}
-                                                        className="ruda-timeline-cell"
-                                                      >
-                                                        {renderTimeline(
-                                                          activity
-                                                        )}
-                                                      </td>
-                                                    </tr>
-                                                  )
-                                                )}
-                                            </React.Fragment>
-                                          );
+                              {expandedPackages.has(packageKey) &&
+                                pkg.subpackages &&
+                                pkg.subpackages.map((subpkg, subIndex) => {
+                                  const subpackageKey = `${packageKey}-${subIndex}`;
+                                  return (
+                                    <React.Fragment key={subpackageKey}>
+                                      <tr
+                                        className="ruda-subpackage-row"
+                                        onClick={() =>
+                                          toggleSubpackage(subpackageKey)
                                         }
-                                      )}
+                                      >
+                                        <td className="ruda-cell subpackage-cell">
+                                          📋 {subpkg.name}{" "}
+                                          {expandedSubpackages.has(
+                                            subpackageKey
+                                          )
+                                            ? "▲"
+                                            : "▼"}
+                                        </td>
+                                        <td className="ruda-cell right">
+                                          {formatAmount(subpkg.budgetedCost)}
+                                        </td>
+                                        <td className="ruda-cell right">
+                                          {subpkg.duration || "-"}
+                                        </td>
+                                        <td className="ruda-cell right">
+                                          {subpkg.scheduleComplete || "-"}
+                                        </td>
+                                        <td className="ruda-cell right">
+                                          {subpkg.performanceComplete || "-"}
+                                        </td>
+                                        <td
+                                          colSpan={60}
+                                          className="ruda-timeline-cell"
+                                        >
+                                          {renderTimeline(subpkg)}
+                                        </td>
+                                      </tr>
 
-                                    {/* Render direct activities for subpackages (without subsubpackages) */}
-                                    {expandedSubpackages.has(subpackageKey) &&
-                                      subpkg.activities &&
-                                      !subpkg.subsubpackages &&
-                                      subpkg.activities.map(
-                                        (activity, actIndex) => (
-                                          <tr
-                                            key={actIndex}
-                                            className="ruda-activity-row"
-                                            onClick={() =>
-                                              handleItemClick(
-                                                activity,
-                                                "activity"
-                                              )
-                                            }
-                                          >
-                                            <td className="ruda-cell activity-cell">
-                                              🟢 {activity.name}
-                                            </td>
-                                            <td className="ruda-cell right">
-                                              {formatAmount(
-                                                activity.budgetedCost
-                                              )}
-                                            </td>
-                                            <td className="ruda-cell right">
-                                              {activity.duration || "-"}
-                                            </td>
-                                            <td className="ruda-cell right">
-                                              {activity.scheduleComplete || "-"}
-                                            </td>
-                                            <td className="ruda-cell right">
-                                              {activity.performanceComplete ||
-                                                "-"}
-                                            </td>
-                                            <td
-                                              colSpan={60}
-                                              className="ruda-timeline-cell"
+                                      {/* Render subsubpackages if they exist */}
+                                      {expandedSubpackages.has(subpackageKey) &&
+                                        subpkg.subsubpackages &&
+                                        subpkg.subsubpackages.map(
+                                          (subsubpkg, subsubIndex) => {
+                                            const subsubpackageKey = `${subpackageKey}-${subsubIndex}`;
+                                            return (
+                                              <React.Fragment
+                                                key={subsubpackageKey}
+                                              >
+                                                <tr
+                                                  className="ruda-subsubpackage-row"
+                                                  onClick={() =>
+                                                    toggleSubsubpackage(
+                                                      subsubpackageKey
+                                                    )
+                                                  }
+                                                >
+                                                  <td className="ruda-cell subsubpackage-cell">
+                                                    🔷 {subsubpkg.name}{" "}
+                                                    {expandedSubsubpackages.has(
+                                                      subsubpackageKey
+                                                    )
+                                                      ? "▲"
+                                                      : "▼"}
+                                                  </td>
+                                                  <td className="ruda-cell right">
+                                                    {formatAmount(
+                                                      subsubpkg.budgetedCost
+                                                    )}
+                                                  </td>
+                                                  <td className="ruda-cell right">
+                                                    {subsubpkg.duration || "-"}
+                                                  </td>
+                                                  <td className="ruda-cell right">
+                                                    {subsubpkg.scheduleComplete ||
+                                                      "-"}
+                                                  </td>
+                                                  <td className="ruda-cell right">
+                                                    {subsubpkg.performanceComplete ||
+                                                      "-"}
+                                                  </td>
+                                                  <td
+                                                    colSpan={60}
+                                                    className="ruda-timeline-cell"
+                                                  >
+                                                    {renderTimeline(subsubpkg)}
+                                                  </td>
+                                                </tr>
+
+                                                {/* Render reaches if they exist (for Material Delivery) */}
+                                                {expandedSubsubpackages.has(
+                                                  subsubpackageKey
+                                                ) &&
+                                                  subsubpkg.reaches &&
+                                                  subsubpkg.reaches.map(
+                                                    (reach, reachIndex) => {
+                                                      const reachKey = `${subsubpackageKey}-${reachIndex}`;
+                                                      return (
+                                                        <React.Fragment
+                                                          key={reachKey}
+                                                        >
+                                                          <tr
+                                                            className="ruda-reach-row"
+                                                            onClick={() =>
+                                                              toggleReach(
+                                                                reachKey
+                                                              )
+                                                            }
+                                                          >
+                                                            <td className="ruda-cell reach-cell">
+                                                              🎯 {reach.name}{" "}
+                                                              {expandedReaches.has(
+                                                                reachKey
+                                                              )
+                                                                ? "▲"
+                                                                : "▼"}
+                                                            </td>
+                                                            <td className="ruda-cell right">
+                                                              {formatAmount(
+                                                                reach.budgetedCost
+                                                              )}
+                                                            </td>
+                                                            <td className="ruda-cell right">
+                                                              {reach.duration ||
+                                                                "-"}
+                                                            </td>
+                                                            <td className="ruda-cell right">
+                                                              {reach.scheduleComplete ||
+                                                                "-"}
+                                                            </td>
+                                                            <td className="ruda-cell right">
+                                                              {reach.performanceComplete ||
+                                                                "-"}
+                                                            </td>
+                                                            <td
+                                                              colSpan={60}
+                                                              className="ruda-timeline-cell"
+                                                            >
+                                                              {renderTimeline(
+                                                                reach
+                                                              )}
+                                                            </td>
+                                                          </tr>
+
+                                                          {/* Render materials */}
+                                                          {expandedReaches.has(
+                                                            reachKey
+                                                          ) &&
+                                                            reach.materials &&
+                                                            reach.materials.map(
+                                                              (
+                                                                material,
+                                                                materialIndex
+                                                              ) => (
+                                                                <tr
+                                                                  key={
+                                                                    materialIndex
+                                                                  }
+                                                                  className="ruda-material-row"
+                                                                  onClick={() =>
+                                                                    handleItemClick(
+                                                                      material,
+                                                                      "material"
+                                                                    )
+                                                                  }
+                                                                >
+                                                                  <td className="ruda-cell material-cell">
+                                                                    🧱{" "}
+                                                                    {
+                                                                      material.name
+                                                                    }
+                                                                  </td>
+                                                                  <td className="ruda-cell right">
+                                                                    -
+                                                                  </td>
+                                                                  <td className="ruda-cell right">
+                                                                    {material.duration ||
+                                                                      "-"}
+                                                                  </td>
+                                                                  <td className="ruda-cell right">
+                                                                    {material.scheduleComplete ||
+                                                                      "-"}
+                                                                  </td>
+                                                                  <td className="ruda-cell right">
+                                                                    {material.performanceComplete ||
+                                                                      "-"}
+                                                                  </td>
+                                                                  <td
+                                                                    colSpan={60}
+                                                                    className="ruda-timeline-cell"
+                                                                  >
+                                                                    {renderTimeline(
+                                                                      material
+                                                                    )}
+                                                                  </td>
+                                                                </tr>
+                                                              )
+                                                            )}
+                                                        </React.Fragment>
+                                                      );
+                                                    }
+                                                  )}
+
+                                                {/* Render activities for subsubpackages */}
+                                                {expandedSubsubpackages.has(
+                                                  subsubpackageKey
+                                                ) &&
+                                                  subsubpkg.activities &&
+                                                  subsubpkg.activities.map(
+                                                    (activity, actIndex) => (
+                                                      <tr
+                                                        key={actIndex}
+                                                        className="ruda-activity-row"
+                                                        onClick={() =>
+                                                          handleItemClick(
+                                                            activity,
+                                                            "activity"
+                                                          )
+                                                        }
+                                                      >
+                                                        <td className="ruda-cell activity-cell">
+                                                          🟢 {activity.name}
+                                                        </td>
+                                                        <td className="ruda-cell right">
+                                                          {formatAmount(
+                                                            activity.budgetedCost
+                                                          )}
+                                                        </td>
+                                                        <td className="ruda-cell right">
+                                                          {activity.duration ||
+                                                            "-"}
+                                                        </td>
+                                                        <td className="ruda-cell right">
+                                                          {activity.scheduleComplete ||
+                                                            "-"}
+                                                        </td>
+                                                        <td className="ruda-cell right">
+                                                          {activity.performanceComplete ||
+                                                            "-"}
+                                                        </td>
+                                                        <td
+                                                          colSpan={60}
+                                                          className="ruda-timeline-cell"
+                                                        >
+                                                          {renderTimeline(
+                                                            activity
+                                                          )}
+                                                        </td>
+                                                      </tr>
+                                                    )
+                                                  )}
+                                              </React.Fragment>
+                                            );
+                                          }
+                                        )}
+
+                                      {/* Render direct activities for subpackages (without subsubpackages) */}
+                                      {expandedSubpackages.has(subpackageKey) &&
+                                        subpkg.activities &&
+                                        !subpkg.subsubpackages &&
+                                        subpkg.activities.map(
+                                          (activity, actIndex) => (
+                                            <tr
+                                              key={actIndex}
+                                              className="ruda-activity-row"
+                                              onClick={() =>
+                                                handleItemClick(
+                                                  activity,
+                                                  "activity"
+                                                )
+                                              }
                                             >
-                                              {renderTimeline(activity)}
-                                            </td>
-                                          </tr>
-                                        )
-                                      )}
-                                  </React.Fragment>
-                                );
-                              })}
-                          </React.Fragment>
-                        );
-                      })}
+                                              <td className="ruda-cell activity-cell">
+                                                🟢 {activity.name}
+                                              </td>
+                                              <td className="ruda-cell right">
+                                                {formatAmount(
+                                                  activity.budgetedCost
+                                                )}
+                                              </td>
+                                              <td className="ruda-cell right">
+                                                {activity.duration || "-"}
+                                              </td>
+                                              <td className="ruda-cell right">
+                                                {activity.scheduleComplete ||
+                                                  "-"}
+                                              </td>
+                                              <td className="ruda-cell right">
+                                                {activity.performanceComplete ||
+                                                  "-"}
+                                              </td>
+                                              <td
+                                                colSpan={60}
+                                                className="ruda-timeline-cell"
+                                              >
+                                                {renderTimeline(activity)}
+                                              </td>
+                                            </tr>
+                                          )
+                                        )}
+                                    </React.Fragment>
+                                  );
+                                })}
+                            </React.Fragment>
+                          );
+                        })}
 
-                    {/* Render original items structure for phases without packages */}
-                    {phase.items &&
-                      !phase.packages &&
-                      phase.items.map((item, itemIndex) => (
-                        <tr
-                          key={itemIndex}
-                          onClick={() => handleItemClick(item)}
-                        >
-                          <td className="ruda-cell indent">{item.name}</td>
-                          <td className="ruda-cell ruda-bold right">
-                            {item.amount}
-                          </td>
-                          <td className="ruda-cell right">-</td>
-                          <td className="ruda-cell right">-</td>
-                          <td className="ruda-cell right">-</td>
-                          <td colSpan={60} className="ruda-timeline-cell">
-                            {renderTimeline(item)}
+                      {/* Render original items structure for phases without packages */}
+                      {phase.items &&
+                        !phase.packages &&
+                        phase.items.map((item, itemIndex) => (
+                          <tr
+                            key={itemIndex}
+                            onClick={() => handleItemClick(item)}
+                          >
+                            <td className="ruda-cell indent">{item.name}</td>
+                            <td className="ruda-cell ruda-bold right">
+                              {item.amount}
+                            </td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
+                            <td colSpan={60} className="ruda-timeline-cell">
+                              {renderTimeline(item)}
+                            </td>
+                          </tr>
+                        ))}
+
+                      {/* Render original items for phases that have both packages and items (Phase 2) */}
+                      {phase.items && phase.packages && (
+                        <tr className="ruda-separator-row">
+                          <td className="ruda-separator-cell" colSpan={65}>
+                            <strong>Original Phase Items</strong>
                           </td>
                         </tr>
-                      ))}
+                      )}
 
-                    {/* Render original items for phases that have both packages and items (Phase 2) */}
-                    {phase.items && phase.packages && (
-                      <tr className="ruda-separator-row">
-                        <td className="ruda-separator-cell" colSpan={65}>
-                          <strong>Original Phase Items</strong>
-                        </td>
-                      </tr>
-                    )}
-
-                    {phase.items &&
-                      phase.packages &&
-                      phase.items.map((item, itemIndex) => (
-                        <tr
-                          key={`original-${itemIndex}`}
-                          onClick={() => handleItemClick(item)}
-                        >
-                          <td className="ruda-cell indent">{item.name}</td>
-                          <td className="ruda-cell ruda-bold right">
-                            {item.amount}
-                          </td>
-                          <td className="ruda-cell right">-</td>
-                          <td className="ruda-cell right">-</td>
-                          <td className="ruda-cell right">-</td>
-                          <td colSpan={60} className="ruda-timeline-cell">
-                            {renderTimeline(item)}
-                          </td>
-                        </tr>
-                      ))}
-                  </>
-                )}
-              </React.Fragment>
-            ))}
-            <tr>
-              <td className="ruda-total-cell">Total</td>
-              <td className="ruda-total-cell right">399,175</td>
-              <td className="ruda-total-cell right">-</td>
-              <td className="ruda-total-cell right">-</td>
-              <td className="ruda-total-cell right">-</td>
-              <td colSpan={60} className="ruda-total-cell"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      {selectedItem && (
-        <div className="ruda-selected-info">
-          <h3>Selected Item: {selectedItem.name}</h3>
-          <p>Timeline visualization updated above</p>
+                      {phase.items &&
+                        phase.packages &&
+                        phase.items.map((item, itemIndex) => (
+                          <tr
+                            key={`original-${itemIndex}`}
+                            onClick={() => handleItemClick(item)}
+                          >
+                            <td className="ruda-cell indent">{item.name}</td>
+                            <td className="ruda-cell ruda-bold right">
+                              {item.amount}
+                            </td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
+                            <td className="ruda-cell right">-</td>
+                            <td colSpan={60} className="ruda-timeline-cell">
+                              {renderTimeline(item)}
+                            </td>
+                          </tr>
+                        ))}
+                    </>
+                  )}
+                </React.Fragment>
+              ))}
+              <tr>
+                <td className="ruda-total-cell">Total</td>
+                <td className="ruda-total-cell right">399,175</td>
+                <td className="ruda-total-cell right">-</td>
+                <td className="ruda-total-cell right">-</td>
+                <td className="ruda-total-cell right">-</td>
+                <td colSpan={60} className="ruda-total-cell"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      )}
+
+        {selectedItem && (
+          <div className="ruda-selected-info">
+            <h3>Selected Item: {selectedItem.name}</h3>
+            <p>Timeline visualization updated above</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
