@@ -101,8 +101,8 @@ const rudaStyles = `
   .ruda-geo-section-header {
     background: linear-gradient(135deg, #e8f4fd 0%, #f1f8ff 100%);
     border-left: 4px solid #1976d2;
-    padding: 12px 16px;
-    margin: 16px 0 8px 0;
+    padding: 8px 16px;
+    margin: 12px 0 10px 0;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   }
@@ -119,12 +119,12 @@ const rudaStyles = `
   }
 
   .ruda-geo-dialog-content {
-    padding: 24px;
+    padding: 16px 24px;
     background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
   }
 
   .ruda-geo-text-field {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
 
   .ruda-geo-text-field .MuiOutlinedInput-root {
@@ -380,7 +380,28 @@ const GeoDataManager = () => {
 
     if (type === "select") {
       return (
-        <FormControl fullWidth>
+        <FormControl
+          fullWidth
+          size="small"
+          className="ruda-geo-text-field"
+          sx={{
+            mb: 1,
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "8px",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              },
+              "&.Mui-focused": {
+                boxShadow: "0 4px 12px rgba(25, 118, 210, 0.2)",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              color: "#1e3a5f",
+              fontWeight: "500",
+            },
+          }}
+        >
           <InputLabel>{label}</InputLabel>
           <Select
             value={value}
@@ -409,7 +430,7 @@ const GeoDataManager = () => {
         size="small"
         className="ruda-geo-text-field"
         sx={{
-          mb: 2,
+          mb: 1,
           "& .MuiOutlinedInput-root": {
             borderRadius: "8px",
             transition: "all 0.3s ease",
@@ -649,7 +670,7 @@ const GeoDataManager = () => {
             }}
           >
             <Box sx={{ pt: 0 }}>
-              <Grid container spacing={3}>
+              <Grid container spacing={2}>
                 {/* Basic Information Section */}
                 <Grid item xs={12}>
                   <div className="ruda-geo-section-header">
@@ -669,24 +690,24 @@ const GeoDataManager = () => {
 
                   <Grid container spacing={2} sx={{ width: "100%" }}>
                     {/* First row: Project Name, Layer, Map Name */}
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField("name", "Project Name")}
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField("layer", "Layer")}
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField("map_name", "Map Name")}
                     </Grid>
 
                     {/* Second row: Category, RUDA Phase, RTW Package */}
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField("category", "Category")}
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField("ruda_phase", "RUDA Phase", "select")}
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField("rtw_pkg", "RTW Package")}
                     </Grid>
                   </Grid>
@@ -711,13 +732,13 @@ const GeoDataManager = () => {
 
                   <Grid container spacing={2} sx={{ width: "100%" }}>
                     {/* First row: Area (sq km), Area (acres), Land Available (%) */}
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField("area_sqkm", "Area (sq km)", "number")}
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField("area_acres", "Area (acres)", "number")}
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField(
                         "land_available_pct",
                         "Land Available (%)",
@@ -726,21 +747,21 @@ const GeoDataManager = () => {
                     </Grid>
 
                     {/* Second row: Land Available (km), Land Remaining (%), Land Remaining (km) */}
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField(
                         "land_available_km",
                         "Land Available (km)",
                         "number"
                       )}
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField(
                         "land_remaining_pct",
                         "Land Remaining (%)",
                         "number"
                       )}
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField(
                         "land_remaining_km",
                         "Land Remaining (km)",
@@ -769,21 +790,21 @@ const GeoDataManager = () => {
 
                   <Grid container spacing={2} sx={{ width: "100%" }}>
                     {/* First row: Awarded Cost, Work Done, Certified */}
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField(
                         "awarded_cost",
                         "Awarded Cost (Million)",
                         "number"
                       )}
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField(
                         "work_done_million",
                         "Work Done (Million)",
                         "number"
                       )}
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={4}>
                       {renderFormField(
                         "certified_million",
                         "Certified (Million)",
@@ -791,8 +812,8 @@ const GeoDataManager = () => {
                       )}
                     </Grid>
 
-                    {/* Second row: Physical Actual (%) */}
-                    <Grid item xs={12} md={4}>
+                    {/* Second row: Physical Actual (%) - first field only */}
+                    <Grid item xs={4}>
                       {renderFormField(
                         "physical_actual_pct",
                         "Physical Actual (%)",
@@ -820,29 +841,31 @@ const GeoDataManager = () => {
                   </div>
 
                   <Grid container spacing={2}>
-                    {/* Timeline fields in one row */}
-                    <Grid item xs={12} md={3}>
+                    {/* First row: Duration, Elapsed, Commencement Date */}
+                    <Grid item xs={4}>
                       {renderFormField(
                         "duration_months",
                         "Duration (Months)",
                         "number"
                       )}
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid item xs={4}>
                       {renderFormField(
                         "elapsed_months",
                         "Elapsed (Months)",
                         "number"
                       )}
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid item xs={4}>
                       {renderFormField(
                         "commencement_date",
                         "Commencement Date",
                         "date"
                       )}
                     </Grid>
-                    <Grid item xs={12} md={3}>
+
+                    {/* Second row: Completion Date */}
+                    <Grid item xs={4}>
                       {renderFormField(
                         "completion_date",
                         "Completion Date",
@@ -854,19 +877,20 @@ const GeoDataManager = () => {
 
                 {/* Description Section */}
                 <Grid item xs={12}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      mb: 3,
-                      mt: 0,
-                      color: "#1976d2",
-                      fontWeight: "bold",
-                      borderBottom: "2px solid #1976d2",
-                      paddingBottom: 1,
-                    }}
-                  >
-                    Description
-                  </Typography>
+                  <div className="ruda-geo-section-header">
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        margin: 0,
+                        color: "#1e3a5f",
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        textShadow: "0 1px 2px rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      Description
+                    </Typography>
+                  </div>
 
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -883,26 +907,27 @@ const GeoDataManager = () => {
 
                 {/* JSON Data Section */}
                 <Grid item xs={12}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      mb: 3,
-                      mt: 0,
-                      color: "#1976d2",
-                      fontWeight: "bold",
-                      borderBottom: "2px solid #1976d2",
-                      paddingBottom: 1,
-                    }}
-                  >
-                    Additional Data (JSON Format)
-                  </Typography>
+                  <div className="ruda-geo-section-header">
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        margin: 0,
+                        color: "#1e3a5f",
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        textShadow: "0 1px 2px rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      Additional Data (JSON Format)
+                    </Typography>
+                  </div>
 
                   <Grid container spacing={2}>
-                    {/* JSON fields in equal sizes */}
-                    <Grid item xs={12} md={6}>
+                    {/* JSON fields - all 50% width */}
+                    <Grid item xs={6}>
                       <TextField
                         fullWidth
-                        label=" Firms (JSON)"
+                        label="Firms (JSON)"
                         value={formData.firms || ""}
                         onChange={(e) =>
                           handleInputChange("firms", e.target.value)
@@ -913,6 +938,7 @@ const GeoDataManager = () => {
                         size="small"
                         className="ruda-geo-text-field"
                         sx={{
+                          mb: 1,
                           "& .MuiOutlinedInput-root": {
                             borderRadius: "8px",
                             backgroundColor: "rgba(76, 175, 80, 0.05)",
@@ -925,7 +951,7 @@ const GeoDataManager = () => {
                         helperText="Example: [{'img': '/Ruda.jpg', 'name': 'RUDA', 'title': 'Employer'}]"
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={6}>
                       <TextField
                         fullWidth
                         label="Scope of Work (JSON)"
@@ -937,10 +963,22 @@ const GeoDataManager = () => {
                         rows={3}
                         variant="outlined"
                         size="small"
+                        className="ruda-geo-text-field"
+                        sx={{
+                          mb: 1,
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "8px",
+                            backgroundColor: "rgba(76, 175, 80, 0.05)",
+                          },
+                          "& .MuiInputLabel-root": {
+                            color: "#1e3a5f",
+                            fontWeight: "500",
+                          },
+                        }}
                         helperText="Example: [{'name': 'Earth Work', 'value': 100}]"
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={6}>
                       <TextField
                         fullWidth
                         label="Physical Chart (JSON)"
@@ -952,10 +990,22 @@ const GeoDataManager = () => {
                         rows={3}
                         variant="outlined"
                         size="small"
+                        className="ruda-geo-text-field"
+                        sx={{
+                          mb: 1,
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "8px",
+                            backgroundColor: "rgba(76, 175, 80, 0.05)",
+                          },
+                          "& .MuiInputLabel-root": {
+                            color: "#1e3a5f",
+                            fontWeight: "500",
+                          },
+                        }}
                         helperText="Example: [{'month': 'Jul-24', 'actual': 1, 'planned': 2}]"
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={6}>
                       <TextField
                         fullWidth
                         label="Financial Chart (JSON)"
@@ -967,10 +1017,22 @@ const GeoDataManager = () => {
                         rows={3}
                         variant="outlined"
                         size="small"
+                        className="ruda-geo-text-field"
+                        sx={{
+                          mb: 1,
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "8px",
+                            backgroundColor: "rgba(76, 175, 80, 0.05)",
+                          },
+                          "& .MuiInputLabel-root": {
+                            color: "#1e3a5f",
+                            fontWeight: "500",
+                          },
+                        }}
                         helperText="Example: [{'name': 'Contract Amount', 'value': 2520}]"
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={6}>
                       <TextField
                         fullWidth
                         label="KPI Chart (JSON)"
@@ -982,10 +1044,22 @@ const GeoDataManager = () => {
                         rows={3}
                         variant="outlined"
                         size="small"
+                        className="ruda-geo-text-field"
+                        sx={{
+                          mb: 1,
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "8px",
+                            backgroundColor: "rgba(76, 175, 80, 0.05)",
+                          },
+                          "& .MuiInputLabel-root": {
+                            color: "#1e3a5f",
+                            fontWeight: "500",
+                          },
+                        }}
                         helperText="Example: [{'name': 'Planned', 'value': 76}]"
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={6}>
                       <TextField
                         fullWidth
                         label="Curve Chart (JSON)"
@@ -997,6 +1071,18 @@ const GeoDataManager = () => {
                         rows={3}
                         variant="outlined"
                         size="small"
+                        className="ruda-geo-text-field"
+                        sx={{
+                          mb: 1,
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "8px",
+                            backgroundColor: "rgba(76, 175, 80, 0.05)",
+                          },
+                          "& .MuiInputLabel-root": {
+                            color: "#1e3a5f",
+                            fontWeight: "500",
+                          },
+                        }}
                         helperText="Example: [{'name': 'S-Curve', 'value': 50}]"
                       />
                     </Grid>
