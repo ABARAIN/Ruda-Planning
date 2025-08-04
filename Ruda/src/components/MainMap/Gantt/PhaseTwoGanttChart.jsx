@@ -2668,37 +2668,6 @@ const PhaseTwoGanttChart = () => {
                         ))}
 
                       {/* Render original items for phases that have both packages and items (Phase 2) */}
-                      {phase.items && phase.packages && (
-                        <tr className="ruda-separator-row">
-                          <td className="ruda-separator-cell" colSpan={65}>
-                            <strong>Original Phase Items</strong>
-                          </td>
-                        </tr>
-                      )}
-
-                      {phase.items &&
-                        phase.packages &&
-                        phase.items.map((item, itemIndex) => (
-                          <tr
-                            key={`original-${itemIndex}`}
-                            onClick={() => handleItemClick(item)}
-                          >
-                            <td className="ruda-cell indent">{item.name}</td>
-                            <td className="ruda-cell ruda-bold right">
-                              {item.amount}
-                            </td>
-                            <td className="ruda-cell right">-</td>
-                            <td className="ruda-cell right">-</td>
-                            <td className="ruda-cell right">-</td>
-                            <td className="ruda-cell right">-</td>
-                            <td className="ruda-cell right">-</td>
-                            <td className="ruda-cell right">-</td>
-                            <td className="ruda-cell right">-</td>
-                            <td colSpan={60} className="ruda-timeline-cell">
-                              {renderTimeline(item)}
-                            </td>
-                          </tr>
-                        ))}
                     </>
                   )}
                 </React.Fragment>
