@@ -96,7 +96,7 @@ export default function DashboardRTWExact() {
     console.log("🔍 Looking for project:", decodedName);
 
     axios
-      .get("http://localhost:5000/api/all")
+      .get("https://ruda-backend-ny14.onrender.com/api/all")
       .then((res) => {
         console.log(
           "📊 Available projects:",
