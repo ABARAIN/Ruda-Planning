@@ -2292,7 +2292,6 @@ const RudaTimeline = () => {
                     <td className="ruda-phase-header right">-</td>
                     <td className="ruda-phase-header right">-</td>
                     <td className="ruda-phase-header right">-</td>
-                    <td className="ruda-phase-header right">-</td>
                     <td colSpan={60} className="ruda-phase-header"></td>
                   </tr>
 
@@ -2768,7 +2767,6 @@ const RudaTimeline = () => {
                             <td className="ruda-cell right">-</td>
                             <td className="ruda-cell right">-</td>
                             <td className="ruda-cell right">-</td>
-                            <td className="ruda-cell right">-</td>
                             <td colSpan={60} className="ruda-timeline-cell">
                               {renderTimeline(item)}
                             </td>
@@ -2802,7 +2800,6 @@ const RudaTimeline = () => {
                             <td className="ruda-cell right">-</td>
                             <td className="ruda-cell right">-</td>
                             <td className="ruda-cell right">-</td>
-                            <td className="ruda-cell right">-</td>
                             <td colSpan={60} className="ruda-timeline-cell">
                               {renderTimeline(item)}
                             </td>
@@ -2815,7 +2812,6 @@ const RudaTimeline = () => {
               <tr>
                 <td className="ruda-total-cell">Total</td>
                 <td className="ruda-total-cell right">399,175</td>
-                <td className="ruda-total-cell right">-</td>
                 <td className="ruda-total-cell right">-</td>
                 <td className="ruda-total-cell right">-</td>
                 <td className="ruda-total-cell right">-</td>
