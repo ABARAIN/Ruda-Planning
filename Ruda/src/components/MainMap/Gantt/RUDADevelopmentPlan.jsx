@@ -2351,7 +2351,7 @@ const RudaTimeline = () => {
                                         }
                                       >
                                         <td className="ruda-cell subpackage-cell">
-                                          {subpkg.name}{" "}
+                                          &nbsp;&nbsp;{subpkg.name}{" "}
                                           {expandedSubpackages.has(
                                             subpackageKey
                                           )
@@ -2411,7 +2411,8 @@ const RudaTimeline = () => {
                                                   }
                                                 >
                                                   <td className="ruda-cell subsubpackage-cell">
-                                                    🔷 {subsubpkg.name}{" "}
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;🔷{" "}
+                                                    {subsubpkg.name}{" "}
                                                     {expandedSubsubpackages.has(
                                                       subsubpackageKey
                                                     )
@@ -2481,6 +2482,9 @@ const RudaTimeline = () => {
                                                             }
                                                           >
                                                             <td className="ruda-cell reach-cell">
+                                                              &nbsp;&nbsp;
+                                                              &nbsp;&nbsp;
+                                                              &nbsp;&nbsp;🟢{" "}
                                                               {reach.name}{" "}
                                                               {expandedReaches.has(
                                                                 reachKey
@@ -2556,7 +2560,8 @@ const RudaTimeline = () => {
                                                                   }
                                                                 >
                                                                   <td className="ruda-cell material-cell">
-                                                                    🧱{" "}
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🧱{" "}
                                                                     {
                                                                       material.name
                                                                     }
@@ -2628,7 +2633,9 @@ const RudaTimeline = () => {
                                                         }
                                                       >
                                                         <td className="ruda-cell activity-cell">
-                                                          🟢 {activity.name}
+                                                          &nbsp;&nbsp;&nbsp;&nbsp;
+                                                          &nbsp;&nbsp;🟢{" "}
+                                                          {activity.name}
                                                         </td>
                                                         <td className="ruda-cell right">
                                                           {formatAmount(
@@ -2698,7 +2705,8 @@ const RudaTimeline = () => {
                                               }
                                             >
                                               <td className="ruda-cell activity-cell">
-                                                🟢 {activity.name}
+                                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                                &nbsp;&nbsp;🟢 {activity.name}
                                               </td>
                                               <td className="ruda-cell right">
                                                 {formatAmount(
