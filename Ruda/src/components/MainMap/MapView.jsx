@@ -14,7 +14,6 @@ import { useTheme } from "@mui/material/styles";
 import ProposedRoadsLayer from "./ProposedRoadsLayer";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
-import landmarks from "./Landmarks";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -25,6 +24,43 @@ const baseStyles = {
   Streets: "mapbox://styles/mapbox/streets-v12",
   Outdoors: "mapbox://styles/mapbox/outdoors-v12",
 };
+
+const landmarks = [
+  // { name: 'Badshahi Mosque', coords: [74.3083, 31.5889], icon: './badshahi-mosque.svg'  },
+  {
+    name: "Minar-e-Pakistan",
+    coords: [74.3091, 31.5922],
+    icon: "./Minar-e-Pakistan.svg",
+  },
+  { name: "Tomb of Jahangir", coords: [74.3003, 31.6242], icon: "./Tomb.svg" },
+  {
+    name: "Punjab University",
+    coords: [74.2889, 31.5032],
+    icon: "./University.svg",
+  },
+  {
+    name: "Punjab University",
+    coords: [74.2889, 31.5032],
+    icon: "./University.svg",
+  },
+  {
+    name: "Eiffel Tower Bahria Town",
+    coords: [74.18424, 31.3559],
+    icon: "./Eiffel-Tower.svg",
+  },
+  // { name: 'Shahdara Town', coords: [74.2870, 31.6234], icon: './badshahi-mosque.svg' },
+  {
+    name: "Lahore Railway Station",
+    coords: [74.3579, 31.582],
+    icon: "./train.svg",
+  },
+  {
+    name: "Data Darbar",
+    coords: [74.313, 31.5823],
+    icon: "./badshahi-mosque.svg",
+  },
+  { name: "Jallo Park", coords: [74.4416, 31.5884], icon: "./Park.svg" },
+];
 
 const MapView = ({
   features,
@@ -195,42 +231,32 @@ const MapView = ({
       const { name, area_sqkm, land_available_pct, physical_actual_pct } =
         feature.properties;
 
-      const popupHTML = `
+        const popupHTML = `
         <div style="font-family: 'Segoe UI', sans-serif; min-width:220px; padding:8px;">
-          <h3 style="margin:0 0 8px; font-size:16px; color:#1976d2;">${
-            name || "Unnamed"
-          }</h3>
-          <div style="font-size:14px; margin-bottom:8px;"><strong>Area:</strong> ${parseFloat(
-            area_sqkm || 0
-          ).toFixed(2)} sq.km</div>
-          <div style="display:flex; gap:6px; font-size:13px; margin-bottom:10px;">
-            ${
-              name === "RTW P-02"
-                ? `<a href="/map" target="_blank" rel="noopener noreferrer" style="flex:1;text-decoration:none;">
-                    <div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:6px;padding:6px;text-align:center;color:#1565c0;">
-                      <div style="font-weight:500;">Land Available</div>
-                      <div>${land_available_pct || 0}%</div>
-                    </div>
-                  </a>`
-                : `<div style="flex:1;background:#e3f2fd;border:1px solid #90caf9;border-radius:6px;padding:6px;text-align:center;color:#1565c0;">
-                    <div style="font-weight:500;">Land Available</div><div>${
-                      land_available_pct || 0
-                    }%</div>
-                   </div>`
-            }
-            <a href="/phase2-gantt" target="_blank" style="flex:1;background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:6px;text-align:center;color:#f9a825;text-decoration:none;display:block;cursor:pointer;">
-              <div style="font-weight:500;">Physical Progress</div><div>${
-                physical_actual_pct || 0
-              }%</div>
-            </a>
+          <h3 style="margin:0 0 8px; font-size:16px; color:#1976d2;">${name || "Unnamed"}</h3>
+          <div style="font-size:14px; margin-bottom:8px;">
+            <strong>Area:</strong> ${parseFloat(area_sqkm || 0).toFixed(2)} sq.km
           </div>
-          <a href="/details/${encodeURIComponent(
-            name
-          )}" target="_blank" style="font-size:13px;color:#388e3c;font-weight:500;text-decoration:none;">
+          <div style="display:flex; gap:6px; font-size:13px; margin-bottom:10px;">
+          <a href="/map?selected=${encodeURIComponent(name)}" target="_blank" rel="noopener noreferrer" style="flex:1;text-decoration:none;">
+
+              <div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:6px;padding:6px;text-align:center;color:#1565c0;">
+                <div style="font-weight:500;">Land Available</div>
+                <div>${land_available_pct || 0}%</div>
+              </div>
+            </a>
+            <div style="flex:1;background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:6px;text-align:center;color:#f9a825;">
+              <div style="font-weight:500;">Physical Progress</div>
+              <div>${physical_actual_pct || 0}%</div>
+            </div>
+          </div>
+          <a href="/details/${encodeURIComponent(name)}" target="_blank"
+             style="font-size:13px;color:#388e3c;font-weight:500;text-decoration:none;">
             🔍 View Details
           </a>
         </div>
       `;
+      
 
       new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(popupHTML).addTo(map);
     });
