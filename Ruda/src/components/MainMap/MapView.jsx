@@ -218,11 +218,11 @@ const MapView = ({
                     }%</div>
                    </div>`
             }
-            <div style="flex:1;background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:6px;text-align:center;color:#f9a825;">
+            <a href="/phase2-gantt" target="_blank" style="flex:1;background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:6px;text-align:center;color:#f9a825;text-decoration:none;display:block;cursor:pointer;">
               <div style="font-weight:500;">Physical Progress</div><div>${
                 physical_actual_pct || 0
               }%</div>
-            </div>
+            </a>
           </div>
           <a href="/details/${encodeURIComponent(
             name
