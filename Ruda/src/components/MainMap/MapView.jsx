@@ -391,7 +391,20 @@ const MapView = ({
   }
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+<>
+
+   <style>
+      {`
+        .mapboxgl-popup-close-button {
+          font-size: 30px !important;
+          width: 40px !important;
+          height: 40px !important;
+          color: #1976d2 !important;
+        }
+      `}
+    </style>
+
+<div style={{ position: "relative", width: "100%", height: "100%" }}>
       {/* Basemap dropdown */}
       <Box
         sx={{
@@ -425,6 +438,7 @@ const MapView = ({
       <ProposedRoadsLayer />
       <div ref={mapContainerRef} style={{ width: "100%", height: "100%" }} />
     </div>
+    </>
   );
 };
 
