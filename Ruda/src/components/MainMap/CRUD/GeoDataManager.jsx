@@ -229,7 +229,7 @@ const GeoDataManager = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/all");
+      const res = await axios.get("https://ruda-backend-ny14.onrender.com/api/all");
       const features = res.data.features || [];
       const propertiesList = features.map((f) => f.properties || {});
       const allKeys = [
