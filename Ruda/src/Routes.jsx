@@ -7,6 +7,7 @@ import GeoDataManager from "./components/MainMap/CRUD/GeoDataManager";
 import Portfolio from "./components/MainMap/Portfolio/Portfolio";
 import RUDADevelopmentPlan from "./components/MainMap/Gantt/RUDADevelopmentPlan";
 import PhaseTwoGanttChart from "./components/MainMap/Gantt/PhaseTwoGanttChart";
+import PCrud from "./components/MainMap/Portfolio/PCrud";
 
 const AppRoutes = () => {
   return (
@@ -18,6 +19,7 @@ const AppRoutes = () => {
       <Route path="/details/:name" element={<DashboardRTWExact />} />
       <Route path="/gantt" element={<RUDADevelopmentPlan />} />
       <Route path="/phase2-gantt" element={<PhaseTwoGanttChart />} />
+      <Route path="/portfolio-crud" element={<PCrud />} />
     </Routes>
   );
 };
