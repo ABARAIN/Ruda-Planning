@@ -1,13 +1,17 @@
 const { Pool } = require("pg");
 require("dotenv").config();
 
-// Log database configuration (without password)
+const ssl =
+  process.env.DB_SSL === "true"
+    ? { rejectUnauthorized: false } // for cloud DBs that require SSL (Neon/Render/ElephantSQL/etc.)
+    : false;                        // for local Postgres (no SSL)
+
 console.log("Database Config:", {
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
-  ssl: { rejectUnauthorized: false },
+  ssl
 });
 
 const pool = new Pool({
@@ -16,14 +20,12 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  ssl: { rejectUnauthorized: false },
+  ssl
 });
 
-// Test database connection
 pool.on("connect", () => {
   console.log("✅ Database connected successfully");
 });
-
 pool.on("error", (err) => {
   console.error("❌ Database connection error:", err.message);
 });

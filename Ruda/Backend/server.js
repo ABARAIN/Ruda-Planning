@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const { SERVER_CONFIG } = require("./config/constants");
 const geoDataRoutes = require("./routes/geoDataRoutes");
+const portfolioCrudRoutes = require("./routes/portfolioCrudRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const logger = require("./utils/logger");
 
@@ -23,11 +24,12 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/api", geoDataRoutes);
+app.use("/api/portfoliocrud", portfolioCrudRoutes);
 
 // Health check endpoint
 app.get("/", (req, res) => {
   res.json({
-    message: '🌐 RUDA API running — supports GeoJSON + CRUD on "all" table',
+    message: '🌐 RUDA API running — supports GeoJSON + CRUD on "all" table and portfolio CRUD',
     version: "1.0.0",
     status: "healthy",
     timestamp: new Date().toISOString(),
