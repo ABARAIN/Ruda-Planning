@@ -52,7 +52,9 @@ const Portfolio = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(API_URL, { headers: { Accept: "application/json" } });
+        const res = await fetch(API_URL, {
+          headers: { Accept: "application/json" },
+        });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         // API returns an array from GET /
@@ -84,7 +86,9 @@ const Portfolio = () => {
         <div
           style={{
             ...styles.progressCircle,
-            background: `conic-gradient(${color} ${p * 3.6}deg, #e5e7eb ${p * 3.6}deg)`,
+            background: `conic-gradient(${color} ${p * 3.6}deg, #e5e7eb ${
+              p * 3.6
+            }deg)`,
           }}
         >
           <div style={styles.progressInner}>
@@ -155,11 +159,31 @@ const Portfolio = () => {
 
   // Map DB values -> chart structures safely
   const developmentData = [
-    { name: "Residential", value: num(row.dev_residential_pct), color: row.dev_residential_color || "#8B4513" },
-    { name: "Commercial", value: num(row.dev_commercial_pct), color: row.dev_commercial_color || "#9932CC" },
-    { name: "Industrial", value: num(row.dev_industrial_pct), color: row.dev_industrial_color || "#32CD32" },
-    { name: "Mixed Use", value: num(row.dev_mixed_use_pct), color: row.dev_mixed_use_color || "#FF6347" },
-    { name: "Institutional", value: num(row.dev_institutional_pct), color: row.dev_institutional_color || "#4169E1" },
+    {
+      name: "Residential",
+      value: num(row.dev_residential_pct),
+      color: row.dev_residential_color || "#8B4513",
+    },
+    {
+      name: "Commercial",
+      value: num(row.dev_commercial_pct),
+      color: row.dev_commercial_color || "#9932CC",
+    },
+    {
+      name: "Industrial",
+      value: num(row.dev_industrial_pct),
+      color: row.dev_industrial_color || "#32CD32",
+    },
+    {
+      name: "Mixed Use",
+      value: num(row.dev_mixed_use_pct),
+      color: row.dev_mixed_use_color || "#FF6347",
+    },
+    {
+      name: "Institutional",
+      value: num(row.dev_institutional_pct),
+      color: row.dev_institutional_color || "#4169E1",
+    },
   ];
 
   const expenditureData = [
@@ -169,12 +193,26 @@ const Portfolio = () => {
     { year: "FY25-26", amount: num(row.exp_fy25_26_b) },
     { year: "FY26-27", amount: num(row.exp_fy26_27_b) },
   ];
-  const totalSpent = expenditureData.reduce((s, i) => s + num(i.amount), 0).toFixed(1);
+  const totalSpent = expenditureData
+    .reduce((s, i) => s + num(i.amount), 0)
+    .toFixed(1);
 
   const financialData = [
-    { name: "Total Budget", value: num(row.financial_total_budget), color: row.financial_total_budget_color || "#3b82f6" },
-    { name: "Utilized Budget", value: num(row.financial_utilized_budget), color: row.financial_utilized_budget_color || "#10b981" },
-    { name: "Remaining Budget", value: num(row.financial_remaining_budget), color: row.financial_remaining_budget_color || "#f59e0b" },
+    {
+      name: "Total Budget",
+      value: num(row.financial_total_budget),
+      color: row.financial_total_budget_color || "#3b82f6",
+    },
+    {
+      name: "Utilized Budget",
+      value: num(row.financial_utilized_budget),
+      color: row.financial_utilized_budget_color || "#10b981",
+    },
+    {
+      name: "Remaining Budget",
+      value: num(row.financial_remaining_budget),
+      color: row.financial_remaining_budget_color || "#f59e0b",
+    },
   ];
 
   // Bar widths (px) based on billons * factor
@@ -190,16 +228,31 @@ const Portfolio = () => {
       <Printer
         size={22}
         onClick={handleDownloadPDF}
-        style={{ cursor: "pointer", color: "#333", marginLeft: "4px", marginTop: "-110px" }}
+        style={{
+          cursor: "pointer",
+          color: "#333",
+          marginLeft: "4px",
+          marginTop: "-110px",
+        }}
       />
 
       {/* First Row */}
-      <div style={isMobile ? { display: "flex", flexDirection: "column", gap: "16px" } : styles.firstRow}>
+      <div
+        style={
+          isMobile
+            ? { display: "flex", flexDirection: "column", gap: "16px" }
+            : styles.firstRow
+        }
+      >
         {/* RAVI CITY MASTER PLAN */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>RAVI CITY MASTER PLAN</h2>
           <div style={styles.masterPlan}>
-            <img src={row.master_plan_image_url || "Img.png"} alt="Master Plan" style={styles.img} />
+            <img
+              src={row.master_plan_image_url || "Img.png"}
+              alt="Master Plan"
+              style={styles.img}
+            />
           </div>
         </div>
 
@@ -216,7 +269,9 @@ const Portfolio = () => {
                   cx="48%"
                   cy="50%"
                   outerRadius={80}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) =>
+                    `${name}: ${(percent * 100).toFixed(0)}%`
+                  }
                 >
                   {developmentData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -248,17 +303,40 @@ const Portfolio = () => {
             <MetricCard
               icon={TrendingUp}
               title="Total Development Budget"
-              value={`PKR ${fmtPKR(row.metric_total_development_budget_pkr || row.financial_total_budget)}`}
+              value={`PKR ${fmtPKR(
+                row.metric_total_development_budget_pkr ||
+                  row.financial_total_budget
+              )}`}
             />
-            <MetricCard icon={Clock} title="Overall Duration" value={`${num(row.metric_overall_duration_years)} Years`} />
-            <MetricCard icon={MapPin} title="Total Area" value={`${num(row.metric_total_area_acres).toLocaleString()} Acres`} />
-            <MetricCard icon={Building} title="Total Projects" value={`${num(row.metric_total_projects)}`} />
+            <MetricCard
+              icon={Clock}
+              title="Overall Duration"
+              value={`${num(row.metric_overall_duration_years)} Years`}
+            />
+            <MetricCard
+              icon={MapPin}
+              title="Total Area"
+              value={`${num(
+                row.metric_total_area_acres
+              ).toLocaleString()} Acres`}
+            />
+            <MetricCard
+              icon={Building}
+              title="Total Projects"
+              value={`${num(row.metric_total_projects)}`}
+            />
           </div>
         </div>
       </div>
 
       {/* Second Row */}
-      <div style={isMobile ? { display: "flex", flexDirection: "column", gap: "16px" } : styles.secondRow}>
+      <div
+        style={
+          isMobile
+            ? { display: "flex", flexDirection: "column", gap: "16px" }
+            : styles.secondRow
+        }
+      >
         {/* DEVELOPMENT TIMELINES */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>DEVELOPMENT TIMELINES</h2>
@@ -266,8 +344,12 @@ const Portfolio = () => {
             <div style={styles.timelineDuration}>
               <span style={styles.durationLabel}>DURATION</span>
               <div style={styles.durationChips}>
-                <span style={{ ...styles.chip, ...styles.chipGreen }}>{num(row.timeline_elapsed_years)} YEARS</span>
-                <span style={{ ...styles.chip, ...styles.chipBlue }}>{num(row.timeline_remaining_years)} YEARS</span>
+                <span style={{ ...styles.chip, ...styles.chipGreen }}>
+                  {num(row.timeline_elapsed_years)} YEARS
+                </span>
+                <span style={{ ...styles.chip, ...styles.chipBlue }}>
+                  {num(row.timeline_remaining_years)} YEARS
+                </span>
               </div>
             </div>
             <div style={styles.timelineYears}>
@@ -281,11 +363,15 @@ const Portfolio = () => {
             </div>
             <div style={styles.timelineLegend}>
               <div style={styles.legendItem}>
-                <div style={{ ...styles.legendColor, backgroundColor: "#10b981" }} />
+                <div
+                  style={{ ...styles.legendColor, backgroundColor: "#10b981" }}
+                />
                 <span style={styles.legendText}>TIME ELAPSED</span>
               </div>
               <div style={styles.legendItem}>
-                <div style={{ ...styles.legendColor, backgroundColor: "#3b82f6" }} />
+                <div
+                  style={{ ...styles.legendColor, backgroundColor: "#3b82f6" }}
+                />
                 <span style={styles.legendText}>REMAINING TIME</span>
               </div>
             </div>
@@ -296,14 +382,28 @@ const Portfolio = () => {
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>OVERALL PROGRESS</h2>
           <div style={styles.progressContainer}>
-            <ProgressCard title="Planned" percentage={num(row.progress_planned_pct)} color="#2196f3" />
-            <ProgressCard title="Actual" percentage={num(row.progress_actual_pct)} color="#4caf50" />
+            <ProgressCard
+              title="Planned"
+              percentage={num(row.progress_planned_pct)}
+              color="#2196f3"
+            />
+            <ProgressCard
+              title="Actual"
+              percentage={num(row.progress_actual_pct)}
+              color="#4caf50"
+            />
           </div>
         </div>
       </div>
 
       {/* Third Row */}
-      <div style={isMobile ? { display: "flex", flexDirection: "column", gap: "16px" } : styles.thirdRow}>
+      <div
+        style={
+          isMobile
+            ? { display: "flex", flexDirection: "column", gap: "16px" }
+            : styles.thirdRow
+        }
+      >
         {/* FINANCIAL OVERVIEW */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>FINANCIAL OVERVIEW</h2>
@@ -325,7 +425,9 @@ const Portfolio = () => {
           <div style={styles.customLegend}>
             {financialData.map((item, index) => (
               <div key={index} style={styles.legendItem}>
-                <div style={{ ...styles.legendColor, backgroundColor: item.color }} />
+                <div
+                  style={{ ...styles.legendColor, backgroundColor: item.color }}
+                />
                 <span style={styles.legendText}>{fmtPKR(item.value)}</span>
               </div>
             ))}
@@ -342,7 +444,10 @@ const Portfolio = () => {
                 style={{
                   ...styles.budgetBar3D,
                   backgroundColor: "#003366",
-                  width: `${Math.max(10, Math.round(plannedB * widthFactor))}px`,
+                  width: `${Math.max(
+                    10,
+                    Math.round(plannedB * widthFactor)
+                  )}px`,
                 }}
               >
                 {plannedB.toFixed(2)} B
@@ -350,12 +455,17 @@ const Portfolio = () => {
             </div>
 
             <div style={styles.budgetItem}>
-              <div style={styles.budgetLabel}>Certified Amount Till Date FY24-25</div>
+              <div style={styles.budgetLabel}>
+                Certified Amount Till Date FY24-25
+              </div>
               <div
                 style={{
                   ...styles.budgetBar3D,
                   backgroundColor: "#2e7d32",
-                  width: `${Math.max(10, Math.round(certifiedB * widthFactor))}px`,
+                  width: `${Math.max(
+                    10,
+                    Math.round(certifiedB * widthFactor)
+                  )}px`,
                 }}
               >
                 {certifiedB.toFixed(2)} B
@@ -363,7 +473,9 @@ const Portfolio = () => {
             </div>
 
             <div style={styles.budgetItem}>
-              <div style={styles.budgetLabel}>Expenditure Till Date FY24-25</div>
+              <div style={styles.budgetLabel}>
+                Expenditure Till Date FY24-25
+              </div>
               <div
                 style={{
                   ...styles.budgetBar3D,
@@ -387,26 +499,48 @@ const Portfolio = () => {
                 <YAxis />
                 <Tooltip formatter={(value) => `Rs. ${num(value)}B`} />
                 <Bar dataKey="amount" fill="#3b82f6">
-                  <LabelList dataKey="amount" position="top" formatter={(value) => `Rs. ${num(value)}B`} />
+                  <LabelList
+                    dataKey="amount"
+                    position="top"
+                    formatter={(value) => `Rs. ${num(value)}B`}
+                  />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div style={{ textAlign: "right", marginTop: "8px", fontWeight: "bold", fontSize: "14px" }}>
+          <div
+            style={{
+              textAlign: "right",
+              marginTop: "8px",
+              fontWeight: "bold",
+              fontSize: "14px",
+            }}
+          >
             Total Spent: Rs. {totalSpent}B
           </div>
         </div>
       </div>
 
       {/* Fourth Row */}
-      <div style={isMobile ? { display: "flex", flexDirection: "column", gap: "16px" } : styles.fourthRow}>
+      <div
+        style={
+          isMobile
+            ? { display: "flex", flexDirection: "column", gap: "16px" }
+            : styles.fourthRow
+        }
+      >
         {/* KEY ACHIEVEMENTS */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>KEY ACHIEVEMENTS</h2>
           <div style={styles.achievementsContainer}>
             <div style={styles.achievementsContent}>
-              <TrendingUp size={32} style={{ margin: "0 auto 8px", display: "block" }} />
-              <span>Key achievements and milestones will be displayed here</span>
+              <TrendingUp
+                size={32}
+                style={{ margin: "0 auto 8px", display: "block" }}
+              />
+              <span>
+                Key achievements and milestones will be displayed here
+              </span>
             </div>
           </div>
         </div>
@@ -414,7 +548,13 @@ const Portfolio = () => {
         {/* SUSTAINABILITY HIGHLIGHTS */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>SUSTAINABILITY HIGHLIGHTS</h2>
-          <div style={isMobile ? { display: "flex", flexDirection: "column", gap: "12px" } : styles.sustainabilityContainer}>
+          <div
+            style={
+              isMobile
+                ? { display: "flex", flexDirection: "column", gap: "12px" }
+                : styles.sustainabilityContainer
+            }
+          >
             <SustainabilityItem
               icon={Droplets}
               title="RIVER CHANNELIZATION"
@@ -436,7 +576,9 @@ const Portfolio = () => {
             <SustainabilityItem
               icon={Trees}
               title="AFFORESTATION"
-              subtitle={`${num(row.sustainability_afforestation_acres).toLocaleString()} Acres`}
+              subtitle={`${num(
+                row.sustainability_afforestation_acres
+              ).toLocaleString()} Acres`}
               color="#4caf50"
             />
             <SustainabilityItem
