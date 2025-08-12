@@ -178,12 +178,12 @@ const JSONData = ({ formData, setFormData }) => {
                     {firm.img && (
                       <IconButton
                         size="small"
-                        onClick={() =>
-                          window.open(
-                            `http://localhost:5000${firm.img}`,
-                            "_blank"
-                          )
-                        }
+                        onClick={() => {
+                          const imageUrl = firm.img.startsWith("/uploads/")
+                            ? `http://localhost:5000${firm.img}`
+                            : firm.img;
+                          window.open(imageUrl, "_blank");
+                        }}
                         sx={{
                           color: "#4caf50",
                           "&:hover": {

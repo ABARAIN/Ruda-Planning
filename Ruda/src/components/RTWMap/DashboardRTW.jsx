@@ -39,6 +39,19 @@ import IconButton from "@mui/material/IconButton";
 
 const pieColors = ["#4caf50", "#f44336"];
 
+// Helper function to get the correct image URL
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return "";
+
+  // If it's an uploaded image path, prepend the server URL
+  if (imagePath.startsWith("/uploads/")) {
+    return `http://localhost:5000${imagePath}`;
+  }
+
+  // If it's already a full URL or a relative path, return as is
+  return imagePath;
+};
+
 const bounceStyle = `
 @keyframes bounce {
   0%, 100% {
@@ -443,7 +456,7 @@ function MobileView({ data }) {
               data.firms.map((firm, index) => (
                 <Box key={index}>
                   <Avatar
-                    src={firm.img || ""}
+                    src={getImageUrl(firm.img)}
                     sx={{ width: 56, height: 56, mx: "auto", mb: 0 }}
                   />
                   <Typography variant="caption" fontWeight="bold">
@@ -793,7 +806,7 @@ function DesktopView({ data }) {
                   data.firms.map((firm, index) => (
                     <Box key={index}>
                       <Avatar
-                        src={firm.img || ""}
+                        src={getImageUrl(firm.img)}
                         sx={{ width: 56, height: 56, mx: "auto", mb: 0 }}
                       />
                       <Typography variant="caption" fontWeight="bold">
