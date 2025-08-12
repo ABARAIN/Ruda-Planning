@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -6,10 +6,21 @@ import {
   Grid,
   IconButton,
   Button,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
-import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import {
+  Add as AddIcon,
+  Delete as DeleteIcon,
+  CloudUpload as UploadIcon,
+  Image as ImageIcon,
+} from "@mui/icons-material";
+import axios from "axios";
 
 const JSONData = ({ formData, setFormData }) => {
+  const [uploadingStates, setUploadingStates] = useState({});
+  const [uploadErrors, setUploadErrors] = useState({});
+
   const addItemToArray = (fieldName, newItem) => {
     setFormData((prev) => ({
       ...prev,
@@ -31,6 +42,51 @@ const JSONData = ({ formData, setFormData }) => {
         i === index ? updatedItem : item
       ),
     }));
+  };
+
+  // Handle image upload
+  const handleImageUpload = async (file, firmIndex) => {
+    const uploadKey = `firm-${firmIndex}`;
+
+    try {
+      setUploadingStates((prev) => ({ ...prev, [uploadKey]: true }));
+      setUploadErrors((prev) => ({ ...prev, [uploadKey]: null }));
+
+      const uploadFormData = new FormData();
+      uploadFormData.append("image", file);
+
+      const response = await axios.post(
+        "http://localhost:5000/api/upload/image",
+        uploadFormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.data && response.data.data) {
+        // Update the firm's image path with the uploaded file path
+        const firms = [...(formData.firms || [])];
+        firms[firmIndex] = {
+          ...firms[firmIndex],
+          img: response.data.data.path,
+        };
+
+        setFormData((prev) => ({
+          ...prev,
+          firms: firms,
+        }));
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      setUploadErrors((prev) => ({
+        ...prev,
+        [uploadKey]: error.response?.data?.message || "Upload failed",
+      }));
+    } finally {
+      setUploadingStates((prev) => ({ ...prev, [uploadKey]: false }));
+    }
   };
 
   const renderFirmsBuilder = () => {
@@ -55,29 +111,96 @@ const JSONData = ({ formData, setFormData }) => {
           >
             <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
-                <TextField
-                  fullWidth
-                  label="Image Path"
-                  value={firm.img || ""}
-                  onChange={(e) =>
-                    updateItemInArray("firms", index, {
-                      ...firm,
-                      img: e.target.value,
-                    })
-                  }
-                  size="small"
-                  sx={{
-                    mb: 1,
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "8px",
-                      backgroundColor: "rgba(76, 175, 80, 0.05)",
-                    },
-                    "& .MuiInputLabel-root": {
-                      color: "#1e3a5f",
-                      fontWeight: "500",
-                    },
-                  }}
-                />
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <TextField
+                    fullWidth
+                    label="Image Path"
+                    value={firm.img || ""}
+                    onChange={(e) =>
+                      updateItemInArray("firms", index, {
+                        ...firm,
+                        img: e.target.value,
+                      })
+                    }
+                    size="small"
+                    sx={{
+                      mb: 1,
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "8px",
+                        backgroundColor: "rgba(76, 175, 80, 0.05)",
+                      },
+                      "& .MuiInputLabel-root": {
+                        color: "#1e3a5f",
+                        fontWeight: "500",
+                      },
+                    }}
+                  />
+                  <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                    <Button
+                      component="label"
+                      variant="outlined"
+                      startIcon={
+                        uploadingStates[`firm-${index}`] ? (
+                          <CircularProgress size={16} />
+                        ) : (
+                          <UploadIcon />
+                        )
+                      }
+                      disabled={uploadingStates[`firm-${index}`]}
+                      size="small"
+                      sx={{
+                        borderRadius: "8px",
+                        borderColor: "#1976d2",
+                        color: "#1976d2",
+                        textTransform: "none",
+                        fontSize: "12px",
+                        "&:hover": {
+                          backgroundColor: "rgba(25, 118, 210, 0.1)",
+                          borderColor: "#1565c0",
+                        },
+                      }}
+                    >
+                      {uploadingStates[`firm-${index}`]
+                        ? "Uploading..."
+                        : "Upload Image"}
+                      <input
+                        type="file"
+                        hidden
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            handleImageUpload(file, index);
+                          }
+                        }}
+                      />
+                    </Button>
+                    {firm.img && (
+                      <IconButton
+                        size="small"
+                        onClick={() =>
+                          window.open(
+                            `http://localhost:5000${firm.img}`,
+                            "_blank"
+                          )
+                        }
+                        sx={{
+                          color: "#4caf50",
+                          "&:hover": {
+                            backgroundColor: "rgba(76, 175, 80, 0.1)",
+                          },
+                        }}
+                      >
+                        <ImageIcon />
+                      </IconButton>
+                    )}
+                  </Box>
+                  {uploadErrors[`firm-${index}`] && (
+                    <Alert severity="error" sx={{ mt: 1, fontSize: "12px" }}>
+                      {uploadErrors[`firm-${index}`]}
+                    </Alert>
+                  )}
+                </Box>
               </Grid>
               <Grid item xs={12} md={4}>
                 <TextField
