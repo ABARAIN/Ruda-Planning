@@ -238,27 +238,40 @@ const fieldGroups = [
   {
     title: "Development Components",
     fields: [
-      { key: "dev_residential_pct", label: "Residential %", type: "number" },
       {
-        key: "dev_residential_color",
-        label: "Residential Color",
-        type: "color",
+        key: "dev_residential",
+        label: "Residential %",
+        type: "number_with_color",
+        numberKey: "dev_residential_pct",
+        colorKey: "dev_residential_color",
       },
-      { key: "dev_commercial_pct", label: "Commercial %", type: "number" },
-      { key: "dev_commercial_color", label: "Commercial Color", type: "color" },
-      { key: "dev_industrial_pct", label: "Industrial %", type: "number" },
-      { key: "dev_industrial_color", label: "Industrial Color", type: "color" },
-      { key: "dev_mixed_use_pct", label: "Mixed Use %", type: "number" },
-      { key: "dev_mixed_use_color", label: "Mixed Use Color", type: "color" },
       {
-        key: "dev_institutional_pct",
+        key: "dev_commercial",
+        label: "Commercial %",
+        type: "number_with_color",
+        numberKey: "dev_commercial_pct",
+        colorKey: "dev_commercial_color",
+      },
+      {
+        key: "dev_industrial",
+        label: "Industrial %",
+        type: "number_with_color",
+        numberKey: "dev_industrial_pct",
+        colorKey: "dev_industrial_color",
+      },
+      {
+        key: "dev_mixed_use",
+        label: "Mixed Use %",
+        type: "number_with_color",
+        numberKey: "dev_mixed_use_pct",
+        colorKey: "dev_mixed_use_color",
+      },
+      {
+        key: "dev_institutional",
         label: "Institutional %",
-        type: "number",
-      },
-      {
-        key: "dev_institutional_color",
-        label: "Institutional Color",
-        type: "color",
+        type: "number_with_color",
+        numberKey: "dev_institutional_pct",
+        colorKey: "dev_institutional_color",
       },
     ],
   },
@@ -275,31 +288,26 @@ const fieldGroups = [
   {
     title: "Financial Overview (PKR)",
     fields: [
-      { key: "financial_total_budget", label: "Total Budget", type: "number" },
       {
-        key: "financial_total_budget_color",
-        label: "Total Budget Color",
-        type: "color",
+        key: "financial_total_budget_combined",
+        label: "Total Budget",
+        type: "number_with_color",
+        numberKey: "financial_total_budget",
+        colorKey: "financial_total_budget_color",
       },
       {
-        key: "financial_utilized_budget",
+        key: "financial_utilized_budget_combined",
         label: "Utilized Budget",
-        type: "number",
+        type: "number_with_color",
+        numberKey: "financial_utilized_budget",
+        colorKey: "financial_utilized_budget_color",
       },
       {
-        key: "financial_utilized_budget_color",
-        label: "Utilized Budget Color",
-        type: "color",
-      },
-      {
-        key: "financial_remaining_budget",
+        key: "financial_remaining_budget_combined",
         label: "Remaining Budget",
-        type: "number",
-      },
-      {
-        key: "financial_remaining_budget_color",
-        label: "Remaining Budget Color",
-        type: "color",
+        type: "number_with_color",
+        numberKey: "financial_remaining_budget",
+        colorKey: "financial_remaining_budget_color",
       },
     ],
   },
@@ -519,7 +527,91 @@ export default function PortfolioAdmin() {
     }
   }
 
+  // Custom component for number field with color picker
+  function NumberWithColorField({ def }) {
+    const numberValue = form[def.numberKey] ?? "";
+    const colorValue = form[def.colorKey] ?? "#4caf50";
+
+    const handleNumberChange = (e) => {
+      setForm((s) => ({ ...s, [def.numberKey]: e.target.value }));
+    };
+
+    const handleColorChange = (e) => {
+      setForm((s) => ({ ...s, [def.colorKey]: e.target.value }));
+    };
+
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+        <TextField
+          size="small"
+          fullWidth
+          label={def.label}
+          type="number"
+          value={numberValue}
+          onChange={handleNumberChange}
+          slotProps={{
+            input: { step: "any" },
+          }}
+          className="ruda-portfolio-text-field"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "8px",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              },
+              "&.Mui-focused": {
+                boxShadow: "0 4px 12px rgba(25, 118, 210, 0.2)",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              color: "#1e3a5f",
+              fontWeight: "500",
+            },
+          }}
+        />
+        <Box
+          onClick={() =>
+            document.getElementById(`color-picker-${def.key}`).click()
+          }
+          sx={{
+            width: 40,
+            height: 40,
+            backgroundColor: colorValue,
+            border: "2px solid #e0e0e0",
+            borderRadius: "8px",
+            cursor: "pointer",
+            transition: "all 0.3s ease",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            "&:hover": {
+              transform: "scale(1.05)",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+              borderColor: "#1976d2",
+            },
+            "&:active": {
+              transform: "scale(0.95)",
+            },
+            minWidth: 40,
+            flexShrink: 0,
+          }}
+        />
+        <input
+          id={`color-picker-${def.key}`}
+          type="color"
+          value={colorValue}
+          onChange={handleColorChange}
+          style={{ display: "none" }}
+        />
+      </Box>
+    );
+  }
+
   function Field({ def }) {
+    // Handle the new combined number with color field type
+    if (def.type === "number_with_color") {
+      return <NumberWithColorField def={def} />;
+    }
+
     const v = form[def.key] ?? "";
     const common = {
       size: "small",
@@ -551,7 +643,9 @@ export default function PortfolioAdmin() {
           {...common}
           label={def.label}
           type="number"
-          inputProps={{ step: "any" }}
+          slotProps={{
+            input: { step: "any" },
+          }}
         />
       );
     }
@@ -561,7 +655,9 @@ export default function PortfolioAdmin() {
           {...common}
           label={def.label}
           type="color"
-          InputLabelProps={{ shrink: true }}
+          slotProps={{
+            inputLabel: { shrink: true },
+          }}
           sx={{
             ...common.sx,
             "& input": { height: 40, padding: 0 },
@@ -667,12 +763,14 @@ export default function PortfolioAdmin() {
                   },
                 },
               }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search fontSize="small" />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search fontSize="small" />
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
             <Tooltip title="Refresh">
@@ -924,11 +1022,13 @@ export default function PortfolioAdmin() {
           maxWidth="md"
           fullWidth
           className="ruda-portfolio-dialog"
-          PaperProps={{
-            sx: {
-              maxHeight: "90vh",
-              borderRadius: "16px",
-              overflow: "hidden",
+          slotProps={{
+            paper: {
+              sx: {
+                maxHeight: "90vh",
+                borderRadius: "16px",
+                overflow: "hidden",
+              },
             },
           }}
         >
