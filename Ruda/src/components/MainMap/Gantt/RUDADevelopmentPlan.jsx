@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import LogManager from "../LogManager";
 // Updated CSS styles embedded in component
 const styles = `
 .ruda-container {
@@ -462,6 +463,7 @@ const RudaTimeline = () => {
   );
   const [expandedReaches, setExpandedReaches] = useState(new Set());
   const [selectedItem, setSelectedItem] = useState(null);
+  const [showLog, setShowLog] = useState(false);
 
   const data = [
     // Phase 1
@@ -2157,10 +2159,32 @@ const RudaTimeline = () => {
     setExpandedReaches(newSet);
   };
 
-  const handleItemClick = (item, type = "item") => {
+  const handleItemClick = async (item, type = "item") => {
     // Only set timeline for leaf items that have timeline data
     if (item.timeline && Array.isArray(item.timeline)) {
       setSelectedItem(item);
+
+      // Log the view action for demonstration
+      try {
+        await fetch("http://localhost:5000/api/ganttlog", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            gantt_item_id:
+              item.name?.replace(/\s+/g, "-").toLowerCase() || "unknown",
+            gantt_item_name: item.name || "Unknown Item",
+            action: "UPDATE",
+            field_name: "selected_for_view",
+            old_value: null,
+            new_value: "Item selected for timeline view",
+            changed_by: "User",
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to log Gantt action:", error);
+      }
     }
   };
 
@@ -2193,12 +2217,37 @@ const RudaTimeline = () => {
     return amount;
   };
 
+  // Show log component if requested
+  if (showLog) {
+    return <LogManager onBack={() => setShowLog(false)} />;
+  }
+
   return (
     <div className="ruda-container">
       <div className="ruda-header-container">
         <h1 className="ruda-title">RUDA DEVELOPMENT PLAN - TIMELINE</h1>
-        <div className="ruda-logo" onClick={() => (window.location.href = "/")}>
-          HOME
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <button
+            onClick={() => setShowLog(true)}
+            style={{
+              background: "#1e3a5f",
+              color: "#c0c0c0",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: "600",
+            }}
+          >
+            VIEW LOG
+          </button>
+          <div
+            className="ruda-logo"
+            onClick={() => (window.location.href = "/")}
+          >
+            HOME
+          </div>
         </div>
       </div>
       <div className="ruda-content">

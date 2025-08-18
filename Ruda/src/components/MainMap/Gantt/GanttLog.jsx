@@ -40,7 +40,7 @@ import {
   Storage,
 } from "@mui/icons-material";
 
-// Styles similar to PCrud.jsx
+// Styles similar to PortfolioLog.jsx
 const rudaLogStyles = `
   .ruda-log-header {
     background: linear-gradient(135deg, #1e3a5f 0%, #2c4a6b 100%);
@@ -63,24 +63,25 @@ const rudaLogStyles = `
     border: 1px solid rgba(255,255,255,0.2) !important;
   }
 
+  .ruda-log-table-header {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+    font-weight: bold !important;
+    color: #1e293b !important;
+    border-bottom: 2px solid #cbd5e1 !important;
+  }
+
   .ruda-log-button-primary {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    border: none !important;
     border-radius: 8px !important;
-    text-transform: none !important;
-    font-weight: 600 !important;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
     transition: all 0.3s ease !important;
   }
 
   .ruda-log-button-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
-  }
-
-  .ruda-log-table-header {
-    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
-    font-weight: 600 !important;
-    color: #1e293b !important;
   }
 
   .ruda-log-chip-create {
@@ -137,9 +138,9 @@ if (typeof document !== "undefined") {
   document.head.appendChild(styleSheet);
 }
 
-const API_URL = "http://localhost:5000/api/portfoliolog";
+const API_URL = "http://localhost:5000/api/ganttlog";
 
-export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
+export default function GanttLog({ onBack, activeTab, onTabChange }) {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -153,11 +154,11 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
     const q = search.toLowerCase();
     return logs.filter(
       (log) =>
-        `${log.portfolio_title ?? ""}`.toLowerCase().includes(q) ||
+        `${log.gantt_item_name ?? ""}`.toLowerCase().includes(q) ||
         `${log.action ?? ""}`.toLowerCase().includes(q) ||
         `${log.field_name ?? ""}`.toLowerCase().includes(q) ||
         `${log.changed_by ?? ""}`.toLowerCase().includes(q) ||
-        `${log.portfolio_id}`.includes(q)
+        `${log.gantt_item_id}`.includes(q)
     );
   }, [logs, search]);
 
@@ -183,7 +184,7 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
         throw new Error(json.error || "Failed to load logs");
       }
     } catch (e) {
-      setError("Failed to load portfolio logs: " + e.message);
+      setError("Failed to load gantt logs: " + e.message);
       setLogs([]);
     } finally {
       setLoading(false);
@@ -244,12 +245,7 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
-      }}
-    >
+    <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)" }}>
       {/* Header */}
       <div className="ruda-log-header">
         <Box
@@ -359,10 +355,7 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
                     Total Logs
                   </Typography>
                   <Typography variant="h4" component="div">
-                    {stats.reduce(
-                      (sum, stat) => sum + parseInt(stat.daily_count || 0),
-                      0
-                    )}
+                    {stats.reduce((sum, stat) => sum + parseInt(stat.daily_count || 0), 0)}
                   </Typography>
                 </CardContent>
               </Card>
@@ -374,10 +367,7 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
                     Creates
                   </Typography>
                   <Typography variant="h4" component="div" color="success.main">
-                    {stats.reduce(
-                      (sum, stat) => sum + parseInt(stat.creates || 0),
-                      0
-                    )}
+                    {stats.reduce((sum, stat) => sum + parseInt(stat.creates || 0), 0)}
                   </Typography>
                 </CardContent>
               </Card>
@@ -389,10 +379,7 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
                     Updates
                   </Typography>
                   <Typography variant="h4" component="div" color="warning.main">
-                    {stats.reduce(
-                      (sum, stat) => sum + parseInt(stat.updates || 0),
-                      0
-                    )}
+                    {stats.reduce((sum, stat) => sum + parseInt(stat.updates || 0), 0)}
                   </Typography>
                 </CardContent>
               </Card>
@@ -404,10 +391,7 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
                     Deletes
                   </Typography>
                   <Typography variant="h4" component="div" color="error.main">
-                    {stats.reduce(
-                      (sum, stat) => sum + parseInt(stat.deletes || 0),
-                      0
-                    )}
+                    {stats.reduce((sum, stat) => sum + parseInt(stat.deletes || 0), 0)}
                   </Typography>
                 </CardContent>
               </Card>
@@ -433,13 +417,11 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
             }}
           >
             <TextField
-              placeholder="Search logs..."
+              placeholder="Search gantt logs..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               InputProps={{
-                startAdornment: (
-                  <Search sx={{ color: "text.secondary", mr: 1 }} />
-                ),
+                startAdornment: <Search sx={{ color: "text.secondary", mr: 1 }} />,
               }}
               sx={{ minWidth: 300 }}
             />
@@ -459,24 +441,12 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell className="ruda-log-table-header">
-                        Date/Time
-                      </TableCell>
-                      <TableCell className="ruda-log-table-header">
-                        Portfolio
-                      </TableCell>
-                      <TableCell className="ruda-log-table-header">
-                        Action
-                      </TableCell>
-                      <TableCell className="ruda-log-table-header">
-                        Field
-                      </TableCell>
-                      <TableCell className="ruda-log-table-header">
-                        Changes
-                      </TableCell>
-                      <TableCell className="ruda-log-table-header">
-                        Changed By
-                      </TableCell>
+                      <TableCell className="ruda-log-table-header">Date/Time</TableCell>
+                      <TableCell className="ruda-log-table-header">Gantt Item</TableCell>
+                      <TableCell className="ruda-log-table-header">Action</TableCell>
+                      <TableCell className="ruda-log-table-header">Field</TableCell>
+                      <TableCell className="ruda-log-table-header">Changes</TableCell>
+                      <TableCell className="ruda-log-table-header">Changed By</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -490,13 +460,10 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
                         <TableCell>
                           <Box>
                             <Typography variant="body2" fontWeight="medium">
-                              {log.portfolio_title || "Unknown Portfolio"}
+                              {log.gantt_item_name || "Unknown Item"}
                             </Typography>
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                            >
-                              ID: {log.portfolio_id}
+                            <Typography variant="caption" color="text.secondary">
+                              ID: {log.gantt_item_id}
                             </Typography>
                           </Box>
                         </TableCell>
@@ -509,11 +476,11 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
                         <TableCell>
                           {log.action === "CREATE" ? (
                             <Typography variant="body2" color="success.main">
-                              Portfolio created
+                              Gantt item created
                             </Typography>
                           ) : log.action === "DELETE" ? (
                             <Typography variant="body2" color="error.main">
-                              Portfolio deleted
+                              Gantt item deleted
                             </Typography>
                           ) : (
                             <Accordion>
@@ -523,18 +490,9 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
                                 </Typography>
                               </AccordionSummary>
                               <AccordionDetails>
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 1,
-                                  }}
-                                >
+                                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                                   <Box>
-                                    <Typography
-                                      variant="caption"
-                                      color="error.main"
-                                    >
+                                    <Typography variant="caption" color="text.secondary">
                                       Old Value:
                                     </Typography>
                                     <Typography
@@ -551,10 +509,7 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
                                     </Typography>
                                   </Box>
                                   <Box>
-                                    <Typography
-                                      variant="caption"
-                                      color="success.main"
-                                    >
+                                    <Typography variant="caption" color="text.secondary">
                                       New Value:
                                     </Typography>
                                     <Typography
@@ -576,9 +531,7 @@ export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Typography variant="body2">
-                            {log.changed_by}
-                          </Typography>
+                          <Typography variant="body2">{log.changed_by}</Typography>
                         </TableCell>
                       </TableRow>
                     ))}

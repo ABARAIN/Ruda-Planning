@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import PortfolioLog from "./PortfolioLog";
+import LogManager from "../LogManager";
 import {
   Box,
   Button,
@@ -699,7 +699,7 @@ export default function PortfolioAdmin() {
 
   // Show log component if requested
   if (showLog) {
-    return <PortfolioLog onBack={() => setShowLog(false)} />;
+    return <LogManager onBack={() => setShowLog(false)} />;
   }
 
   return (

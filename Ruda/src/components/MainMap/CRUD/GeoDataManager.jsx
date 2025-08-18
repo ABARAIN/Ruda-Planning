@@ -35,6 +35,7 @@ import {
 } from "@mui/icons-material";
 import axios from "axios";
 import JSONData from "./JSONData";
+import LogManager from "../LogManager";
 
 // RUDA Theme Styles
 const rudaStyles = `
@@ -190,6 +191,7 @@ const GeoDataManager = () => {
     message: "",
     severity: "success",
   });
+  const [showLog, setShowLog] = useState(false);
 
   // Initialize form data structure
   const initializeFormData = () => ({
@@ -229,7 +231,9 @@ const GeoDataManager = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("https://ruda-backend-ny14.onrender.com/api/all");
+      const res = await axios.get(
+        "https://ruda-backend-ny14.onrender.com/api/all"
+      );
       const features = res.data.features || [];
       const propertiesList = features.map((f) => f.properties || {});
       const allKeys = [
@@ -521,6 +525,11 @@ const GeoDataManager = () => {
     );
   }
 
+  // Show log component if requested
+  if (showLog) {
+    return <LogManager onBack={() => setShowLog(false)} />;
+  }
+
   return (
     <div className="ruda-geo-container">
       <div className="ruda-geo-header">
@@ -544,20 +553,39 @@ const GeoDataManager = () => {
           >
             PROJECT DATA MANAGER
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => handleOpenDialog()}
-            className="ruda-geo-button-primary"
-            sx={{
-              color: "white",
-              fontWeight: "bold",
-              textTransform: "none",
-              fontSize: "14px",
-            }}
-          >
-            Add New Project
-          </Button>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => setShowLog(true)}
+              sx={{
+                background: "linear-gradient(135deg, #929292 0%, #9f9f9f 100%)",
+                color: "white",
+                fontWeight: "bold",
+                textTransform: "none",
+                fontSize: "14px",
+                "&:hover": {
+                  background:
+                    "linear-gradient(135deg, #bebebe 0%, #9f9f9f 100%)",
+                },
+              }}
+            >
+              📊 View Logs
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => handleOpenDialog()}
+              className="ruda-geo-button-primary"
+              sx={{
+                color: "white",
+                fontWeight: "bold",
+                textTransform: "none",
+                fontSize: "14px",
+              }}
+            >
+              Add New Project
+            </Button>
+          </Box>
         </Box>
       </div>
       <div className="ruda-geo-content">

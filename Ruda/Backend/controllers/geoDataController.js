@@ -1,4 +1,5 @@
 const GeoDataModel = require("../models/GeoDataModel");
+const CrudLogModel = require("../models/CrudLogModel");
 
 class GeoDataController {
   // Get GeoJSON data for a specific table
@@ -55,6 +56,27 @@ class GeoDataController {
 
     try {
       const newRecord = await GeoDataModel.createRecord(data);
+
+      // Log the creation
+      try {
+        console.log(
+          "🔄 Attempting to log CREATE operation for record:",
+          newRecord.gid
+        );
+        await CrudLogModel.logCrudChange(
+          newRecord.gid,
+          newRecord.name || "Unknown Record",
+          "CREATE",
+          null,
+          null,
+          newRecord,
+          "System"
+        );
+        console.log("✅ CREATE operation logged successfully");
+      } catch (logError) {
+        console.error("❌ Failed to log CREATE operation:", logError);
+      }
+
       res.status(201).json({
         message: "Record added",
         row: newRecord,
@@ -78,10 +100,58 @@ class GeoDataController {
     }
 
     try {
+      // Get the old record first for logging
+      const oldRecord = await GeoDataModel.getRecordById(id);
       const updatedRecord = await GeoDataModel.updateRecord(id, data);
 
       if (!updatedRecord) {
         return res.status(404).json({ error: "Record not found" });
+      }
+
+      // Log the update with field-level changes
+      try {
+        if (oldRecord) {
+          console.log(
+            "🔄 Attempting to log UPDATE operation for record:",
+            updatedRecord.gid
+          );
+          // Compare fields and log changes
+          const fieldsToCheck = [
+            "name",
+            "layer",
+            "map_name",
+            "area_sqkm",
+            "area_acres",
+            "ruda_phase",
+            "rtw_pkg",
+            "description",
+            "category",
+          ];
+
+          let changesLogged = 0;
+          for (const field of fieldsToCheck) {
+            if (oldRecord[field] !== updatedRecord[field]) {
+              console.log(
+                `📝 Field changed: ${field} from "${oldRecord[field]}" to "${updatedRecord[field]}"`
+              );
+              await CrudLogModel.logCrudChange(
+                updatedRecord.gid,
+                updatedRecord.name || "Unknown Record",
+                "UPDATE",
+                field,
+                oldRecord[field],
+                updatedRecord[field],
+                "System"
+              );
+              changesLogged++;
+            }
+          }
+          console.log(
+            `✅ UPDATE operation logged successfully (${changesLogged} changes)`
+          );
+        }
+      } catch (logError) {
+        console.error("❌ Failed to log UPDATE operation:", logError);
       }
 
       res.json({
@@ -99,10 +169,34 @@ class GeoDataController {
     const { id } = req.params;
 
     try {
+      // Get the record before deletion for logging
+      const recordToDelete = await GeoDataModel.getRecordById(id);
       const deletedRecord = await GeoDataModel.deleteRecord(id);
 
       if (!deletedRecord) {
         return res.status(404).json({ error: "Record not found" });
+      }
+
+      // Log the deletion
+      try {
+        if (recordToDelete) {
+          console.log(
+            "🔄 Attempting to log DELETE operation for record:",
+            recordToDelete.gid
+          );
+          await CrudLogModel.logCrudChange(
+            recordToDelete.gid,
+            recordToDelete.name || "Unknown Record",
+            "DELETE",
+            null,
+            recordToDelete,
+            null,
+            "System"
+          );
+          console.log("✅ DELETE operation logged successfully");
+        }
+      } catch (logError) {
+        console.error("❌ Failed to log DELETE operation:", logError);
       }
 
       res.json({

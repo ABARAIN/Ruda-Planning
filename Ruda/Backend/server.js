@@ -5,10 +5,14 @@ const { SERVER_CONFIG } = require("./config/constants");
 const geoDataRoutes = require("./routes/geoDataRoutes");
 const portfolioCrudRoutes = require("./routes/portfolioCrudRoutes");
 const portfolioLogRoutes = require("./routes/portfolioLogRoutes");
+const ganttLogRoutes = require("./routes/ganttLogRoutes");
+const crudLogRoutes = require("./routes/crudLogRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const logger = require("./utils/logger");
 const PortfolioLogModel = require("./models/PortfolioLogModel");
+const GanttLogModel = require("./models/GanttLogModel");
+const CrudLogModel = require("./models/CrudLogModel");
 const path = require("path");
 
 const app = express();
@@ -33,6 +37,8 @@ app.use((req, res, next) => {
 app.use("/api", geoDataRoutes);
 app.use("/api/portfoliocrud", portfolioCrudRoutes);
 app.use("/api/portfoliolog", portfolioLogRoutes);
+app.use("/api/ganttlog", ganttLogRoutes);
+app.use("/api/crudlog", crudLogRoutes);
 app.use("/api/upload", uploadRoutes);
 
 // Health check endpoint
@@ -57,13 +63,19 @@ app.use("*", (req, res) => {
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Initialize portfolio logs table on startup
+// Initialize all log tables on startup
 async function initializeDatabase() {
   try {
     await PortfolioLogModel.createLogTable();
     logger.info("✅ Portfolio logs table initialized");
+
+    await GanttLogModel.createLogTable();
+    logger.info("✅ Gantt logs table initialized");
+
+    await CrudLogModel.createLogTable();
+    logger.info("✅ CRUD logs table initialized");
   } catch (error) {
-    logger.error("❌ Failed to initialize portfolio logs table:", error);
+    logger.error("❌ Failed to initialize log tables:", error);
   }
 }
 

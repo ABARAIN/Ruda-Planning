@@ -63,6 +63,56 @@ class GeoDataModel {
     return geojson;
   }
 
+  static async getRecordById(id) {
+    try {
+      const query = `
+        SELECT gid, layer, map_name, name, area_sqkm, area_acres, ruda_phase, rtw_pkg,
+               description, scope_of_work, land_available_pct, land_available_km,
+               land_remaining_pct, land_remaining_km, awarded_cost, duration_months,
+               commencement_date, completion_date, physical_actual_pct, work_done_million,
+               certified_million, elapsed_months, firms, physical_chart, financial_chart,
+               kpi_chart, curve_chart, category
+        FROM "all" WHERE gid = $1
+      `;
+      const result = await pool.query(query, [id]);
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      const record = result.rows[0];
+
+      // JSON fields that need to be parsed
+      const jsonFields = [
+        "firms",
+        "scope_of_work",
+        "physical_chart",
+        "financial_chart",
+        "kpi_chart",
+        "curve_chart",
+      ];
+
+      // Parse JSON fields
+      jsonFields.forEach((field) => {
+        if (record[field]) {
+          try {
+            record[field] = JSON.parse(record[field]);
+          } catch (e) {
+            console.warn(`Failed to parse JSON field ${field}:`, e);
+            record[field] = [];
+          }
+        } else {
+          record[field] = [];
+        }
+      });
+
+      return record;
+    } catch (error) {
+      console.error("Error fetching record by ID:", error);
+      throw error;
+    }
+  }
+
   static async getAllRecords() {
     try {
       const query = `
