@@ -71,7 +71,7 @@ const rudaLogStyles = `
   }
 
   .ruda-log-button-primary {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    background: linear-gradient(135deg, #1e3a5fd4 0%, #2c4b6b94 100%) !important;
     border: none !important;
     border-radius: 8px !important;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
@@ -79,7 +79,7 @@ const rudaLogStyles = `
   }
 
   .ruda-log-button-primary:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    background: linear-gradient(135deg, #1e3a5f88 0%, #2c4c6b6f 100%) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
   }
@@ -107,6 +107,8 @@ const rudaLogStyles = `
     border-radius: 12px !important;
     box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
     border: 1px solid rgba(59, 130, 246, 0.1) !important;
+     min-width: 110px !important;
+    height: 90px !important;
   }
 
   .ruda-log-nav-tabs {
@@ -125,7 +127,7 @@ const rudaLogStyles = `
   }
 
   .ruda-log-nav-tab.Mui-selected {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+linear-gradient(135deg, #1e3a5f 0%, #2c4a6b 100%) !important;
     color: white !important;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
   }
@@ -245,7 +247,12 @@ export default function CrudLog({ onBack, activeTab, onTabChange }) {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)" }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+      }}
+    >
       {/* Header */}
       <div className="ruda-log-header">
         <Box
@@ -345,60 +352,6 @@ export default function CrudLog({ onBack, activeTab, onTabChange }) {
       </div>
 
       <div className="ruda-log-content">
-        {/* Stats Cards */}
-        {stats && stats.length > 0 && (
-          <Grid container spacing={3} sx={{ mb: 3 }}>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card className="ruda-log-stats-card">
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom>
-                    Total Logs
-                  </Typography>
-                  <Typography variant="h4" component="div">
-                    {stats.reduce((sum, stat) => sum + parseInt(stat.daily_count || 0), 0)}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card className="ruda-log-stats-card">
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom>
-                    Creates
-                  </Typography>
-                  <Typography variant="h4" component="div" color="success.main">
-                    {stats.reduce((sum, stat) => sum + parseInt(stat.creates || 0), 0)}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card className="ruda-log-stats-card">
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom>
-                    Updates
-                  </Typography>
-                  <Typography variant="h4" component="div" color="warning.main">
-                    {stats.reduce((sum, stat) => sum + parseInt(stat.updates || 0), 0)}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card className="ruda-log-stats-card">
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom>
-                    Deletes
-                  </Typography>
-                  <Typography variant="h4" component="div" color="error.main">
-                    {stats.reduce((sum, stat) => sum + parseInt(stat.deletes || 0), 0)}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        )}
-
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
@@ -406,28 +359,102 @@ export default function CrudLog({ onBack, activeTab, onTabChange }) {
         )}
 
         <Paper elevation={0} className="ruda-log-paper" sx={{ p: 3 }}>
-          {/* Search and Controls */}
+          {/* Search + Stats in same row */}
           <Box
             sx={{
               mb: 2,
               display: "flex",
-              gap: 2,
+              justifyContent: "space-between",
               alignItems: "center",
               flexWrap: "wrap",
+              gap: 2,
             }}
           >
-            <TextField
-              placeholder="Search RTW CRUD logs..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              InputProps={{
-                startAdornment: <Search sx={{ color: "text.secondary", mr: 1 }} />,
+            {/* Left: Search + log count */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                flexWrap: "wrap",
               }}
-              sx={{ minWidth: 300 }}
-            />
-            <Typography variant="body2" color="text.secondary">
-              {filtered.length} log{filtered.length !== 1 ? "s" : ""} found
-            </Typography>
+            >
+              <TextField
+                placeholder="Search RTW CRUD logs..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <Search sx={{ color: "text.secondary", mr: 1 }} />
+                  ),
+                }}
+                sx={{ minWidth: 300 }}
+              />
+              <Typography variant="body2" color="text.secondary">
+                {filtered.length} log{filtered.length !== 1 ? "s" : ""} found
+              </Typography>
+            </Box>
+
+            {/* Right: Stats cards */}
+            {stats && stats.length > 0 && (
+              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                <Card className="ruda-log-stats-card" sx={{ minWidth: 120 }}>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
+                      Total Logs
+                    </Typography>
+                    <Typography variant="h5">
+                      {stats.reduce(
+                        (sum, stat) => sum + parseInt(stat.daily_count || 0),
+                        0
+                      )}
+                    </Typography>
+                  </CardContent>
+                </Card>
+
+                <Card className="ruda-log-stats-card" sx={{ minWidth: 120 }}>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
+                      Creates
+                    </Typography>
+                    <Typography variant="h5" color="success.main">
+                      {stats.reduce(
+                        (sum, stat) => sum + parseInt(stat.creates || 0),
+                        0
+                      )}
+                    </Typography>
+                  </CardContent>
+                </Card>
+
+                <Card className="ruda-log-stats-card" sx={{ minWidth: 120 }}>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
+                      Updates
+                    </Typography>
+                    <Typography variant="h5" color="warning.main">
+                      {stats.reduce(
+                        (sum, stat) => sum + parseInt(stat.updates || 0),
+                        0
+                      )}
+                    </Typography>
+                  </CardContent>
+                </Card>
+
+                <Card className="ruda-log-stats-card" sx={{ minWidth: 120 }}>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
+                      Deletes
+                    </Typography>
+                    <Typography variant="h5" color="error.main">
+                      {stats.reduce(
+                        (sum, stat) => sum + parseInt(stat.deletes || 0),
+                        0
+                      )}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Box>
+            )}
           </Box>
 
           {/* Logs Table */}
@@ -441,12 +468,24 @@ export default function CrudLog({ onBack, activeTab, onTabChange }) {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell className="ruda-log-table-header">Date/Time</TableCell>
-                      <TableCell className="ruda-log-table-header">Record</TableCell>
-                      <TableCell className="ruda-log-table-header">Action</TableCell>
-                      <TableCell className="ruda-log-table-header">Field</TableCell>
-                      <TableCell className="ruda-log-table-header">Changes</TableCell>
-                      <TableCell className="ruda-log-table-header">Changed By</TableCell>
+                      <TableCell className="ruda-log-table-header">
+                        Date/Time
+                      </TableCell>
+                      <TableCell className="ruda-log-table-header">
+                        Record
+                      </TableCell>
+                      <TableCell className="ruda-log-table-header">
+                        Action
+                      </TableCell>
+                      <TableCell className="ruda-log-table-header">
+                        Field
+                      </TableCell>
+                      <TableCell className="ruda-log-table-header">
+                        Changes
+                      </TableCell>
+                      <TableCell className="ruda-log-table-header">
+                        Changed By
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -462,7 +501,10 @@ export default function CrudLog({ onBack, activeTab, onTabChange }) {
                             <Typography variant="body2" fontWeight="medium">
                               {log.record_name || "Unknown Record"}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
                               ID: {log.record_id}
                             </Typography>
                           </Box>
@@ -490,9 +532,18 @@ export default function CrudLog({ onBack, activeTab, onTabChange }) {
                                 </Typography>
                               </AccordionSummary>
                               <AccordionDetails>
-                                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 1,
+                                  }}
+                                >
                                   <Box>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography
+                                      variant="caption"
+                                      color="text.secondary"
+                                    >
                                       Old Value:
                                     </Typography>
                                     <Typography
@@ -509,7 +560,10 @@ export default function CrudLog({ onBack, activeTab, onTabChange }) {
                                     </Typography>
                                   </Box>
                                   <Box>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography
+                                      variant="caption"
+                                      color="text.secondary"
+                                    >
                                       New Value:
                                     </Typography>
                                     <Typography
@@ -531,7 +585,9 @@ export default function CrudLog({ onBack, activeTab, onTabChange }) {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Typography variant="body2">{log.changed_by}</Typography>
+                          <Typography variant="body2">
+                            {log.changed_by}
+                          </Typography>
                         </TableCell>
                       </TableRow>
                     ))}

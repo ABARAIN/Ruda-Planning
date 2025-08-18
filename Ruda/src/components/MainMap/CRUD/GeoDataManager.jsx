@@ -558,18 +558,18 @@ const GeoDataManager = () => {
               variant="contained"
               onClick={() => setShowLog(true)}
               sx={{
-                background: "linear-gradient(135deg, #929292 0%, #9f9f9f 100%)",
+                background: "linear-gradient(135deg, #585858 0%, #6d6d6d 100%)",
                 color: "white",
                 fontWeight: "bold",
                 textTransform: "none",
                 fontSize: "14px",
                 "&:hover": {
                   background:
-                    "linear-gradient(135deg, #bebebe 0%, #9f9f9f 100%)",
+                    "linear-gradient(135deg, #838383 0%, #626262 100%)",
                 },
               }}
             >
-              📊 View Logs
+              View Log
             </Button>
             <Button
               variant="contained"

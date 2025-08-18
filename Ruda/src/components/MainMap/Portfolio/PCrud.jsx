@@ -737,7 +737,7 @@ export default function PortfolioAdmin() {
                 textTransform: "none",
                 fontSize: "14px",
                 background:
-                  "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important",
+                  "linear-gradient(135deg, #6b6b6b 0%, #898989 100%) !important",
               }}
             >
               View Log
