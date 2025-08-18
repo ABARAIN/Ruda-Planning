@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import PortfolioLog from "./PortfolioLog";
 import {
   Box,
   Button,
@@ -36,6 +37,7 @@ import {
   ExpandMore,
   Save,
   Cancel,
+  History,
 } from "@mui/icons-material";
 
 // RUDA Theme Styles
@@ -434,6 +436,7 @@ export default function PortfolioAdmin() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [toast, setToast] = useState({ open: false, type: "success", msg: "" });
+  const [showLog, setShowLog] = useState(false);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return rows;
@@ -694,6 +697,11 @@ export default function PortfolioAdmin() {
     );
   }
 
+  // Show log component if requested
+  if (showLog) {
+    return <PortfolioLog onBack={() => setShowLog(false)} />;
+  }
+
   return (
     <div className="ruda-portfolio-container">
       <div className="ruda-portfolio-header">
@@ -717,20 +725,38 @@ export default function PortfolioAdmin() {
           >
             PORTFOLIO DATA MANAGER
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={onAdd}
-            className="ruda-portfolio-button-primary"
-            sx={{
-              color: "white",
-              fontWeight: "bold",
-              textTransform: "none",
-              fontSize: "14px",
-            }}
-          >
-            Add New Portfolio
-          </Button>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant="contained"
+              startIcon={<History />}
+              onClick={() => setShowLog(true)}
+              className="ruda-portfolio-button-primary"
+              sx={{
+                color: "white",
+                fontWeight: "bold",
+                textTransform: "none",
+                fontSize: "14px",
+                background:
+                  "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important",
+              }}
+            >
+              View Log
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={onAdd}
+              className="ruda-portfolio-button-primary"
+              sx={{
+                color: "white",
+                fontWeight: "bold",
+                textTransform: "none",
+                fontSize: "14px",
+              }}
+            >
+              Add New Portfolio
+            </Button>
+          </Box>
         </Box>
       </div>
       <div className="ruda-portfolio-content">

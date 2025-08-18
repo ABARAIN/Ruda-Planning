@@ -4,9 +4,11 @@ const cors = require("cors");
 const { SERVER_CONFIG } = require("./config/constants");
 const geoDataRoutes = require("./routes/geoDataRoutes");
 const portfolioCrudRoutes = require("./routes/portfolioCrudRoutes");
+const portfolioLogRoutes = require("./routes/portfolioLogRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const logger = require("./utils/logger");
+const PortfolioLogModel = require("./models/PortfolioLogModel");
 const path = require("path");
 
 const app = express();
@@ -30,6 +32,7 @@ app.use((req, res, next) => {
 // Routes
 app.use("/api", geoDataRoutes);
 app.use("/api/portfoliocrud", portfolioCrudRoutes);
+app.use("/api/portfoliolog", portfolioLogRoutes);
 app.use("/api/upload", uploadRoutes);
 
 // Health check endpoint
@@ -54,11 +57,24 @@ app.use("*", (req, res) => {
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
+// Initialize portfolio logs table on startup
+async function initializeDatabase() {
+  try {
+    await PortfolioLogModel.createLogTable();
+    logger.info("✅ Portfolio logs table initialized");
+  } catch (error) {
+    logger.error("❌ Failed to initialize portfolio logs table:", error);
+  }
+}
+
 // Start server
 const PORT = SERVER_CONFIG.PORT;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   logger.info(`🚀 Server ready at http://localhost:${PORT}`);
   logger.info(`Environment: ${SERVER_CONFIG.NODE_ENV}`);
+
+  // Initialize database tables
+  await initializeDatabase();
 });
 
 // Graceful shutdown
