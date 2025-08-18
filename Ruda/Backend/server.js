@@ -5,6 +5,7 @@ const { SERVER_CONFIG } = require("./config/constants");
 const geoDataRoutes = require("./routes/geoDataRoutes");
 const portfolioCrudRoutes = require("./routes/portfolioCrudRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
+const ganntCrudRoutes = require("./routes/ganntCrudRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const logger = require("./utils/logger");
 const path = require("path");
@@ -31,6 +32,8 @@ app.use((req, res, next) => {
 app.use("/api", geoDataRoutes);
 app.use("/api/portfoliocrud", portfolioCrudRoutes);
 app.use("/api/upload", uploadRoutes);
+
+app.use("/api/ganntcrud", ganntCrudRoutes);
 
 // Health check endpoint
 app.get("/", (req, res) => {
