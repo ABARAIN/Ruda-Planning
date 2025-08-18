@@ -8,6 +8,7 @@ const portfolioLogRoutes = require("./routes/portfolioLogRoutes");
 const ganttLogRoutes = require("./routes/ganttLogRoutes");
 const crudLogRoutes = require("./routes/crudLogRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
+const ganntCrudRoutes = require("./routes/ganntCrudRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const logger = require("./utils/logger");
 const PortfolioLogModel = require("./models/PortfolioLogModel");
@@ -40,6 +41,8 @@ app.use("/api/portfoliolog", portfolioLogRoutes);
 app.use("/api/ganttlog", ganttLogRoutes);
 app.use("/api/crudlog", crudLogRoutes);
 app.use("/api/upload", uploadRoutes);
+
+app.use("/api/ganntcrud", ganntCrudRoutes);
 
 // Health check endpoint
 app.get("/", (req, res) => {
