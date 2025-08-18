@@ -127,7 +127,7 @@ const rudaLogStyles = `
   }
 
   .ruda-log-nav-tab.Mui-selected {
-linear-gradient(135deg, #1e3a5f 0%, #2c4a6b 100%) !important;
+    background: linear-gradient(135deg, #2d394a 0%, #2c4a6b 100%) !important;
     color: white !important;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
   }
