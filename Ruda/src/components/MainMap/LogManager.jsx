@@ -3,8 +3,8 @@ import PortfolioLog from "./Portfolio/PortfolioLog";
 import GanttLog from "./Gantt/GanttLog";
 import CrudLog from "./CRUD/CrudLog";
 
-export default function LogManager({ onBack }) {
-  const [activeTab, setActiveTab] = useState("portfolio");
+export default function LogManager({ onBack, logType = "portfolio", onClose }) {
+  const [activeTab, setActiveTab] = useState(logType);
 
   const handleTabChange = (newTab) => {
     setActiveTab(newTab);
@@ -15,7 +15,7 @@ export default function LogManager({ onBack }) {
       case "portfolio":
         return (
           <PortfolioLog
-            onBack={onBack}
+            onBack={onClose || onBack}
             activeTab={activeTab}
             onTabChange={handleTabChange}
           />
@@ -23,7 +23,7 @@ export default function LogManager({ onBack }) {
       case "gantt":
         return (
           <GanttLog
-            onBack={onBack}
+            onBack={onClose || onBack}
             activeTab={activeTab}
             onTabChange={handleTabChange}
           />
@@ -31,7 +31,7 @@ export default function LogManager({ onBack }) {
       case "crud":
         return (
           <CrudLog
-            onBack={onBack}
+            onBack={onClose || onBack}
             activeTab={activeTab}
             onTabChange={handleTabChange}
           />
@@ -39,7 +39,7 @@ export default function LogManager({ onBack }) {
       default:
         return (
           <PortfolioLog
-            onBack={onBack}
+            onBack={onClose || onBack}
             activeTab={activeTab}
             onTabChange={handleTabChange}
           />
