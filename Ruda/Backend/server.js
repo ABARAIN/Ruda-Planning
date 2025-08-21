@@ -7,7 +7,6 @@ const portfolioCrudRoutes = require("./routes/portfolioCrudRoutes");
 const portfolioLogRoutes = require("./routes/portfolioLogRoutes");
 const ganttLogRoutes = require("./routes/ganttLogRoutes");
 const crudLogRoutes = require("./routes/crudLogRoutes");
-const ganttCrudRoutes = require("./routes/GanttCrudRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const ganntCrudRoutes = require("./routes/ganntCrudRoutes");
 const errorHandler = require("./middleware/errorHandler");
@@ -15,7 +14,6 @@ const logger = require("./utils/logger");
 const PortfolioLogModel = require("./models/PortfolioLogModel");
 const GanttLogModel = require("./models/GanttLogModel");
 const CrudLogModel = require("./models/CrudLogModel");
-const GanttCrudModel = require("./models/GanttCrudModel");
 const path = require("path");
 
 const app = express();
@@ -42,7 +40,6 @@ app.use("/api/portfoliocrud", portfolioCrudRoutes);
 app.use("/api/portfoliolog", portfolioLogRoutes);
 app.use("/api/ganttlog", ganttLogRoutes);
 app.use("/api/crudlog", crudLogRoutes);
-app.use("/api/ganttcrud", ganttCrudRoutes);
 app.use("/api/upload", uploadRoutes);
 
 app.use("/api/ganntcrud", ganntCrudRoutes);
@@ -80,11 +77,8 @@ async function initializeDatabase() {
 
     await CrudLogModel.createLogTable();
     logger.info("✅ CRUD logs table initialized");
-
-    await GanttCrudModel.createTables();
-    logger.info("✅ Gantt CRUD tables initialized");
   } catch (error) {
-    logger.error("❌ Failed to initialize tables:", error);
+    logger.error("❌ Failed to initialize log tables:", error);
   }
 }
 
