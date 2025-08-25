@@ -25,6 +25,7 @@ export default function RUDAPlanTimeline({
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
   const [expanded, setExpanded] = useState({});
+  const [expandedCategories, setExpandedCategories] = useState({});
   const [query, setQuery] = useState("");
 
   const scrollerRef = useRef(null);
@@ -59,20 +60,28 @@ export default function RUDAPlanTimeline({
 
   useEffect(() => {
     if (!sheets.length) return;
-    if (!sheets.find((s) => String(s.name).trim() === String(activeSheetName).trim())) {
+    if (
+      !sheets.find(
+        (s) => String(s.name).trim() === String(activeSheetName).trim()
+      )
+    ) {
       setActiveSheetName(sheets[0].name);
     }
   }, [sheets]);
 
   const rows = useMemo(() => {
-    const s = sheets.find((x) => String(x.name).trim() === String(activeSheetName).trim());
+    const s = sheets.find(
+      (x) => String(x.name).trim() === String(activeSheetName).trim()
+    );
     return s?.rows ?? [];
   }, [sheets, activeSheetName]);
 
   // ----- Helpers -----
   const get = (obj, key, fallbacks = []) => {
     if (key in obj) return obj[key];
-    const k = Object.keys(obj).find((kk) => kk.trim().toLowerCase() === key.trim().toLowerCase());
+    const k = Object.keys(obj).find(
+      (kk) => kk.trim().toLowerCase() === key.trim().toLowerCase()
+    );
     if (k) return obj[k];
     for (const fb of fallbacks) {
       if (fb in obj) return obj[fb];
@@ -86,46 +95,71 @@ export default function RUDAPlanTimeline({
     return Number.isFinite(n) ? n : null;
   };
 
-  const fmt = (n) => (n === null || n === undefined || Number.isNaN(n) ? "-" : n.toLocaleString());
+  const fmt = (n) =>
+    n === null || n === undefined || Number.isNaN(n) ? "-" : n.toLocaleString();
 
   const isPhaseRow = (r) => {
     const rawPhase = get(r, COL_RUDA, [COL_SECTION]);
-    const v = String(rawPhase ?? "").trim().toUpperCase();
+    const v = String(rawPhase ?? "")
+      .trim()
+      .toUpperCase();
     return v.startsWith("PHASE");
   };
 
   const isCategoryRow = (r) => {
     const sn = get(r, COL_SN, ["Unnamed: 1"]);
-    const name = get(r, COL_BREAKDOWN, ["Project Amount Breakdown  Development Works", "Unnamed: 2"]);
+    const name = get(r, COL_BREAKDOWN, [
+      "Project Amount Breakdown  Development Works",
+      "Unnamed: 2",
+    ]);
     return !!name && !!sn && /^[A-Z]$/.test(String(sn).trim());
   };
 
   const isItemRow = (r) => {
     const sn = get(r, COL_SN, ["Unnamed: 1"]);
-    const name = get(r, COL_BREAKDOWN, ["Project Amount Breakdown  Development Works", "Unnamed: 2"]);
+    const name = get(r, COL_BREAKDOWN, [
+      "Project Amount Breakdown  Development Works",
+      "Unnamed: 2",
+    ]);
     return !!name && !sn && !isPhaseRow(r);
   };
 
   // Collect FY columns dynamically
   const FY_COLS = useMemo(() => {
     const set = new Set();
-    for (const r of rows) Object.keys(r).forEach((k) => { if (/^FY\s*\d{2}\s*[-–]\s*\d{2}$/i.test(k)) set.add(k); });
+    for (const r of rows)
+      Object.keys(r).forEach((k) => {
+        if (/^FY\s*\d{2}\s*[-–]\s*\d{2}$/i.test(k)) set.add(k);
+      });
     const mostFYRow = rows.reduce(
       (best, r) => {
-        const c = Object.keys(r).filter((k) => /^FY\s*\d{2}\s*[-–]\s*\d{2}$/i.test(k)).length;
+        const c = Object.keys(r).filter((k) =>
+          /^FY\s*\d{2}\s*[-–]\s*\d{2}$/i.test(k)
+        ).length;
         return c > best.count ? { row: r, count: c } : best;
       },
       { row: null, count: 0 }
     ).row;
     if (!mostFYRow) return Array.from(set);
-    const ordered = Object.keys(mostFYRow).filter((k) => /^FY\s*\d{2}\s*[-–]\s*\d{2}$/i.test(k) && set.has(k));
+    const ordered = Object.keys(mostFYRow).filter(
+      (k) => /^FY\s*\d{2}\s*[-–]\s*\d{2}$/i.test(k) && set.has(k)
+    );
     for (const k of set) if (!ordered.includes(k)) ordered.push(k);
     return ordered;
   }, [rows]);
 
-  // Generate month columns for each FY
-  const getMonthsForFY = (fy) => {
-    return ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
+  // Get value for a specific FY column from row data
+  const getFYValue = (row, fyCol) => {
+    const value = get(row, fyCol);
+    if (
+      value === null ||
+      value === undefined ||
+      value === "" ||
+      value === "-"
+    ) {
+      return null;
+    }
+    return value;
   };
 
   // ----- Build hierarchy -----
@@ -136,7 +170,8 @@ export default function RUDAPlanTimeline({
     for (const r of rows) {
       if (isPhaseRow(r)) {
         const title = String(get(r, COL_RUDA, [COL_SECTION]) ?? "").trim();
-        const amt = toNum(get(r, COL_BUDGET_EST)) ?? toNum(get(r, COL_BUDGET_REV0));
+        const amt =
+          toNum(get(r, COL_BUDGET_EST)) ?? toNum(get(r, COL_BUDGET_REV0));
         curP = { title, amount: amt, raw: r, cats: [] };
         phases.push(curP);
         curC = null;
@@ -145,16 +180,28 @@ export default function RUDAPlanTimeline({
       if (!curP) continue;
 
       if (isCategoryRow(r)) {
-        const name = String(get(r, COL_BREAKDOWN, ["Project Amount Breakdown  Development Works", "Unnamed: 2"]) ?? "").trim();
-        const amt = toNum(get(r, COL_BUDGET_EST)) ?? toNum(get(r, COL_BUDGET_REV0));
+        const name = String(
+          get(r, COL_BREAKDOWN, [
+            "Project Amount Breakdown  Development Works",
+            "Unnamed: 2",
+          ]) ?? ""
+        ).trim();
+        const amt =
+          toNum(get(r, COL_BUDGET_EST)) ?? toNum(get(r, COL_BUDGET_REV0));
         curC = { name, amount: amt, raw: r, items: [] };
         curP.cats.push(curC);
         continue;
       }
 
       if (isItemRow(r) && curC) {
-        const name = String(get(r, COL_BREAKDOWN, ["Project Amount Breakdown  Development Works", "Unnamed: 2"]) ?? "").trim();
-        const amt = toNum(get(r, COL_BUDGET_EST)) ?? toNum(get(r, COL_BUDGET_REV0));
+        const name = String(
+          get(r, COL_BREAKDOWN, [
+            "Project Amount Breakdown  Development Works",
+            "Unnamed: 2",
+          ]) ?? ""
+        ).trim();
+        const amt =
+          toNum(get(r, COL_BUDGET_EST)) ?? toNum(get(r, COL_BUDGET_REV0));
         curC.items.push({ name, amount: amt, raw: r });
       }
     }
@@ -171,7 +218,9 @@ export default function RUDAPlanTimeline({
         const cats = p.cats
           .map((c) => {
             const cHit = c.name.toLowerCase().includes(q);
-            const its = c.items.filter((it) => it.name.toLowerCase().includes(q));
+            const its = c.items.filter((it) =>
+              it.name.toLowerCase().includes(q)
+            );
             if (cHit && its.length === 0) return { ...c, items: c.items };
             if (!cHit && its.length === 0) return null;
             return { ...c, items: its };
@@ -217,7 +266,9 @@ export default function RUDAPlanTimeline({
           className="sheet-select"
         >
           {sheets.map((s) => (
-            <option key={s.name} value={s.name}>{s.name}</option>
+            <option key={s.name} value={s.name}>
+              {s.name}
+            </option>
           ))}
         </select>
       </div>
@@ -228,24 +279,36 @@ export default function RUDAPlanTimeline({
           <thead>
             <tr className="header-row">
               <th className="col-phases">PHASES / PACKAGES</th>
-              <th className="col-amount">Amount<br/>(PKR, M)</th>
-              <th className="col-duration">Duration<br/>(Days)</th>
-              <th className="col-schedule">Schedule<br/>%</th>
-              <th className="col-performance">Performance<br/>%</th>
-              <th className="col-planned">Planned<br/>Value<br/>(PKR, M)</th>
-              <th className="col-earned">Earned<br/>Value<br/>(PKR, M)</th>
-              <th className="col-actual-start">Actual<br/>Start</th>
-              <th className="col-actual-finish">Actual<br/>Finish</th>
+              <th className="col-amount">
+                Amount
+                <br />
+                (PKR, M)
+              </th>
+              <th className="col-budget-rev0">
+                Budget Estimates
+                <br />
+                Rev-0
+                <br />
+                (PKR Millions)
+              </th>
+              <th className="col-budget-est">
+                Budget Estimates
+                <br />
+                (PKR Millions)
+              </th>
+              <th className="col-ongoing">
+                Ongoing /
+                <br />
+                Completed
+              </th>
+              <th className="col-priority">
+                Priority
+                <br />
+                Projects
+              </th>
               {FY_COLS.map((fy) => (
                 <th key={fy} className="col-fy">
-                  <div className="fy-header">
-                    <div className="fy-title">{fy}</div>
-                    <div className="fy-months">
-                      {getMonthsForFY(fy).map(month => (
-                        <span key={month} className="month-header">{month}</span>
-                      ))}
-                    </div>
-                  </div>
+                  {fy}
                 </th>
               ))}
             </tr>
@@ -253,99 +316,120 @@ export default function RUDAPlanTimeline({
           <tbody>
             {filteredHierarchy.map((phase, idx) => {
               const isExpanded = expanded[idx];
-              
+
               return (
                 <React.Fragment key={phase.title}>
                   {/* Phase Row */}
-                  <tr 
-                    className="phase-row" 
-                    onClick={() => setExpanded(prev => ({ ...prev, [idx]: !isExpanded }))}
+                  <tr
+                    className="phase-row"
+                    onClick={() =>
+                      setExpanded((prev) => ({ ...prev, [idx]: !isExpanded }))
+                    }
                   >
                     <td className="phase-name">
-                      <span className={`expand-icon ${isExpanded ? 'expanded' : ''}`}>▲</span>
+                      <span
+                        className={`expand-icon ${
+                          isExpanded ? "expanded" : ""
+                        }`}
+                      >
+                        ▲
+                      </span>
                       <strong>{phase.title}</strong>
                     </td>
                     <td className="amount">{fmt(phase.amount)}</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    {FY_COLS.map((fy) => (
-                      <td key={fy} className="fy-cell">
-                        <div className="month-cells">
-                          {getMonthsForFY(fy).map(month => (
-                            <div key={month} className="month-cell"></div>
-                          ))}
-                        </div>
-                      </td>
-                    ))}
+                    <td>{fmt(toNum(get(phase.raw, COL_BUDGET_REV0)))}</td>
+                    <td>{fmt(toNum(get(phase.raw, COL_BUDGET_EST)))}</td>
+                    <td>{get(phase.raw, COL_ONGOING) || "-"}</td>
+                    <td>{get(phase.raw, COL_PRIORITY) || "-"}</td>
+                    {FY_COLS.map((fy) => {
+                      const value = getFYValue(phase.raw, fy);
+                      return (
+                        <td key={fy} className="fy-cell">
+                          {value !== null ? fmt(toNum(value)) : "-"}
+                        </td>
+                      );
+                    })}
                   </tr>
 
                   {/* Category and Item Rows */}
-                  {isExpanded && phase.cats.map((category) => (
-                    <React.Fragment key={category.name}>
-                      {/* Category Row */}
-                      <tr className="category-row">
-                        <td className="item-name">{category.name}</td>
-                        <td className="amount">{fmt(category.amount)}</td>
-                        <td>{get(category.raw, 'Duration') || '-'}</td>
-                        <td>{get(category.raw, 'Schedule %') || '-'}</td>
-                        <td>{get(category.raw, 'Performance %') || '-'}</td>
-                        <td>{get(category.raw, 'Planned Value') || '-'}</td>
-                        <td>{get(category.raw, 'Earned Value') || '-'}</td>
-                        <td>{get(category.raw, 'Actual Start') || '-'}</td>
-                        <td>{get(category.raw, 'Actual Finish') || '-'}</td>
-                        {FY_COLS.map((fy) => (
-                          <td key={fy} className="fy-cell">
-                            <div className="month-cells">
-                              {getMonthsForFY(fy).map(month => {
-                                const hasValue = Math.random() > 0.7; // Simulate some data
-                                return (
-                                  <div 
-                                    key={month} 
-                                    className={`month-cell ${hasValue ? 'has-value' : ''}`}
-                                  ></div>
-                                );
-                              })}
-                            </div>
-                          </td>
-                        ))}
-                      </tr>
+                  {isExpanded &&
+                    phase.cats.map((category, catIdx) => {
+                      const categoryKey = `${idx}-${catIdx}`;
+                      const isCategoryExpanded =
+                        expandedCategories[categoryKey];
 
-                      {/* Sub-item Rows */}
-                      {category.items.map((item) => (
-                        <tr key={item.name} className="item-row">
-                          <td className="item-name sub-item">{item.name}</td>
-                          <td className="amount">{fmt(item.amount)}</td>
-                          <td>{get(item.raw, 'Duration') || '-'}</td>
-                          <td>{get(item.raw, 'Schedule %') || '-'}</td>
-                          <td>{get(item.raw, 'Performance %') || '-'}</td>
-                          <td>{get(item.raw, 'Planned Value') || '-'}</td>
-                          <td>{get(item.raw, 'Earned Value') || '-'}</td>
-                          <td>{get(item.raw, 'Actual Start') || '-'}</td>
-                          <td>{get(item.raw, 'Actual Finish') || '-'}</td>
-                          {FY_COLS.map((fy) => (
-                            <td key={fy} className="fy-cell">
-                              <div className="month-cells">
-                                {getMonthsForFY(fy).map(month => {
-                                  const hasValue = Math.random() > 0.8; // Simulate some data
+                      return (
+                        <React.Fragment key={category.name}>
+                          {/* Category Row */}
+                          <tr
+                            className="category-row"
+                            onClick={() =>
+                              setExpandedCategories((prev) => ({
+                                ...prev,
+                                [categoryKey]: !isCategoryExpanded,
+                              }))
+                            }
+                          >
+                            <td className="item-name category-name">
+                              <span className="category-indent"></span>
+                              <span
+                                className={`expand-icon ${
+                                  isCategoryExpanded ? "expanded" : ""
+                                }`}
+                              >
+                                ▲
+                              </span>
+                              {category.name}
+                            </td>
+                            <td className="amount">{fmt(category.amount)}</td>
+                            <td>
+                              {fmt(toNum(get(category.raw, COL_BUDGET_REV0)))}
+                            </td>
+                            <td>
+                              {fmt(toNum(get(category.raw, COL_BUDGET_EST)))}
+                            </td>
+                            <td>{get(category.raw, COL_ONGOING) || "-"}</td>
+                            <td>{get(category.raw, COL_PRIORITY) || "-"}</td>
+                            {FY_COLS.map((fy) => {
+                              const value = getFYValue(category.raw, fy);
+                              return (
+                                <td key={fy} className="fy-cell">
+                                  {value !== null ? fmt(toNum(value)) : "-"}
+                                </td>
+                              );
+                            })}
+                          </tr>
+
+                          {/* Sub-item Rows */}
+                          {isCategoryExpanded &&
+                            category.items.map((item) => (
+                              <tr key={item.name} className="item-row">
+                                <td className="item-name sub-item">
+                                  <span className="sub-item-indent"></span>
+                                  {item.name}
+                                </td>
+                                <td className="amount">{fmt(item.amount)}</td>
+                                <td>
+                                  {fmt(toNum(get(item.raw, COL_BUDGET_REV0)))}
+                                </td>
+                                <td>
+                                  {fmt(toNum(get(item.raw, COL_BUDGET_EST)))}
+                                </td>
+                                <td>{get(item.raw, COL_ONGOING) || "-"}</td>
+                                <td>{get(item.raw, COL_PRIORITY) || "-"}</td>
+                                {FY_COLS.map((fy) => {
+                                  const value = getFYValue(item.raw, fy);
                                   return (
-                                    <div 
-                                      key={month} 
-                                      className={`month-cell ${hasValue ? 'has-value' : ''}`}
-                                    ></div>
+                                    <td key={fy} className="fy-cell">
+                                      {value !== null ? fmt(toNum(value)) : "-"}
+                                    </td>
                                   );
                                 })}
-                              </div>
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </React.Fragment>
-                  ))}
+                              </tr>
+                            ))}
+                        </React.Fragment>
+                      );
+                    })}
                 </React.Fragment>
               );
             })}
@@ -454,34 +538,19 @@ export default function RUDAPlanTimeline({
           min-width: 90px;
         }
 
+        .col-budget-rev0, .col-budget-est {
+          min-width: 100px;
+        }
+
+        .col-ongoing, .col-priority {
+          min-width: 80px;
+        }
+
         .col-fy {
-          min-width: 180px;
-          padding: 5px !important;
-        }
-
-        .fy-header {
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-        }
-
-        .fy-title {
+          min-width: 120px;
+          padding: 8px !important;
+          text-align: center;
           font-weight: bold;
-          color: white;
-          text-align: center;
-        }
-
-        .fy-months {
-          display: grid;
-          grid-template-columns: repeat(12, 1fr);
-          gap: 1px;
-        }
-
-        .month-header {
-          font-size: 10px;
-          color: #e2e8f0;
-          text-align: center;
-          padding: 2px 1px;
         }
 
         .phase-row {
@@ -517,11 +586,31 @@ export default function RUDAPlanTimeline({
 
         .category-row {
           background: #f7fafc;
+          cursor: pointer;
+        }
+
+        .category-row:hover {
+          background: #edf2f7;
         }
 
         .category-row td {
           padding: 10px 8px;
           border: 1px solid #e2e8f0;
+        }
+
+        .category-name {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .category-indent {
+          width: 20px;
+        }
+
+        .sub-item-indent {
+          width: 40px;
+          display: inline-block;
         }
 
         .item-row {
@@ -549,24 +638,9 @@ export default function RUDAPlanTimeline({
         }
 
         .fy-cell {
-          padding: 4px !important;
-        }
-
-        .month-cells {
-          display: grid;
-          grid-template-columns: repeat(12, 1fr);
-          gap: 1px;
-          height: 20px;
-        }
-
-        .month-cell {
-          background: #f1f5f9;
-          border-radius: 2px;
-          position: relative;
-        }
-
-        .month-cell.has-value {
-          background: #22c55e;
+          padding: 8px !important;
+          text-align: center;
+          font-weight: 500;
         }
 
         .ruda-loading, .ruda-error {
