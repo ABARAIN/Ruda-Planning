@@ -278,30 +278,50 @@ export default function RUDAPlanTimeline({
         <table className="ruda-table">
           <thead>
             <tr className="header-row">
-              <th className="col-phases">PHASES / PACKAGES</th>
-              <th className="col-amount">
+              <th
+                style={{ width: "365px", minWidth: "365px" }}
+                className="col-phases"
+              >
+                PHASES / PACKAGES
+              </th>
+              <th
+                style={{ width: "100px", minWidth: "100px" }}
+                className="col-amount"
+              >
                 Amount
                 <br />
                 (PKR, M)
               </th>
-              <th className="col-budget-rev0">
+              <th
+                style={{ width: "100px", minWidth: "100px" }}
+                className="col-budget-rev0"
+              >
                 Budget Estimates
                 <br />
                 Rev-0
                 <br />
                 (PKR Millions)
               </th>
-              <th className="col-budget-est">
+              <th
+                style={{ width: "100px", minWidth: "100px" }}
+                className="col-budget-est"
+              >
                 Budget Estimates
                 <br />
                 (PKR Millions)
               </th>
-              <th className="col-ongoing">
+              <th
+                style={{ width: "100px", minWidth: "100px" }}
+                className="col-ongoing"
+              >
                 Ongoing /
                 <br />
                 Completed
               </th>
-              <th className="col-priority">
+              <th
+                style={{ width: "100px", minWidth: "100px" }}
+                className="col-priority"
+              >
                 Priority
                 <br />
                 Projects
@@ -491,6 +511,8 @@ export default function RUDAPlanTimeline({
           font-size: 14px;
         }
 
+
+
         .sheet-select {
           padding: 8px 12px;
           border: 1px solid #cbd5e0;
@@ -512,7 +534,7 @@ export default function RUDAPlanTimeline({
         }
 
         .header-row {
-          background: #4a90e2;
+          background: #2c5282;
           color: white;
           position: sticky;
           top: 0;
@@ -521,10 +543,10 @@ export default function RUDAPlanTimeline({
 
         .header-row th {
           padding: 10px 8px;
-          border: 1px solid #357abd;
+          border: 1px solid #222b35;
           text-align: center;
           font-weight: bold;
-          font-size: 11px;
+          font-size: 12px;
           vertical-align: top;
           min-width: 80px;
         }
