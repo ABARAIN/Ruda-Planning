@@ -219,6 +219,56 @@ const MainMapPage = () => {
             <Button
               variant="contained"
               size="small"
+              onClick={() => (window.location.href = "/upcoming-projects")}
+              sx={{
+                backgroundColor: "rgba(255,255,255,0.15)",
+                color: "#fff",
+                textTransform: "none",
+                fontSize: "0.75rem",
+                fontWeight: 300,
+                borderRadius: "6px",
+                padding: "5px 10px",
+                minWidth: "auto",
+                boxShadow: "none",
+                border: "1px solid rgba(255,255,255,0.3)",
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  transform: "translateY(-1px)",
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              Upcoming Projects
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => (window.location.href = "/ongoing-projects")}
+              sx={{
+                backgroundColor: "rgba(255,255,255,0.15)",
+                color: "#fff",
+                textTransform: "none",
+                fontSize: "0.75rem",
+                fontWeight: 300,
+                borderRadius: "6px",
+                padding: "5px 10px",
+                minWidth: "auto",
+                boxShadow: "none",
+                border: "1px solid rgba(255,255,255,0.3)",
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  transform: "translateY(-1px)",
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              Ongoing Projects
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
               onClick={() => (window.location.href = "/gantt")}
               sx={{
                 backgroundColor: "rgba(255,255,255,0.15)",
@@ -241,7 +291,6 @@ const MainMapPage = () => {
             >
               Timeline
             </Button>
-
             <Button
               variant="contained"
               size="small"
@@ -267,7 +316,6 @@ const MainMapPage = () => {
             >
               Portfolio
             </Button>
-
             <Button
               variant="contained"
               size="small"
