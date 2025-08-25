@@ -27,6 +27,7 @@ const MainMapPage = () => {
   const [selectedPhases, setSelectedPhases] = useState([]);
   const [selectedPackages, setSelectedPackages] = useState([]);
   const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedLayers, setSelectedLayers] = useState([]);
   const [colorMap, setColorMap] = useState({});
   const [districtBoundaries, setDistrictBoundaries] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -73,9 +74,19 @@ const MainMapPage = () => {
       const names = [
         ...new Set(feats.map((f) => f.properties?.name).filter(Boolean)),
       ];
+
+      // Add layer names for color management
+      const layerNames = [
+        "Charhar Bhag",
+        "CB Enclave",
+        "Access Roads",
+        "M Toll Plaze",
+        "Jhoke",
+      ];
+
       setColorMap((prev) => {
         const newMap = { ...prev };
-        names.forEach((name) => {
+        [...names, ...layerNames].forEach((name) => {
           if (!newMap[name]) newMap[name] = getRandomColor();
         });
         return newMap;
@@ -370,6 +381,8 @@ const MainMapPage = () => {
                 setSelectedPackages={setSelectedPackages}
                 selectedProjects={selectedProjects}
                 setSelectedProjects={setSelectedProjects}
+                selectedLayers={selectedLayers}
+                setSelectedLayers={setSelectedLayers}
                 colorMap={colorMap}
                 onColorChange={handleColorChange}
                 onClose={() => setDrawerOpen(false)}
@@ -382,6 +395,7 @@ const MainMapPage = () => {
               colorMap={colorMap}
               selectedNames={selectedNames}
               districtBoundaries={districtBoundaries}
+              selectedLayers={selectedLayers}
             />
           </Box>
         </>
@@ -412,6 +426,8 @@ const MainMapPage = () => {
               setSelectedPackages={setSelectedPackages}
               selectedProjects={selectedProjects}
               setSelectedProjects={setSelectedProjects}
+              selectedLayers={selectedLayers}
+              setSelectedLayers={setSelectedLayers}
               colorMap={colorMap}
               onColorChange={handleColorChange}
             />
@@ -422,6 +438,7 @@ const MainMapPage = () => {
               colorMap={colorMap}
               selectedNames={selectedNames}
               districtBoundaries={districtBoundaries}
+              selectedLayers={selectedLayers}
             />
           </Box>
         </Box>

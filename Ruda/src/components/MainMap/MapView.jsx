@@ -67,13 +67,25 @@ const MapView = ({
   colorMap,
   selectedNames,
   districtBoundaries = [],
+  selectedLayers = [],
 }) => {
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
   const [baseStyleKey, setBaseStyleKey] = useState("Streets");
+  const [layersData, setLayersData] = useState({});
+  const [loadedLayers, setLoadedLayers] = useState(new Set());
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Mapping of layer names to GeoJSON file names
+  const layerFileMap = {
+    "Charhar Bhag": "Charhar Bhag_28-9-2022_2.geojson",
+    "CB Enclave": "CB Enclave.geojson",
+    "Access Roads": "Access Road.geojson",
+    "M Toll Plaze": "M2 Toll Plaza.geojson",
+    Jhoke: "Development at Jhoke 158 acres.geojson",
+  };
 
   const geojson = {
     type: "FeatureCollection",
@@ -181,6 +193,155 @@ const MapView = ({
       duration: 800,
     });
   }, [selectedNames]);
+
+  // Pre-load all layer data to prevent flickering
+  useEffect(() => {
+    const loadAllLayers = async () => {
+      const layerPromises = Object.entries(layerFileMap).map(
+        async ([layerName, fileName]) => {
+          try {
+            const response = await fetch(`/geojson/${fileName}`);
+            if (!response.ok) {
+              throw new Error(`Failed to load ${fileName}`);
+            }
+            const data = await response.json();
+            return [layerName, data];
+          } catch (error) {
+            console.error(`Error loading layer ${layerName}:`, error);
+            return [layerName, null];
+          }
+        }
+      );
+
+      const results = await Promise.all(layerPromises);
+      const layersDataMap = {};
+      results.forEach(([layerName, data]) => {
+        if (data) {
+          layersDataMap[layerName] = data;
+        }
+      });
+
+      setLayersData(layersDataMap);
+    };
+
+    loadAllLayers();
+  }, []);
+
+  // Handle layer visibility on map
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || Object.keys(layersData).length === 0) return;
+
+    // Get all available layer names
+    const allLayerNames = Object.keys(layerFileMap);
+
+    // Process each layer
+    allLayerNames.forEach((layerName) => {
+      const sourceId = `layer-${layerName.replace(/\s+/g, "-").toLowerCase()}`;
+      const fillLayerId = `${sourceId}-fill`;
+      const lineLayerId = `${sourceId}-line`;
+      const isSelected = selectedLayers.includes(layerName);
+      const layerData = layersData[layerName];
+
+      if (!layerData) return;
+
+      // Add source if it doesn't exist
+      if (!map.getSource(sourceId)) {
+        map.addSource(sourceId, {
+          type: "geojson",
+          data: layerData,
+        });
+
+        // Add fill layer
+        map.addLayer({
+          id: fillLayerId,
+          type: "fill",
+          source: sourceId,
+          paint: {
+            "fill-color": colorMap[layerName] || "#ff6b35",
+            "fill-opacity": 0.6,
+          },
+          layout: {
+            visibility: isSelected ? "visible" : "none",
+          },
+        });
+
+        // Add line layer for borders
+        map.addLayer({
+          id: lineLayerId,
+          type: "line",
+          source: sourceId,
+          paint: {
+            "line-color": colorMap[layerName] || "#ff6b35",
+            "line-width": 2,
+          },
+          layout: {
+            visibility: isSelected ? "visible" : "none",
+          },
+        });
+      } else {
+        // Update visibility for existing layers
+        if (map.getLayer(fillLayerId)) {
+          map.setLayoutProperty(
+            fillLayerId,
+            "visibility",
+            isSelected ? "visible" : "none"
+          );
+        }
+        if (map.getLayer(lineLayerId)) {
+          map.setLayoutProperty(
+            lineLayerId,
+            "visibility",
+            isSelected ? "visible" : "none"
+          );
+        }
+      }
+    });
+
+    // Fit map to selected layers bounds
+    if (selectedLayers.length > 0) {
+      const selectedLayersData = selectedLayers
+        .map((layerName) => layersData[layerName])
+        .filter(Boolean);
+
+      if (selectedLayersData.length > 0) {
+        const allFeatures = selectedLayersData.flatMap(
+          (data) => data.features || []
+        );
+        if (allFeatures.length > 0) {
+          const combinedData = {
+            type: "FeatureCollection",
+            features: allFeatures,
+          };
+          const bounds = bbox(combinedData);
+          map.fitBounds(bounds, {
+            padding: 60,
+            duration: 800,
+          });
+        }
+      }
+    }
+  }, [selectedLayers, layersData]);
+
+  // Update layer colors when colorMap changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || Object.keys(layersData).length === 0) return;
+
+    Object.keys(layerFileMap).forEach((layerName) => {
+      const sourceId = `layer-${layerName.replace(/\s+/g, "-").toLowerCase()}`;
+      const fillLayerId = `${sourceId}-fill`;
+      const lineLayerId = `${sourceId}-line`;
+      const color = colorMap[layerName] || "#ff6b35";
+
+      if (map.getLayer(fillLayerId)) {
+        map.setPaintProperty(fillLayerId, "fill-color", color);
+      }
+      if (map.getLayer(lineLayerId)) {
+        map.setPaintProperty(lineLayerId, "line-color", color);
+      }
+    });
+  }, [colorMap, layersData]);
 
   const addLayers = (map) => {
     map.addSource("mapbox-dem", {
@@ -391,10 +552,9 @@ const MapView = ({
   }
 
   return (
-<>
-
-   <style>
-      {`
+    <>
+      <style>
+        {`
         .mapboxgl-popup-close-button {
           font-size: 30px !important;
           width: 40px !important;
@@ -402,42 +562,42 @@ const MapView = ({
           color: #1976d2 !important;
         }
       `}
-    </style>
+      </style>
 
-<div style={{ position: "relative", width: "100%", height: "100%" }}>
-      {/* Basemap dropdown */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: isMobile ? 8 : 12,
-          right: isMobile ? 8 : 12,
-          zIndex: 10,
-          background: "#fff",
-          p: 1,
-          borderRadius: 1,
-          boxShadow: 2,
-          minWidth: 120,
-        }}
-      >
-        <FormControl size="small" fullWidth>
-          <InputLabel>Basemap</InputLabel>
-          <Select
-            label="Basemap"
-            value={baseStyleKey}
-            onChange={(e) => setBaseStyleKey(e.target.value)}
-          >
-            {Object.keys(baseStyles).map((label) => (
-              <MenuItem key={label} value={label}>
-                {label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
+      <div style={{ position: "relative", width: "100%", height: "100%" }}>
+        {/* Basemap dropdown */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: isMobile ? 8 : 12,
+            right: isMobile ? 8 : 12,
+            zIndex: 10,
+            background: "#fff",
+            p: 1,
+            borderRadius: 1,
+            boxShadow: 2,
+            minWidth: 120,
+          }}
+        >
+          <FormControl size="small" fullWidth>
+            <InputLabel>Basemap</InputLabel>
+            <Select
+              label="Basemap"
+              value={baseStyleKey}
+              onChange={(e) => setBaseStyleKey(e.target.value)}
+            >
+              {Object.keys(baseStyles).map((label) => (
+                <MenuItem key={label} value={label}>
+                  {label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
 
-      <ProposedRoadsLayer />
-      <div ref={mapContainerRef} style={{ width: "100%", height: "100%" }} />
-    </div>
+        <ProposedRoadsLayer />
+        <div ref={mapContainerRef} style={{ width: "100%", height: "100%" }} />
+      </div>
     </>
   );
 };

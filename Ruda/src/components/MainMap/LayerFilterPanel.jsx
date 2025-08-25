@@ -47,6 +47,8 @@ const LayerFilterPanel = ({
   colorMap = {},
   onColorChange,
   onClose = () => {},
+  selectedLayers = [],
+  setSelectedLayers,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -56,6 +58,7 @@ const LayerFilterPanel = ({
   const [openPackage, setOpenPackage] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [openProject, setOpenProject] = useState(false);
+  const [openLayers, setOpenLayers] = useState(false);
 
   const phaseOptions = useMemo(
     () => [
@@ -118,6 +121,14 @@ const LayerFilterPanel = ({
       )
       .map((f) => f.properties.name);
   }, [features, selectedPackages, selectedCategories]);
+
+  const layerOptions = [
+    "Charhar Bhag",
+    "CB Enclave",
+    "Access Roads",
+    "M Toll Plaze",
+    "Jhoke",
+  ];
 
   const renderDropdown = (
     label,
@@ -403,33 +414,15 @@ const LayerFilterPanel = ({
         </Select>
       </FormControl>
 
-      {/* Layers Dropdown */}
-      <FormControl fullWidth sx={{ mt: 2 }}>
-        <InputLabel sx={{ color: "#ccc" }}>Layers</InputLabel>
-        <Select
-          label="Layers"
-          defaultValue=""
-          sx={{
-            bgcolor: "#1a1a1a1d",
-            color: "#ffffff",
-            borderRadius: "8px",
-            "& .MuiSvgIcon-root": { color: "#fff" },
-            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#555" },
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#555 !important",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#555 !important",
-            },
-          }}
-        >
-          <MenuItem value="charhar bhag">Charhar Bhag</MenuItem>
-          <MenuItem value="CB Enclave">CB Enclave</MenuItem>
-          <MenuItem value="Access Roads">Access Roads</MenuItem>
-          <MenuItem value="M Toll Plaze">M Toll Plaze</MenuItem>
-          <MenuItem value="Jhoke">Jhoke</MenuItem>
-        </Select>
-      </FormControl>
+      {renderDropdown(
+        "Layers",
+        selectedLayers,
+        setSelectedLayers,
+        layerOptions,
+        openLayers,
+        setOpenLayers,
+        false
+      )}
     </Box>
   );
 };
