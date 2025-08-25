@@ -402,6 +402,34 @@ const LayerFilterPanel = ({
           ))}
         </Select>
       </FormControl>
+
+      {/* Layers Dropdown */}
+      <FormControl fullWidth sx={{ mt: 2 }}>
+        <InputLabel sx={{ color: "#ccc" }}>Layers</InputLabel>
+        <Select
+          label="Layers"
+          defaultValue=""
+          sx={{
+            bgcolor: "#1a1a1a1d",
+            color: "#ffffff",
+            borderRadius: "8px",
+            "& .MuiSvgIcon-root": { color: "#fff" },
+            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#555" },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#555 !important",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#555 !important",
+            },
+          }}
+        >
+          <MenuItem value="charhar bhag">Charhar Bhag</MenuItem>
+          <MenuItem value="CB Enclave">CB Enclave</MenuItem>
+          <MenuItem value="Access Roads">Access Roads</MenuItem>
+          <MenuItem value="M Toll Plaze">M Toll Plaze</MenuItem>
+          <MenuItem value="Jhoke">Jhoke</MenuItem>
+        </Select>
+      </FormControl>
     </Box>
   );
 };
