@@ -654,7 +654,7 @@ export default function RUDAPlanTimeline({
         }
         .ruda-container {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          background: #2c5282;
+          // background: #2c5282;
           min-height: 100vh;
           padding: 0;
           margin: 0;
@@ -728,7 +728,7 @@ export default function RUDAPlanTimeline({
         }
 
         .header-row {
-          background: #4a90e2;
+          background: #2c5282;
           color: white;
           position: sticky;
           top: 0;
@@ -740,8 +740,8 @@ export default function RUDAPlanTimeline({
           border: 1px solid #357abd;
           text-align: center;
           font-weight: bold;
-          font-size: 11px;
-          vertical-align: top;
+          font-size: 12px;
+          vertical-align: middle;
           min-width: 80px;
         }
 
