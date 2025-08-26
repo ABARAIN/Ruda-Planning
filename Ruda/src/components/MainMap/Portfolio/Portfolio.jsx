@@ -30,6 +30,7 @@ import "../../../Portfolio.css";
 import styles from "./styles";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import ProjectMilestone from "../ProjectMilestone";
 
 const API_URL = "http://localhost:5000/api/portfoliocrud/";
 
@@ -256,6 +257,48 @@ const Portfolio = () => {
           </div>
         </div>
 
+        {/* OVERALL PROGRESS - Vertical Layout */}
+        <div style={{ ...styles.card, width: isMobile ? "100%" : "300px" }}>
+          <h2 style={styles.cardTitle}>OVERALL PROGRESS</h2>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "20px",
+              padding: "20px 0",
+            }}
+          >
+            <ProgressCard
+              title="Planned"
+              percentage={num(row.progress_planned_pct)}
+              color="#2196f3"
+            />
+            <ProgressCard
+              title="Actual"
+              percentage={num(row.progress_actual_pct)}
+              color="#4caf50"
+            />
+          </div>
+        </div>
+
+        {/* PROJECT MILESTONE MAP */}
+        <div style={{ ...styles.card, flex: 1 }}>
+          <h2 style={styles.cardTitle}>PROJECT MILESTONE</h2>
+          <div style={{ width: "100%", height: "400px", overflow: "hidden" }}>
+            <ProjectMilestone />
+          </div>
+        </div>
+      </div>
+
+      {/* Second Row */}
+      <div
+        style={
+          isMobile
+            ? { display: "flex", flexDirection: "column", gap: "16px" }
+            : styles.secondRow
+        }
+      >
         {/* DEVELOPMENT COMPONENTS */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>DEVELOPMENT COMPONENTS</h2>
@@ -327,16 +370,7 @@ const Portfolio = () => {
             />
           </div>
         </div>
-      </div>
 
-      {/* Second Row */}
-      <div
-        style={
-          isMobile
-            ? { display: "flex", flexDirection: "column", gap: "16px" }
-            : styles.secondRow
-        }
-      >
         {/* DEVELOPMENT TIMELINES */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>DEVELOPMENT TIMELINES</h2>
@@ -375,23 +409,6 @@ const Portfolio = () => {
                 <span style={styles.legendText}>REMAINING TIME</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* OVERALL PROGRESS */}
-        <div style={styles.card}>
-          <h2 style={styles.cardTitle}>OVERALL PROGRESS</h2>
-          <div style={styles.progressContainer}>
-            <ProgressCard
-              title="Planned"
-              percentage={num(row.progress_planned_pct)}
-              color="#2196f3"
-            />
-            <ProgressCard
-              title="Actual"
-              percentage={num(row.progress_actual_pct)}
-              color="#4caf50"
-            />
           </div>
         </div>
       </div>
