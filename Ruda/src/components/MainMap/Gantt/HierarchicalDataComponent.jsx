@@ -408,7 +408,12 @@ export default function RUDAPlanTimeline({
           >
             {showOngoing ? "SHOW ALL" : "ONGOING"}
           </button>
-          <button className="home-btn" onClick={() => (window.location.href = "/")}>HOME</button>
+          <button
+            className="home-btn"
+            onClick={() => (window.location.href = "/")}
+          >
+            HOME
+          </button>
         </div>
       </div>
 
