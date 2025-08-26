@@ -9,6 +9,7 @@ import RUDADevelopmentPlan from "./components/MainMap/Gantt/RUDADevelopmentPlan"
 import PhaseTwoGanttChart from "./components/MainMap/Gantt/PhaseTwoGanttChart";
 import PCrud from "./components/MainMap/Portfolio/PCrud";
 import HierarchicalDataComponent from "./components/MainMap/Gantt/HierarchicalDataComponent";
+import ProjectMilestone from "./components/MainMap/ProjectMilestone";
 
 const AppRoutes = () => {
   return (
@@ -22,6 +23,7 @@ const AppRoutes = () => {
       <Route path="/phase2-gantt" element={<PhaseTwoGanttChart />} />
       <Route path="/portfolio-crud" element={<PCrud />} />
       <Route path="/hierarchical-gantt" element={<HierarchicalDataComponent />} />
+      <Route path="/milestones" element={<ProjectMilestone />} />
     </Routes>
   );
 };
