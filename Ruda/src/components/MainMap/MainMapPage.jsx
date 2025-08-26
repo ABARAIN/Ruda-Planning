@@ -280,7 +280,7 @@ const MainMapPage = () => {
             <Button
               variant="contained"
               size="small"
-              onClick={() => (window.location.href = "/gantt")}
+              onClick={() => (window.location.href = "/hierarchical-gantt")}
               sx={{
                 backgroundColor: "rgba(255,255,255,0.15)",
                 color: "#fff",
