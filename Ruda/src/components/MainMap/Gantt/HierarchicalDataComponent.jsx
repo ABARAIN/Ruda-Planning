@@ -4,6 +4,20 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
  * RUDA Development Plan – Timeline (Updated Design)
  * Matches the design from the provided image
  */
+// Milestone columns (from HierarchicalDataComponent1.jsx)
+const MILESTONE_COLS = [
+  "PC-I Preparation",
+  "PC-I Approval (DDC, RDWP, Board)",
+  "Admin Approval",
+  "Technical Sanction (TS)",
+  "Tender Advert",
+  "Bid Receipt",
+  "Technical evaluation",
+  "Financial evaluation",
+  "Letter of Acceptance (LOA)",
+  "Contract Award",
+  "Commencement of Work",
+];
 export default function RUDAPlanTimeline({
   jsonPath = "/Sheet.json",
   sheetName = "R.Dev Plan (v3.2 Actual udpate)",
@@ -27,6 +41,8 @@ export default function RUDAPlanTimeline({
   const [expanded, setExpanded] = useState({});
   const [expandedCategories, setExpandedCategories] = useState({});
   const [query, setQuery] = useState("");
+  // Add showPriority state for the PRIORITY/SHOW ALL button
+  const [showPriority, setShowPriority] = useState(false);
 
   const scrollerRef = useRef(null);
 
@@ -208,30 +224,63 @@ export default function RUDAPlanTimeline({
     return phases;
   }, [rows]);
 
-  // Filter by search
+  // Filter by search and priority
   const filteredHierarchy = useMemo(() => {
+    let filtered = hierarchy;
+    if (showPriority) {
+      filtered = filtered
+        .map((phase) => {
+          // Filter categories/items for priority
+          const cats = phase.cats
+            .map((cat) => {
+              // Filter items to only those with YES
+              const items = cat.items.filter(
+                (item) =>
+                  String(item.raw[COL_PRIORITY]).trim().toUpperCase() === "YES"
+              );
+              const isCatPriority =
+                String(cat.raw[COL_PRIORITY]).trim().toUpperCase() === "YES";
+              // Show category if it or any item is priority
+              if (isCatPriority || items.length > 0) {
+                return { ...cat, items };
+              }
+              return null;
+            })
+            .filter(Boolean);
+          const isPhasePriority =
+            String(phase.raw[COL_PRIORITY]).trim().toUpperCase() === "YES";
+          // Show phase if it or any category/item is priority
+          if (isPhasePriority || cats.length > 0) {
+            return { ...phase, cats };
+          }
+          return null;
+        })
+        .filter(Boolean);
+    }
     const q = query.trim().toLowerCase();
-    if (!q) return hierarchy;
-    return hierarchy
-      .map((p) => {
-        const pHit = p.title.toLowerCase().includes(q);
-        const cats = p.cats
-          .map((c) => {
-            const cHit = c.name.toLowerCase().includes(q);
-            const its = c.items.filter((it) =>
-              it.name.toLowerCase().includes(q)
-            );
-            if (cHit && its.length === 0) return { ...c, items: c.items };
-            if (!cHit && its.length === 0) return null;
-            return { ...c, items: its };
-          })
-          .filter(Boolean);
-        if (pHit && cats.length === 0) return p;
-        if (pHit || cats.length > 0) return { ...p, cats };
-        return null;
-      })
-      .filter(Boolean);
-  }, [hierarchy, query]);
+    if (q) {
+      filtered = filtered
+        .map((p) => {
+          const pHit = p.title.toLowerCase().includes(q);
+          const cats = p.cats
+            .map((c) => {
+              const cHit = c.name.toLowerCase().includes(q);
+              const its = c.items.filter((it) =>
+                it.name.toLowerCase().includes(q)
+              );
+              if (cHit && its.length === 0) return { ...c, items: c.items };
+              if (!cHit && its.length === 0) return null;
+              return { ...c, items: its };
+            })
+            .filter(Boolean);
+          if (pHit && cats.length === 0) return p;
+          if (pHit || cats.length > 0) return { ...p, cats };
+          return null;
+        })
+        .filter(Boolean);
+    }
+    return filtered;
+  }, [hierarchy, query, showPriority]);
 
   if (loading) return <div className="ruda-loading">Loading...</div>;
   if (err) return <div className="ruda-error">Error: {err}</div>;
@@ -243,7 +292,22 @@ export default function RUDAPlanTimeline({
         <div className="header-left">
           <h1>RUDA DEVELOPMENT PLAN - TIMELINE</h1>
         </div>
-        <div className="header-right">
+        <div className="header-right" style={{ display: "flex", gap: "10px" }}>
+          <button
+            className={`priority-btn${showPriority ? " active" : ""}`}
+            onClick={() => setShowPriority((v) => !v)}
+            style={{
+              background: showPriority ? "#5aa807ff" : "#4a90e2",
+              color: "white",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            {showPriority ? "SHOW ALL" : "PRIORITY"}
+          </button>
           <button className="home-btn">HOME</button>
         </div>
       </div>
@@ -314,8 +378,7 @@ export default function RUDAPlanTimeline({
                 style={{ width: "100px", minWidth: "100px" }}
                 className="col-ongoing"
               >
-                Ongoing /
-                <br />
+                Ongoing /<br />
                 Completed
               </th>
               <th
@@ -420,33 +483,114 @@ export default function RUDAPlanTimeline({
                             })}
                           </tr>
 
-                          {/* Sub-item Rows */}
+                          {/* Sub-item Rows with milestone rows */}
                           {isCategoryExpanded &&
-                            category.items.map((item) => (
-                              <tr key={item.name} className="item-row">
-                                <td className="item-name sub-item">
-                                  <span className="sub-item-indent"></span>
-                                  {item.name}
-                                </td>
-                                <td className="amount">{fmt(item.amount)}</td>
-                                <td>
-                                  {fmt(toNum(get(item.raw, COL_BUDGET_REV0)))}
-                                </td>
-                                <td>
-                                  {fmt(toNum(get(item.raw, COL_BUDGET_EST)))}
-                                </td>
-                                <td>{get(item.raw, COL_ONGOING) || "-"}</td>
-                                <td>{get(item.raw, COL_PRIORITY) || "-"}</td>
-                                {FY_COLS.map((fy) => {
-                                  const value = getFYValue(item.raw, fy);
-                                  return (
-                                    <td key={fy} className="fy-cell">
-                                      {value !== null ? fmt(toNum(value)) : "-"}
+                            category.items.map((item, itemIdx) => {
+                              const itemKey = `${category.name}-${item.name}-${itemIdx}`;
+                              const isMilestoneExpanded =
+                                expandedCategories[itemKey];
+                              return (
+                                <React.Fragment key={item.name}>
+                                  <tr
+                                    className="item-row"
+                                    onClick={() =>
+                                      setExpandedCategories((prev) => ({
+                                        ...prev,
+                                        [itemKey]: !isMilestoneExpanded,
+                                      }))
+                                    }
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <td className="item-name sub-item">
+                                      <span className="sub-item-indent"></span>
+                                      <span
+                                        className={`expand-icon${
+                                          isMilestoneExpanded ? " expanded" : ""
+                                        }`}
+                                      >
+                                        &nbsp;&nbsp; ▲ &nbsp;
+                                      </span>
+                                      {item.name}
                                     </td>
-                                  );
-                                })}
-                              </tr>
-                            ))}
+                                    <td className="amount">
+                                      {fmt(item.amount)}
+                                    </td>
+                                    <td>
+                                      {fmt(
+                                        toNum(get(item.raw, COL_BUDGET_REV0))
+                                      )}
+                                    </td>
+                                    <td>
+                                      {fmt(
+                                        toNum(get(item.raw, COL_BUDGET_EST))
+                                      )}
+                                    </td>
+                                    <td>{get(item.raw, COL_ONGOING) || "-"}</td>
+                                    <td>
+                                      {get(item.raw, COL_PRIORITY) || "-"}
+                                    </td>
+                                    {FY_COLS.map((fy) => {
+                                      const value = getFYValue(item.raw, fy);
+                                      return (
+                                        <td key={fy} className="fy-cell">
+                                          {value !== null
+                                            ? fmt(toNum(value))
+                                            : "-"}
+                                        </td>
+                                      );
+                                    })}
+                                  </tr>
+                                  {isMilestoneExpanded &&
+                                    MILESTONE_COLS.map((milestone, msIdx) => (
+                                      <React.Fragment
+                                        key={item.name + milestone}
+                                      >
+                                        <tr className="milestone-row">
+                                          <td className="item-name milestone-name">
+                                            <span className="sub-item-indent"></span>
+                                            <span className="milestone-indent"></span>{" "}
+                                            <span
+                                              style={{
+                                                color: "darkblue",
+                                                marginLeft: "20px",
+                                                marginRight: "6px",
+                                              }}
+                                            >
+                                              ●
+                                            </span>
+                                            {milestone}
+                                          </td>
+
+                                          <td className="amount">-</td>
+                                          <td className="amount">-</td>
+                                          <td className="amount">-</td>
+                                          <td className="amount">-</td>
+                                          <td className="amount">-</td>
+                                          {FY_COLS.map((fy) => (
+                                            <td key={fy} className="fy-cell">
+                                              -
+                                            </td>
+                                          ))}
+                                        </tr>
+                                        <tr className="milestone-separator">
+                                          <td
+                                            colSpan={6 + FY_COLS.length}
+                                            style={{ padding: 0 }}
+                                          >
+                                            <div
+                                              style={{
+                                                borderBottom:
+                                                  "1px solid #e2e8f0",
+                                                margin: "0 0 0 60px",
+                                              }}
+                                            ></div>
+                                          </td>
+                                        </tr>
+                                      </React.Fragment>
+                                    ))}
+                                </React.Fragment>
+                              );
+                            })}
                         </React.Fragment>
                       );
                     })}
@@ -458,6 +602,49 @@ export default function RUDAPlanTimeline({
       </div>
 
       <style>{`
+        .col-milestone {
+          min-width: 120px;
+          padding: 8px !important;
+          text-align: center;
+          font-weight: bold;
+          background: #f3f4f6;
+        }
+        .milestone-cell {
+          text-align: center;
+          color: #888;
+          font-style: italic;
+          background: #f9fafb;
+        }
+        .milestone-row .milestone-name {
+          padding-left: 0px;
+          color: #2c5282;
+          font-size: 12px;
+          font-style: italic;
+        }
+        .milestone-separator td {
+          background: #f9fafb;
+          height: 2px;
+          padding: 0;
+        }
+        .milestone-indent {
+          width: 20px;
+          display: inline-block;
+        }
+        .priority-btn {
+          background: #4a90e2;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+        }
+        .priority-btn.active {
+          background: #dc2626;
+        }
+        .priority-btn:hover {
+          background: #357abd;
+        }
         .ruda-container {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           background: #2c5282;
@@ -534,7 +721,7 @@ export default function RUDAPlanTimeline({
         }
 
         .header-row {
-          background: #2c5282;
+          background: #4a90e2;
           color: white;
           position: sticky;
           top: 0;
@@ -543,10 +730,10 @@ export default function RUDAPlanTimeline({
 
         .header-row th {
           padding: 10px 8px;
-          border: 1px solid #222b35;
+          border: 1px solid #357abd;
           text-align: center;
           font-weight: bold;
-          font-size: 12px;
+          font-size: 11px;
           vertical-align: top;
           min-width: 80px;
         }
@@ -655,7 +842,7 @@ export default function RUDAPlanTimeline({
         }
 
         .amount {
-          text-align: right;
+          text-align: center;
           font-weight: 500;
         }
 
