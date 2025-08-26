@@ -58,7 +58,6 @@ const LayerFilterPanel = ({
   const [openPackage, setOpenPackage] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [openProject, setOpenProject] = useState(false);
-  const [openLayers, setOpenLayers] = useState(false);
 
   const phaseOptions = useMemo(
     () => [
@@ -109,8 +108,19 @@ const LayerFilterPanel = ({
     return Array.from(categories);
   }, [features, selectedPackages]);
 
+  // Layer options and their corresponding phases
+  const layerPhaseMap = {
+    "Charhar Bhag": "Phase 1",
+    "CB Enclave": "Phase 1",
+    "Access Roads": "Phase 1",
+    "M Toll Plaze": "Phase 2A",
+    "Jhoke": "Phase 3",
+  };
+  const layerOptions = Object.keys(layerPhaseMap);
+
   const projectOptions = useMemo(() => {
-    return features
+    // Get normal project options
+    const projects = features
       .filter(
         (f) =>
           (f.properties?.name?.startsWith("RTW P") ||
@@ -120,15 +130,13 @@ const LayerFilterPanel = ({
           selectedCategories.includes(f.properties?.category)
       )
       .map((f) => f.properties.name);
-  }, [features, selectedPackages, selectedCategories]);
 
-  const layerOptions = [
-    "Charhar Bhag",
-    "CB Enclave",
-    "Access Roads",
-    "M Toll Plaze",
-    "Jhoke",
-  ];
+    // Add layers that match selected phases
+    const layersInSelectedPhases = layerOptions.filter(
+      (layer) => selectedPhases.includes(layerPhaseMap[layer])
+    );
+    return [...projects, ...layersInSelectedPhases];
+  }, [features, selectedPackages, selectedCategories, selectedPhases]);
 
   const renderDropdown = (
     label,
@@ -413,16 +421,6 @@ const LayerFilterPanel = ({
           ))}
         </Select>
       </FormControl>
-
-      {renderDropdown(
-        "Layers",
-        selectedLayers,
-        setSelectedLayers,
-        layerOptions,
-        openLayers,
-        setOpenLayers,
-        false
-      )}
     </Box>
   );
 };

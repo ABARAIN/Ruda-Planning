@@ -27,7 +27,7 @@ const MainMapPage = () => {
   const [selectedPhases, setSelectedPhases] = useState([]);
   const [selectedPackages, setSelectedPackages] = useState([]);
   const [selectedProjects, setSelectedProjects] = useState([]);
-  const [selectedLayers, setSelectedLayers] = useState([]);
+  // Remove selectedLayers, now layers are handled via selectedProjects
   const [colorMap, setColorMap] = useState({});
   const [districtBoundaries, setDistrictBoundaries] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -381,8 +381,6 @@ const MainMapPage = () => {
                 setSelectedPackages={setSelectedPackages}
                 selectedProjects={selectedProjects}
                 setSelectedProjects={setSelectedProjects}
-                selectedLayers={selectedLayers}
-                setSelectedLayers={setSelectedLayers}
                 colorMap={colorMap}
                 onColorChange={handleColorChange}
                 onClose={() => setDrawerOpen(false)}
@@ -395,7 +393,7 @@ const MainMapPage = () => {
               colorMap={colorMap}
               selectedNames={selectedNames}
               districtBoundaries={districtBoundaries}
-              selectedLayers={selectedLayers}
+              selectedProjects={selectedProjects}
             />
           </Box>
         </>
@@ -426,8 +424,6 @@ const MainMapPage = () => {
               setSelectedPackages={setSelectedPackages}
               selectedProjects={selectedProjects}
               setSelectedProjects={setSelectedProjects}
-              selectedLayers={selectedLayers}
-              setSelectedLayers={setSelectedLayers}
               colorMap={colorMap}
               onColorChange={handleColorChange}
             />
@@ -438,7 +434,7 @@ const MainMapPage = () => {
               colorMap={colorMap}
               selectedNames={selectedNames}
               districtBoundaries={districtBoundaries}
-              selectedLayers={selectedLayers}
+              selectedProjects={selectedProjects}
             />
           </Box>
         </Box>
