@@ -43,6 +43,9 @@ export default function RUDAPlanTimeline({
   const [query, setQuery] = useState("");
   // Add showPriority state for the PRIORITY/SHOW ALL button
   const [showPriority, setShowPriority] = useState(false);
+  // Add showCompleted and showOngoing states for new buttons
+  const [showCompleted, setShowCompleted] = useState(false);
+  const [showOngoing, setShowOngoing] = useState(false);
 
   const scrollerRef = useRef(null);
 
@@ -227,20 +230,18 @@ export default function RUDAPlanTimeline({
   // Filter by search and priority
   const filteredHierarchy = useMemo(() => {
     let filtered = hierarchy;
+    // Priority filter
     if (showPriority) {
       filtered = filtered
         .map((phase) => {
-          // Filter categories/items for priority
           const cats = phase.cats
             .map((cat) => {
-              // Filter items to only those with YES
               const items = cat.items.filter(
                 (item) =>
                   String(item.raw[COL_PRIORITY]).trim().toUpperCase() === "YES"
               );
               const isCatPriority =
                 String(cat.raw[COL_PRIORITY]).trim().toUpperCase() === "YES";
-              // Show category if it or any item is priority
               if (isCatPriority || items.length > 0) {
                 return { ...cat, items };
               }
@@ -249,7 +250,6 @@ export default function RUDAPlanTimeline({
             .filter(Boolean);
           const isPhasePriority =
             String(phase.raw[COL_PRIORITY]).trim().toUpperCase() === "YES";
-          // Show phase if it or any category/item is priority
           if (isPhasePriority || cats.length > 0) {
             return { ...phase, cats };
           }
@@ -257,6 +257,64 @@ export default function RUDAPlanTimeline({
         })
         .filter(Boolean);
     }
+    // Completed filter
+    if (showCompleted) {
+      filtered = filtered
+        .map((phase) => {
+          const cats = phase.cats
+            .map((cat) => {
+              const items = cat.items.filter(
+                (item) =>
+                  String(item.raw[COL_ONGOING]).trim().toUpperCase() ===
+                  "COMPLETED"
+              );
+              const isCatCompleted =
+                String(cat.raw[COL_ONGOING]).trim().toUpperCase() ===
+                "COMPLETED";
+              if (isCatCompleted || items.length > 0) {
+                return { ...cat, items };
+              }
+              return null;
+            })
+            .filter(Boolean);
+          const isPhaseCompleted =
+            String(phase.raw[COL_ONGOING]).trim().toUpperCase() === "COMPLETED";
+          if (isPhaseCompleted || cats.length > 0) {
+            return { ...phase, cats };
+          }
+          return null;
+        })
+        .filter(Boolean);
+    }
+    // Ongoing filter
+    if (showOngoing) {
+      filtered = filtered
+        .map((phase) => {
+          const cats = phase.cats
+            .map((cat) => {
+              const items = cat.items.filter(
+                (item) =>
+                  String(item.raw[COL_ONGOING]).trim().toUpperCase() ===
+                  "ONGOING"
+              );
+              const isCatOngoing =
+                String(cat.raw[COL_ONGOING]).trim().toUpperCase() === "ONGOING";
+              if (isCatOngoing || items.length > 0) {
+                return { ...cat, items };
+              }
+              return null;
+            })
+            .filter(Boolean);
+          const isPhaseOngoing =
+            String(phase.raw[COL_ONGOING]).trim().toUpperCase() === "ONGOING";
+          if (isPhaseOngoing || cats.length > 0) {
+            return { ...phase, cats };
+          }
+          return null;
+        })
+        .filter(Boolean);
+    }
+    // Search filter
     const q = query.trim().toLowerCase();
     if (q) {
       filtered = filtered
@@ -280,7 +338,7 @@ export default function RUDAPlanTimeline({
         .filter(Boolean);
     }
     return filtered;
-  }, [hierarchy, query, showPriority]);
+  }, [hierarchy, query, showPriority, showCompleted, showOngoing]);
 
   if (loading) return <div className="ruda-loading">Loading...</div>;
   if (err) return <div className="ruda-error">Error: {err}</div>;
@@ -295,7 +353,11 @@ export default function RUDAPlanTimeline({
         <div className="header-right" style={{ display: "flex", gap: "10px" }}>
           <button
             className={`priority-btn${showPriority ? " active" : ""}`}
-            onClick={() => setShowPriority((v) => !v)}
+            onClick={() => {
+              setShowPriority((v) => !v);
+              setShowCompleted(false);
+              setShowOngoing(false);
+            }}
             style={{
               background: showPriority ? "#5aa807ff" : "#4a90e2",
               color: "white",
@@ -307,6 +369,44 @@ export default function RUDAPlanTimeline({
             }}
           >
             {showPriority ? "SHOW ALL" : "PRIORITY"}
+          </button>
+          <button
+            className={`completed-btn${showCompleted ? " active" : ""}`}
+            onClick={() => {
+              setShowCompleted((v) => !v);
+              setShowPriority(false);
+              setShowOngoing(false);
+            }}
+            style={{
+              background: showCompleted ? "#16a34aff" : "#4a90e2",
+              color: "white",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            {showCompleted ? "SHOW ALL" : "COMPLETED"}
+          </button>
+          <button
+            className={`ongoing-btn${showOngoing ? " active" : ""}`}
+            onClick={() => {
+              setShowOngoing((v) => !v);
+              setShowPriority(false);
+              setShowCompleted(false);
+            }}
+            style={{
+              background: showOngoing ? "#f59e42" : "#4a90e2",
+              color: "white",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            {showOngoing ? "SHOW ALL" : "ONGOING"}
           </button>
           <button className="home-btn">HOME</button>
         </div>
@@ -651,6 +751,18 @@ export default function RUDAPlanTimeline({
         }
         .priority-btn:hover {
           background: #2c5282;
+        }
+        .completed-btn.active {
+          background: #16a34a;
+        }
+        .completed-btn:hover {
+          background: #12803a;
+        }
+        .ongoing-btn.active {
+          background: #f59e42;
+        }
+        .ongoing-btn:hover {
+          background: #e07c00;
         }
         .ruda-container {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
