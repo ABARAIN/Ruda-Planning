@@ -616,15 +616,22 @@ export default function RUDAPlanTimeline({
           background: #f9fafb;
         }
         .milestone-row .milestone-name {
-          padding-left: 0px;
+          
           color: #2c5282;
           font-size: 12px;
           font-style: italic;
+        }
+        .milestone-row td {
+          border-left: 1px solid #e2e8f0;
+          border-right: 1px solid #e2e8f0;
+          padding: 8px 8px;
+          background: #f9fafb;
         }
         .milestone-separator td {
           background: #f9fafb;
           height: 2px;
           padding: 0;
+          border: none;
         }
         .milestone-indent {
           width: 20px;
@@ -643,7 +650,7 @@ export default function RUDAPlanTimeline({
           background: #dc2626;
         }
         .priority-btn:hover {
-          background: #357abd;
+          background: #2c5282;
         }
         .ruda-container {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -679,7 +686,7 @@ export default function RUDAPlanTimeline({
         }
 
         .home-btn:hover {
-          background: #357abd;
+          background: #2c5282;
         }
 
         .ruda-controls {
