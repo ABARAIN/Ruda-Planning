@@ -242,7 +242,12 @@ const Portfolio = () => {
         style={
           isMobile
             ? { display: "flex", flexDirection: "column", gap: "16px" }
-            : styles.firstRow
+            : {
+                display: "flex",
+                flexDirection: "row",
+                gap: 16,
+                marginBottom: 24,
+              }
         }
       >
         {/* RAVI CITY MASTER PLAN */}
@@ -284,7 +289,7 @@ const Portfolio = () => {
 
         {/* PROJECT MILESTONE MAP */}
         <div style={{ ...styles.card, flex: 1 }}>
-          <h2 style={styles.cardTitle}>PROJECT MILESTONE</h2>
+          {/* <h2 style={styles.cardTitle}>PROJECT MILESTONE</h2> */}
           <div style={{ width: "100%", height: "400px", overflow: "hidden" }}>
             <ProjectMilestone />
           </div>

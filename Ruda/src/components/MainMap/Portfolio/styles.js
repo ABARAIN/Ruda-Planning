@@ -108,7 +108,7 @@ const styles = {
     backgroundColor: "white",
     padding: "12px",
     borderRadius: "8px",
-    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0 1px 6px rgba(0.1, 0.1, 0.1, 0.1)",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -119,7 +119,7 @@ const styles = {
     textAlign: "center" /* Center text horizontally */,
   },
   metricIcon: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: "#1c3a6bff",
     color: "white",
     padding: "8px",
     borderRadius: "50%",
@@ -132,7 +132,7 @@ const styles = {
   metricValue: {
     fontSize: "20px",
     fontWeight: "bold",
-    color: "#3b82f6",
+    color: "#1c3a6bff",
     marginBottom: "4px",
     overflow: "hidden" /* Prevent text overflow */,
     textOverflow: "ellipsis" /* Add ellipsis if the text is too long */,
@@ -229,7 +229,7 @@ const styles = {
 
   progressCard: {
     backgroundColor: "white",
-    padding: "16px",
+    padding: "0px",
     borderRadius: "8px",
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
     display: "flex",
@@ -243,8 +243,8 @@ const styles = {
     textAlign: "center" /* Center text horizontally */,
   },
   progressCircle: {
-    width: "64px" /* Set width */,
-    height: "64px" /* Set height */,
+    width: "120px" /* Set width */,
+    height: "120px" /* Set height */,
     borderRadius: "50%",
     border: "4px solid #e5e7eb",
     display: "flex",
@@ -256,8 +256,8 @@ const styles = {
   },
   progressInner: {
     backgroundColor: "white",
-    width: "48px" /* Adjust width */,
-    height: "48px" /* Adjust height */,
+    width: "80px" /* Adjust width */,
+    height: "80px" /* Adjust height */,
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
@@ -265,11 +265,11 @@ const styles = {
     zIndex: 10,
   },
   progressText: {
-    fontSize: "14px",
+    fontSize: "24px",
     fontWeight: "bold",
   },
   progressLabel: {
-    fontSize: "14px",
+    fontSize: "20px",
     fontWeight: "500",
     color: "#374151",
     overflow: "hidden" /* Prevent text from overflowing */,
