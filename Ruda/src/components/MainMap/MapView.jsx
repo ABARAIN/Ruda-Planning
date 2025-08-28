@@ -252,41 +252,31 @@ const MapView = ({
           data: layerData,
         });
 
-      // Always insert selected project layers AFTER 'ruda-fill' for higher z-index
-      let insertBelow = undefined;
-      if (map.getLayer('ruda-fill')) {
-        // Find the next layer after 'ruda-fill' to insert below (topmost)
-        const layers = map.getStyle().layers;
-        const rudaFillIndex = layers.findIndex(l => l.id === 'ruda-fill');
-        if (rudaFillIndex !== -1 && rudaFillIndex < layers.length - 1) {
-          insertBelow = layers[rudaFillIndex + 1].id;
-        }
-      }
-      map.addLayer({
-        id: fillLayerId,
-        type: "fill",
-        source: sourceId,
-        paint: {
-          "fill-color": colorMap[layerName] || "#ff6b35",
-          "fill-opacity": 0.7,
-        },
-        layout: {
-          visibility: isSelected ? "visible" : "none",
-        },
-      }, insertBelow);
+        map.addLayer({
+          id: fillLayerId,
+          type: "fill",
+          source: sourceId,
+          paint: {
+            "fill-color": colorMap[layerName] || "#ff6b35",
+            "fill-opacity": 0.7,
+          },
+          layout: {
+            visibility: isSelected ? "visible" : "none",
+          },
+        });
 
-      map.addLayer({
-        id: lineLayerId,
-        type: "line",
-        source: sourceId,
-        paint: {
-          "line-color": colorMap[layerName] || "#ff6b35",
-          "line-width": 3,
-        },
-        layout: {
-          visibility: isSelected ? "visible" : "none",
-        },
-      }, insertBelow);
+        map.addLayer({
+          id: lineLayerId,
+          type: "line",
+          source: sourceId,
+          paint: {
+            "line-color": colorMap[layerName] || "#ff6b35",
+            "line-width": 3,
+          },
+          layout: {
+            visibility: isSelected ? "visible" : "none",
+          },
+        });
 
         // Add popup for layer features (like ruda-fill)
         map.on("mouseenter", fillLayerId, () => {
@@ -300,16 +290,23 @@ const MapView = ({
           const props = feature.properties || {};
           const popupHTML = `
             <div style="font-family: 'Segoe UI', sans-serif; min-width:220px; padding:8px;">
-              <h3 style="margin:0 0 8px; font-size:16px; color:#1976d2;">${props.name || layerName}</h3>
+              <h3 style="margin:0 0 8px; font-size:16px; color:#1976d2;">${
+                props.name || layerName
+              }</h3>
               <div style="font-size:14px; margin-bottom:8px;">
                 <strong>Layer:</strong> ${layerName}
               </div>
-              <a href="/details/${encodeURIComponent(props.name || layerName)}" target="_blank" style="font-size:13px;color:#388e3c;font-weight:500;text-decoration:none;display:block;text-align:center;margin-top:2px;">
+              <a href="/details/${encodeURIComponent(
+                props.name || layerName
+              )}" target="_blank" style="font-size:13px;color:#388e3c;font-weight:500;text-decoration:none;display:block;text-align:center;margin-top:2px;">
                 🔍 View Details
               </a>
             </div>
           `;
-          new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(popupHTML).addTo(map);
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(popupHTML)
+            .addTo(map);
         });
       } else {
         // Update visibility for existing layers
@@ -328,10 +325,22 @@ const MapView = ({
           );
         }
       }
+
+      // Always move selected layers to the top
+      if (isSelected) {
+        try {
+          map.moveLayer(lineLayerId);
+        } catch (e) {}
+        try {
+          map.moveLayer(fillLayerId);
+        } catch (e) {}
+      }
     });
 
     // Fit map to selected layers bounds
-    const selectedLayerNames = allLayerNames.filter((layerName) => selectedProjects.includes(layerName));
+    const selectedLayerNames = allLayerNames.filter((layerName) =>
+      selectedProjects.includes(layerName)
+    );
     if (selectedLayerNames.length > 0) {
       const selectedLayersData = selectedLayerNames
         .map((layerName) => layersData[layerName])
