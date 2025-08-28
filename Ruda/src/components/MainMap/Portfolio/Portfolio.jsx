@@ -259,44 +259,46 @@ const Portfolio = () => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>
-        {src.title || row.title || "RUDA DEVELOPMENT PORTFOLIO"}
-      </h1>
-
       <div
         style={{
           display: "flex",
-          justifyContent: "flex-end",
+          justifyContent: "space-between",
           alignItems: "center",
+          width: "100%",
+          marginBottom: 16,
         }}
       >
         <div
+          onClick={handleDownloadPDF}
+          title="Print"
+          style={{ cursor: "pointer", padding: 6 }}
+        >
+          <Printer size={22} style={{ color: "#333" }} />
+        </div>
+
+        <h1
+          style={{ ...styles.title, margin: 0, textAlign: "center", flex: 1 }}
+        >
+          {src.title || row.title || "RUDA DEVELOPMENT PORTFOLIO"}
+        </h1>
+
+        <div
           onClick={() => setUsePriority(!usePriority)}
-          title="Toggle Priority values"
+          title="Priority"
           style={{
             display: "inline-flex",
             alignItems: "center",
-            gap: 8,
-            padding: "6px 10px",
+            justifyContent: "center",
+            padding: "6px 12px",
             borderRadius: 6,
-            background: usePriority ? "#111827" : "#e5e7eb",
-            color: usePriority ? "#fff" : "#111827",
+            background: usePriority ? "#10b981" : "#e93131",
+            color: usePriority ? "#fff" : "#ffffff",
             cursor: "pointer",
-            marginBottom: 8,
+            fontWeight: 600,
           }}
         >
-          Priority: {usePriority ? "ON" : "OFF"}
+          Priority
         </div>
-        <Printer
-          size={22}
-          onClick={handleDownloadPDF}
-          style={{
-            cursor: "pointer",
-            color: "#333",
-            marginLeft: "4px",
-            marginTop: "-110px",
-          }}
-        />
       </div>
 
       {/* First Row */}
