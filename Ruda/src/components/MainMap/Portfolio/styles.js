@@ -9,7 +9,7 @@ const styles = {
     fontSize: "32px",
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: "24px",
+    marginBottom: "2px",
     color: "#333",
   },
   row: {
@@ -106,7 +106,7 @@ const styles = {
   },
   metricCard: {
     backgroundColor: "white",
-    padding: "12px",
+    padding: "24px",
     borderRadius: "8px",
     boxShadow: "0 1px 6px rgba(0.1, 0.1, 0.1, 0.1)",
     display: "flex",
