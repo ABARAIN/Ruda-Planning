@@ -31,6 +31,7 @@ import styles from "./styles";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import ProjectMilestone from "../ProjectMilestone";
+import priorityData from "./portfolioPriorityData.json";
 
 const API_URL = "http://localhost:5000/api/portfoliocrud/";
 
@@ -45,8 +46,16 @@ const fmtPKR = (v) => {
   return n.toLocaleString();
 };
 
+const formatDuration = (years) => {
+  const n = num(years);
+  if (n === 0) return "0 Years";
+  if (n < 1) return `${Math.round(n * 12)} Months`;
+  return `${n} Years`;
+};
+
 const Portfolio = () => {
   const [row, setRow] = useState(null);
+  const [usePriority, setUsePriority] = useState(false);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
@@ -164,42 +173,56 @@ const Portfolio = () => {
   if (loading) return <div style={{ padding: 16 }}>Loading…</div>;
   if (err || !row) return <div style={{ padding: 16 }}>{err || "No data"}</div>;
 
+  // Select source: live row or priorityData when toggle is ON
+  const src = usePriority
+    ? {
+        ...priorityData,
+        financial_total_budget: priorityData.financial_total_budget,
+      }
+    : row;
+
   // Map DB values -> chart structures safely
   const developmentData = [
     {
       name: "Residential",
-      value: num(row.dev_residential_pct),
-      color: row.dev_residential_color || "#8B4513",
+      value: num(src.dev_residential_pct),
+      color: src.dev_residential_color || "#8B4513",
     },
     {
       name: "Commercial",
-      value: num(row.dev_commercial_pct),
-      color: row.dev_commercial_color || "#9932CC",
+      value: num(src.dev_commercial_pct),
+      color: src.dev_commercial_color || "#9932CC",
     },
     {
       name: "Industrial",
-      value: num(row.dev_industrial_pct),
-      color: row.dev_industrial_color || "#32CD32",
+      value: num(src.dev_industrial_pct),
+      color: src.dev_industrial_color || "#32CD32",
     },
     {
       name: "Mixed Use",
-      value: num(row.dev_mixed_use_pct),
-      color: row.dev_mixed_use_color || "#FF6347",
+      value: num(src.dev_mixed_use_pct),
+      color: src.dev_mixed_use_color || "#FF6347",
     },
     {
       name: "Institutional",
-      value: num(row.dev_institutional_pct),
-      color: row.dev_institutional_color || "#4169E1",
+      value: num(src.dev_institutional_pct),
+      color: src.dev_institutional_color || "#4169E1",
     },
   ];
 
-  const expenditureData = [
-    { year: "FY22-23", amount: num(row.exp_fy22_23_b) },
-    { year: "FY23-24", amount: num(row.exp_fy23_24_b) },
-    { year: "FY24-25", amount: num(row.exp_fy24_25_b) },
-    { year: "FY25-26", amount: num(row.exp_fy25_26_b) },
-    { year: "FY26-27", amount: num(row.exp_fy26_27_b) },
-  ];
+  // Use priority file's yearly expenditure if priority is ON, otherwise use row
+  const expenditureData = usePriority
+    ? (priorityData.expenditure_yearly || []).map((d) => ({
+        year: d.year,
+        amount: num(d.amount_b),
+      }))
+    : [
+        { year: "FY22-23", amount: num(row.exp_fy22_23_b) },
+        { year: "FY23-24", amount: num(row.exp_fy23_24_b) },
+        { year: "FY24-25", amount: num(row.exp_fy24_25_b) },
+        { year: "FY25-26", amount: num(row.exp_fy25_26_b) },
+        { year: "FY26-27", amount: num(row.exp_fy26_27_b) },
+      ];
   const totalSpent = expenditureData
     .reduce((s, i) => s + num(i.amount), 0)
     .toFixed(1);
@@ -207,41 +230,74 @@ const Portfolio = () => {
   const financialData = [
     {
       name: "Total Budget",
-      value: num(row.financial_total_budget),
-      color: row.financial_total_budget_color || "#3b82f6",
+      value: num(src.financial_total_budget || src.financial_total_budget),
+      color: src.financial_total_budget_color || "#3b82f6",
     },
     {
       name: "Utilized Budget",
-      value: num(row.financial_utilized_budget),
-      color: row.financial_utilized_budget_color || "#10b981",
+      value: num(src.financial_utilized_budget),
+      color: src.financial_utilized_budget_color || "#10b981",
     },
     {
       name: "Remaining Budget",
-      value: num(row.financial_remaining_budget),
-      color: row.financial_remaining_budget_color || "#f59e0b",
+      value: num(src.financial_remaining_budget),
+      color: src.financial_remaining_budget_color || "#f59e0b",
     },
   ];
 
   // Bar widths (px) based on billons * factor
   const widthFactor = 15; // tweak if you want longer bars
-  const plannedB = num(row.budget_planned_till_date_b);
-  const certifiedB = num(row.budget_certified_till_date_b);
-  const expendB = num(row.budget_expenditure_till_date_b);
+  const plannedB = num(
+    src.budget_planned_till_date_b || row.budget_planned_till_date_b
+  );
+  const certifiedB = num(
+    src.budget_certified_till_date_b || row.budget_certified_till_date_b
+  );
+  const expendB = num(
+    src.budget_expenditure_till_date_b || row.budget_expenditure_till_date_b
+  );
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>{row.title || "RUDA DEVELOPMENT PORTFOLIO"}</h1>
+      <h1 style={styles.title}>
+        {src.title || row.title || "RUDA DEVELOPMENT PORTFOLIO"}
+      </h1>
 
-      <Printer
-        size={22}
-        onClick={handleDownloadPDF}
+      <div
         style={{
-          cursor: "pointer",
-          color: "#333",
-          marginLeft: "4px",
-          marginTop: "-110px",
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
         }}
-      />
+      >
+        <div
+          onClick={() => setUsePriority(!usePriority)}
+          title="Toggle Priority values"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "6px 10px",
+            borderRadius: 6,
+            background: usePriority ? "#111827" : "#e5e7eb",
+            color: usePriority ? "#fff" : "#111827",
+            cursor: "pointer",
+            marginBottom: 8,
+          }}
+        >
+          Priority: {usePriority ? "ON" : "OFF"}
+        </div>
+        <Printer
+          size={22}
+          onClick={handleDownloadPDF}
+          style={{
+            cursor: "pointer",
+            color: "#333",
+            marginLeft: "4px",
+            marginTop: "-110px",
+          }}
+        />
+      </div>
 
       {/* First Row */}
       <div
@@ -343,26 +399,26 @@ const Portfolio = () => {
               icon={TrendingUp}
               title="Total Development Budget"
               value={`PKR ${fmtPKR(
-                row.metric_total_development_budget_pkr ||
-                  row.financial_total_budget
+                src.metric_total_development_budget_pkr ||
+                  src.financial_total_budget
               )}`}
             />
             <MetricCard
               icon={Clock}
               title="Overall Duration"
-              value={`${num(row.metric_overall_duration_years)} Years`}
+              value={`${num(src.metric_overall_duration_years)} Years`}
             />
             <MetricCard
               icon={MapPin}
               title="Total Area"
               value={`${num(
-                row.metric_total_area_acres
+                src.metric_total_area_acres
               ).toLocaleString()} Acres`}
             />
             <MetricCard
               icon={Building}
               title="Total Projects"
-              value={`${num(row.metric_total_projects)}`}
+              value={`${num(src.metric_total_projects)}`}
             />
           </div>
         </div>
@@ -382,12 +438,12 @@ const Portfolio = () => {
           >
             <ProgressCard
               title="Planned"
-              percentage={num(row.progress_planned_pct)}
+              percentage={num(src.progress_planned_pct)}
               color="#2196f3"
             />
             <ProgressCard
               title="Actual"
-              percentage={num(row.progress_actual_pct)}
+              percentage={num(src.progress_actual_pct)}
               color="#4caf50"
             />
           </div>
@@ -396,10 +452,10 @@ const Portfolio = () => {
               <span style={styles.durationLabel}>DURATION</span>
               <div style={styles.durationChips}>
                 <span style={{ ...styles.chip, ...styles.chipGreen }}>
-                  {num(row.timeline_elapsed_years)} YEARS
+                  {formatDuration(src.timeline_elapsed_years)}
                 </span>
                 <span style={{ ...styles.chip, ...styles.chipBlue }}>
-                  {num(row.timeline_remaining_years)} YEARS
+                  {formatDuration(src.timeline_remaining_years)}
                 </span>
               </div>
             </div>
