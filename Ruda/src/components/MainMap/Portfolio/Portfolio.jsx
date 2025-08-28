@@ -71,7 +71,13 @@ const Portfolio = () => {
   }, []);
 
   const MetricCard = ({ icon: Icon, title, value }) => (
-    <div style={styles.metricCard}>
+    <div
+      style={{ ...styles.metricCard, cursor: "pointer" }}
+      onClick={() => {
+        window.location.href = "/hierarchical-gantt";
+      }}
+      title="Click to view Hierarchical Gantt"
+    >
       <div style={styles.metricIcon}>
         <Icon size={20} />
       </div>
