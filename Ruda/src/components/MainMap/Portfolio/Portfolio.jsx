@@ -251,7 +251,7 @@ const Portfolio = () => {
         }
       >
         {/* RAVI CITY MASTER PLAN */}
-        <div style={styles.card}>
+        <div style={{ ...styles.card, flex: 0.5 }}>
           <h2 style={styles.cardTitle}>RAVI CITY MASTER PLAN</h2>
           <div style={styles.masterPlan}>
             <img
@@ -262,33 +262,18 @@ const Portfolio = () => {
           </div>
         </div>
 
-        {/* OVERALL PROGRESS - Vertical Layout */}
-        <div style={{ ...styles.card, width: isMobile ? "100%" : "300px" }}>
-          <h2 style={styles.cardTitle}>OVERALL PROGRESS</h2>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "20px",
-              padding: "20px 0",
-            }}
-          >
-            <ProgressCard
-              title="Planned"
-              percentage={num(row.progress_planned_pct)}
-              color="#2196f3"
-            />
-            <ProgressCard
-              title="Actual"
-              percentage={num(row.progress_actual_pct)}
-              color="#4caf50"
-            />
-          </div>
-        </div>
-
         {/* PROJECT MILESTONE MAP */}
-        <div style={{ ...styles.card, flex: 1 }}>
+        <div
+          style={{ ...styles.card, flex: 1, cursor: "pointer" }}
+          onClick={() => {
+            window.location.href = "/project-milestones";
+            setTimeout(() => {
+              // Optional: trigger a resize event for full map view if needed
+              window.dispatchEvent(new Event("resize"));
+            }, 300);
+          }}
+          title="Click to view full Project Milestones map"
+        >
           {/* <h2 style={styles.cardTitle}>PROJECT MILESTONE</h2> */}
           <div style={{ width: "100%", height: "400px", overflow: "hidden" }}>
             <ProjectMilestone />
@@ -379,6 +364,27 @@ const Portfolio = () => {
         {/* DEVELOPMENT TIMELINES */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>DEVELOPMENT TIMELINES</h2>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row", // horizontal
+              alignItems: "center", // vertical alignment
+              justifyContent: "center", // 👈 center horizontally
+              gap: "20px",
+              padding: "20px 0",
+            }}
+          >
+            <ProgressCard
+              title="Planned"
+              percentage={num(row.progress_planned_pct)}
+              color="#2196f3"
+            />
+            <ProgressCard
+              title="Actual"
+              percentage={num(row.progress_actual_pct)}
+              color="#4caf50"
+            />
+          </div>
           <div style={styles.timelineContainer}>
             <div style={styles.timelineDuration}>
               <span style={styles.durationLabel}>DURATION</span>

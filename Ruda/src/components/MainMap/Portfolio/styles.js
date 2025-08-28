@@ -243,8 +243,8 @@ const styles = {
     textAlign: "center" /* Center text horizontally */,
   },
   progressCircle: {
-    width: "120px" /* Set width */,
-    height: "120px" /* Set height */,
+    width: "90px" /* Set width */,
+    height: "90px" /* Set height */,
     borderRadius: "50%",
     border: "4px solid #e5e7eb",
     display: "flex",
@@ -256,8 +256,8 @@ const styles = {
   },
   progressInner: {
     backgroundColor: "white",
-    width: "80px" /* Adjust width */,
-    height: "80px" /* Adjust height */,
+    width: "70px" /* Adjust width */,
+    height: "70px" /* Adjust height */,
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
@@ -265,11 +265,11 @@ const styles = {
     zIndex: 10,
   },
   progressText: {
-    fontSize: "24px",
+    fontSize: "18px",
     fontWeight: "bold",
   },
   progressLabel: {
-    fontSize: "20px",
+    fontSize: "16px",
     fontWeight: "500",
     color: "#374151",
     overflow: "hidden" /* Prevent text from overflowing */,
