@@ -266,7 +266,7 @@ const Portfolio = () => {
         <div
           style={{ ...styles.card, flex: 1, cursor: "pointer" }}
           onClick={() => {
-            window.location.href = "/project-milestones";
+            window.location.href = "/milestones";
             setTimeout(() => {
               // Optional: trigger a resize event for full map view if needed
               window.dispatchEvent(new Event("resize"));
