@@ -47,6 +47,29 @@ export default function RUDAPlanTimeline({
   const [showCompleted, setShowCompleted] = useState(false);
   const [showOngoing, setShowOngoing] = useState(false);
 
+  // Initialize filters from URL query params (e.g. ?filter=ongoing)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const f = (params.get("filter") || "").trim().toLowerCase();
+      if (f === "ongoing") {
+        setShowOngoing(true);
+        setShowPriority(false);
+        setShowCompleted(false);
+      } else if (f === "completed") {
+        setShowCompleted(true);
+        setShowPriority(false);
+        setShowOngoing(false);
+      } else if (f === "priority") {
+        setShowPriority(true);
+        setShowCompleted(false);
+        setShowOngoing(false);
+      }
+    } catch (e) {
+      // ignore malformed URL params
+    }
+  }, []);
+
   const scrollerRef = useRef(null);
 
   // ----- Data load -----
@@ -359,7 +382,7 @@ export default function RUDAPlanTimeline({
               setShowOngoing(false);
             }}
             style={{
-              background: showPriority ? "#5aa807ff" : "#4a90e2",
+              background: showPriority ? "#16a34aff" : "#4a90e2",
               color: "white",
               border: "none",
               padding: "8px 16px",
@@ -368,7 +391,7 @@ export default function RUDAPlanTimeline({
               fontWeight: "bold",
             }}
           >
-            {showPriority ? "SHOW ALL" : "PRIORITY"}
+            {showPriority ? "PRIORITY" : "PRIORITY"}
           </button>
           <button
             className={`completed-btn${showCompleted ? " active" : ""}`}
@@ -387,7 +410,7 @@ export default function RUDAPlanTimeline({
               fontWeight: "bold",
             }}
           >
-            {showCompleted ? "SHOW ALL" : "COMPLETED"}
+            {showCompleted ? "COMPLETED" : "COMPLETED"}
           </button>
           <button
             className={`ongoing-btn${showOngoing ? " active" : ""}`}
@@ -397,7 +420,7 @@ export default function RUDAPlanTimeline({
               setShowCompleted(false);
             }}
             style={{
-              background: showOngoing ? "#f59e42" : "#4a90e2",
+              background: showOngoing ? "#16a34aff" : "#4a90e2",
               color: "white",
               border: "none",
               padding: "8px 16px",
@@ -406,7 +429,7 @@ export default function RUDAPlanTimeline({
               fontWeight: "bold",
             }}
           >
-            {showOngoing ? "SHOW ALL" : "ONGOING"}
+            {showOngoing ? "ONGOING" : "ONGOING"}
           </button>
           <button
             className="home-btn"

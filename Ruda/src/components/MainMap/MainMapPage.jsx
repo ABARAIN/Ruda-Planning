@@ -255,7 +255,7 @@ const MainMapPage = () => {
             <Button
               variant="contained"
               size="small"
-              onClick={() => (window.location.href = "/ongoing-projects")}
+              onClick={() => (window.location.href = "/hierarchical-gantt?filter=ongoing")}
               sx={{
                 backgroundColor: "rgba(255,255,255,0.15)",
                 color: "#fff",
