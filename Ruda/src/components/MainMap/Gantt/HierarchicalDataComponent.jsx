@@ -826,7 +826,7 @@ export default function RUDAPlanTimeline({
         }
 
         .home-btn:hover {
-          background: #2c5282;
+          background: #4b87cc;
         }
 
         .ruda-controls {

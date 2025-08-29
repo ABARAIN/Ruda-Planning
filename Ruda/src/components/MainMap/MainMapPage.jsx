@@ -170,7 +170,7 @@ const MainMapPage = () => {
       <AppBar
         position="static"
         sx={{
-          backgroundColor: "#083373", // Darker blue color
+          backgroundColor: "#083373e1", // Darker blue color
           boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
         }}
       >
@@ -255,7 +255,9 @@ const MainMapPage = () => {
             <Button
               variant="contained"
               size="small"
-              onClick={() => (window.location.href = "/hierarchical-gantt?filter=ongoing")}
+              onClick={() =>
+                (window.location.href = "/hierarchical-gantt?filter=ongoing")
+              }
               sx={{
                 backgroundColor: "rgba(255,255,255,0.15)",
                 color: "#fff",
