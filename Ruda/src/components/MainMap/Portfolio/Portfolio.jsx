@@ -182,33 +182,61 @@ const Portfolio = () => {
     : row;
 
   // Map DB values -> chart structures safely
-  const developmentData = [
-    {
-      name: "Residential",
-      value: num(src.dev_residential_pct),
-      color: src.dev_residential_color || "#8B4513",
-    },
-    {
-      name: "Commercial",
-      value: num(src.dev_commercial_pct),
-      color: src.dev_commercial_color || "#9932CC",
-    },
-    {
-      name: "Industrial",
-      value: num(src.dev_industrial_pct),
-      color: src.dev_industrial_color || "#32CD32",
-    },
-    {
-      name: "Mixed Use",
-      value: num(src.dev_mixed_use_pct),
-      color: src.dev_mixed_use_color || "#FF6347",
-    },
-    {
-      name: "Institutional",
-      value: num(src.dev_institutional_pct),
-      color: src.dev_institutional_color || "#4169E1",
-    },
-  ];
+  const developmentData = usePriority
+    ? [
+        {
+          name: "River Training",
+          value: num(src.dev_rivertraining_pct),
+          color: "#2196f3",
+        },
+        {
+          name: "Barrage & Rubber Dam",
+          value: num(src.dev_rivertraining_pct),
+          color: "#f55098",
+        },
+        {
+          name: "Infrastructure",
+          value: num(src.dev_infrastructure_pct),
+          color: "#336819",
+        },
+        {
+          name: "SWM & WWTP",
+          value: num(src.dev_SWM_WWTP_pct),
+          color: "#ff9800",
+        },
+        {
+          name: "Horticulture",
+          value: num(src.dev_horticulture_pct),
+          color: "#4caf50",
+        },
+      ]
+    : [
+        {
+          name: "Residential",
+          value: num(src.dev_residential_pct),
+          color: src.dev_residential_color || "#8B4513",
+        },
+        {
+          name: "Commercial",
+          value: num(src.dev_commercial_pct),
+          color: src.dev_commercial_color || "#9932CC",
+        },
+        {
+          name: "Industrial",
+          value: num(src.dev_industrial_pct),
+          color: src.dev_industrial_color || "#32CD32",
+        },
+        {
+          name: "Mixed Use",
+          value: num(src.dev_mixed_use_pct),
+          color: src.dev_mixed_use_color || "#FF6347",
+        },
+        {
+          name: "Institutional",
+          value: num(src.dev_institutional_pct),
+          color: src.dev_institutional_color || "#4169E1",
+        },
+      ];
 
   // Use priority file's yearly expenditure if priority is ON, otherwise use row
   const expenditureData = usePriority
