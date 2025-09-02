@@ -21,7 +21,7 @@ const ProposedRoadsLayer = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          "https://ruda-backend-ny14.onrender.com/api/purposed_ruda_road_network"
+          "https://ruda-planning.onrender.com/api/purposed_ruda_road_network"
         );
         const data = await res.json();
         setProposedRoads(data);

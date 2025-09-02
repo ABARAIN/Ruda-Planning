@@ -35,7 +35,7 @@ async function testBackend() {
     
     // Test 1: Create a new record
     console.log("1️⃣ Creating new record with JSON fields...");
-    const createResponse = await axios.post('http://localhost:5000/api/manage/all', testData);
+    const createResponse = await axios.post('https://ruda-planning.onrender.com/api/manage/all', testData);
     console.log("✅ Create successful!");
     console.log("Created record ID:", createResponse.data.row.gid);
     console.log("Firms field:", createResponse.data.row.firms);
@@ -45,7 +45,7 @@ async function testBackend() {
     
     // Test 2: Fetch all records to verify JSON parsing
     console.log("\n2️⃣ Fetching all records to verify JSON parsing...");
-    const fetchResponse = await axios.get('http://localhost:5000/api/manage/all');
+    const fetchResponse = await axios.get('https://ruda-planning.onrender.com/api/manage/all');
     const createdRecord = fetchResponse.data.find(record => record.gid === recordId);
     
     if (createdRecord) {
@@ -67,13 +67,13 @@ async function testBackend() {
       ]
     };
     
-    const updateResponse = await axios.put(`http://localhost:5000/api/manage/all/${recordId}`, updatedData);
+    const updateResponse = await axios.put(`https://ruda-planning.onrender.com/api/manage/all/${recordId}`, updatedData);
     console.log("✅ Update successful!");
     console.log("Updated firms field:", updateResponse.data.row.firms);
     
     // Test 4: Fetch GeoJSON to verify JSON parsing in GeoJSON response
     console.log("\n4️⃣ Fetching GeoJSON to verify JSON parsing...");
-    const geojsonResponse = await axios.get('http://localhost:5000/api/all');
+    const geojsonResponse = await axios.get('https://ruda-planning.onrender.com/api/all');
     const geojsonRecord = geojsonResponse.data.features?.find(
       feature => feature.properties.gid === recordId
     );
@@ -87,7 +87,7 @@ async function testBackend() {
     
     // Test 5: Clean up - delete the test record
     console.log("\n5️⃣ Cleaning up - deleting test record...");
-    await axios.delete(`http://localhost:5000/api/manage/all/${recordId}`);
+    await axios.delete(`https://ruda-planning.onrender.com/api/manage/all/${recordId}`);
     console.log("✅ Test record deleted!");
     
     console.log("\n🎉 All tests completed successfully!");

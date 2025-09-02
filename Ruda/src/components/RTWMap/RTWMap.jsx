@@ -134,7 +134,7 @@ const RTWMap = () => {
         let geojsonArea = 0;
 
         const res = await axios.get(
-          "https://ruda-backend-ny14.onrender.com/api/all"
+          "https://ruda-planning.onrender.com/api/all"
         );
         const projectFeatures = res.data.features;
         const features = res.data.features || [];

@@ -56,7 +56,7 @@ const JSONData = ({ formData, setFormData }) => {
       uploadFormData.append("image", file);
 
       const response = await axios.post(
-        "http://localhost:5000/api/upload/image",
+        "https://ruda-planning.onrender.com/api/upload/image",
         uploadFormData,
         {
           headers: {

@@ -105,10 +105,10 @@ Test the API endpoints directly:
 
 ```bash
 # Test getting logs
-curl http://localhost:5000/api/crudlog
+curl https://ruda-planning.onrender.com/api/crudlog
 
 # Test creating a log manually
-curl -X POST http://localhost:5000/api/crudlog \
+curl -X POST https://ruda-planning.onrender.com/api/crudlog \
   -H "Content-Type: application/json" \
   -d '{
     "record_id": 999,
@@ -142,7 +142,7 @@ node scripts/initializeCrudLogs.js
 **Symptoms:** Backend shows successful logging but CrudLog is empty
 **Solution:**
 - Check browser console for JavaScript errors
-- Verify CrudLog API URL: `http://localhost:5000/api/crudlog`
+- Verify CrudLog API URL: `https://ruda-planning.onrender.com/api/crudlog`
 - Check network tab for failed API calls
 
 ### Issue 5: Database Connection Issues

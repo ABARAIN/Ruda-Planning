@@ -109,7 +109,7 @@ export default function DashboardRTWExact() {
     console.log("🔍 Looking for project:", decodedName);
 
     axios
-      .get("https://ruda-backend-ny14.onrender.com/api/all")
+      .get("https://ruda-planning.onrender.com/api/all")
       .then((res) => {
         console.log(
           "📊 Available projects:",
