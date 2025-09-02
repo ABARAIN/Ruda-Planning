@@ -119,7 +119,7 @@ const styles = {
     textAlign: "center" /* Center text horizontally */,
   },
   metricIcon: {
-    backgroundColor: "#1c3a6bff",
+    backgroundColor: "rgb(33, 150, 243)",
     color: "white",
     padding: "8px",
     borderRadius: "50%",
@@ -132,7 +132,7 @@ const styles = {
   metricValue: {
     fontSize: "20px",
     fontWeight: "bold",
-    color: "#1c3a6bff",
+    color: "rgb(33, 150, 243)",
     marginBottom: "4px",
     overflow: "hidden" /* Prevent text overflow */,
     textOverflow: "ellipsis" /* Add ellipsis if the text is too long */,

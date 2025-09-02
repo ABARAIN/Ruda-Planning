@@ -28,9 +28,9 @@
     { "year": "FY28-29", "amount_b": 75 },
     { "year": "FY29-30", "amount_b": 53 }
   ],
-  "budget_planned_till_date_b": 1.5,
-  "budget_certified_till_date_b": 0.72,
-  "budget_expenditure_till_date_b": 0.11,
+  "budget_planned_till_date_b": 7.5,
+  "budget_certified_till_date_b": 5.72,
+  "budget_expenditure_till_date_b": 5.11,
   "sustainability_river_channelization_km": 12.3,
   "sustainability_barrages_count": 3,
   "sustainability_swm_text": "Pilot SWM lines active",
