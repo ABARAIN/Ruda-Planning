@@ -75,7 +75,7 @@ const Login = () => {
         <div className="auth-card">
           <div className="auth-header">
             <img src="/Ruda.jpg" alt="Ruda Logo" className="auth-header-logo" />
-            <h2 className="auth-title">Login</h2>
+           
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">

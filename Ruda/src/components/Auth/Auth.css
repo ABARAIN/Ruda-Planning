@@ -39,9 +39,11 @@
 
 /* ✅ Logo left aligned */
 .auth-header-logo {
-  height: 80px;
+  height: 100px;
+  position: center;
+  margin-left: 35%;
   width: auto;
-  margin-right: auto; /* force to left */
+  /* force to left */
 }
 
 /* ✅ Login title center aligned */
