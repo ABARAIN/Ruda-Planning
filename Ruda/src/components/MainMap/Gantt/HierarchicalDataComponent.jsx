@@ -52,6 +52,9 @@ export default function RUDAPlanTimeline({
     try {
       const params = new URLSearchParams(window.location.search);
       const f = (params.get("filter") || "").trim().toLowerCase();
+      const expandParam = params.get("expand");
+      const searchParam = params.get("search");
+
       if (f === "ongoing") {
         setShowOngoing(true);
         setShowPriority(false);
@@ -64,6 +67,16 @@ export default function RUDAPlanTimeline({
         setShowPriority(true);
         setShowCompleted(false);
         setShowOngoing(false);
+      }
+
+      // Handle expand parameter to auto-expand phases
+      if (expandParam === "all") {
+        // Will be handled after hierarchy is built
+      }
+
+      // Handle search parameter
+      if (searchParam) {
+        setQuery(searchParam);
       }
     } catch (e) {
       // ignore malformed URL params
@@ -362,6 +375,28 @@ export default function RUDAPlanTimeline({
     }
     return filtered;
   }, [hierarchy, query, showPriority, showCompleted, showOngoing]);
+
+  // Auto-expand phases when URL parameter is set
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const expandParam = params.get("expand");
+
+    if (expandParam === "all" && filteredHierarchy.length > 0) {
+      const newExpanded = {};
+      const newExpandedCategories = {};
+
+      filteredHierarchy.forEach((phase, phaseIdx) => {
+        newExpanded[phaseIdx] = true;
+        phase.cats.forEach((_, catIdx) => {
+          const categoryKey = `${phaseIdx}-${catIdx}`;
+          newExpandedCategories[categoryKey] = true;
+        });
+      });
+
+      setExpanded(newExpanded);
+      setExpandedCategories(newExpandedCategories);
+    }
+  }, [filteredHierarchy]);
 
   if (loading) return <div className="ruda-loading">Loading...</div>;
   if (err) return <div className="ruda-error">Error: {err}</div>;

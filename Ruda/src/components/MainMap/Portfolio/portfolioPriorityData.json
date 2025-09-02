@@ -28,6 +28,9 @@
     { "year": "FY28-29", "amount_b": 75 },
     { "year": "FY29-30", "amount_b": 53 }
   ],
+  "timeline_start_label": "FY25-26",
+  "timeline_mid_label": "FY27-28",
+  "timeline_end_label": "FY29-30",
   "budget_planned_till_date_b": 7.5,
   "budget_certified_till_date_b": 5.72,
   "budget_expenditure_till_date_b": 5.11,

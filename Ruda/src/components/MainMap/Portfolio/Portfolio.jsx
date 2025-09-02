@@ -186,55 +186,45 @@ const Portfolio = () => {
     ? [
         {
           name: "River Training",
-          value: num(src.dev_rivertraining_pct),
+          value: 22,
           color: "#2196f3",
         },
         {
-          name: "Barrage & Rubber Dam",
-          value: num(src.dev_rivertraining_pct),
+          name: "Barrage & Dam",
+          value: 22,
           color: "#f55098",
         },
         {
           name: "Infrastructure",
-          value: num(src.dev_infrastructure_pct),
+          value: 30,
           color: "#336819",
         },
         {
           name: "SWM & WWTP",
-          value: num(src.dev_SWM_WWTP_pct),
+          value: 26,
           color: "#ff9800",
-        },
-        {
-          name: "Horticulture",
-          value: num(src.dev_horticulture_pct),
-          color: "#4caf50",
         },
       ]
     : [
         {
-          name: "Residential",
-          value: num(src.dev_residential_pct),
-          color: src.dev_residential_color || "#8B4513",
+          name: "River Training",
+          value: 15,
+          color: "#2196f3",
         },
         {
-          name: "Commercial",
-          value: num(src.dev_commercial_pct),
-          color: src.dev_commercial_color || "#9932CC",
+          name: "Barrage & Dam",
+          value: 20,
+          color: "#f55098",
         },
         {
-          name: "Industrial",
-          value: num(src.dev_industrial_pct),
-          color: src.dev_industrial_color || "#32CD32",
+          name: "Infrastructure",
+          value: 40,
+          color: "#336819",
         },
         {
-          name: "Mixed Use",
-          value: num(src.dev_mixed_use_pct),
-          color: src.dev_mixed_use_color || "#FF6347",
-        },
-        {
-          name: "Institutional",
-          value: num(src.dev_institutional_pct),
-          color: src.dev_institutional_color || "#4169E1",
+          name: "SWM & WWTP",
+          value: 25,
+          color: "#ff9800",
         },
       ];
 
@@ -397,9 +387,37 @@ const Portfolio = () => {
                   label={({ name, percent }) =>
                     `${name}: ${(percent * 100).toFixed(0)}%`
                   }
+                  onClick={(data) => {
+                    // Navigate to hierarchical-gantt with specific category and priority filter
+                    const categoryName = data.name;
+                    let searchQuery = "";
+
+                    if (categoryName === "River Training") {
+                      searchQuery = "River Training";
+                    } else if (categoryName === "SWM & WWTP") {
+                      searchQuery = "SWM";
+                    } else if (categoryName === "Barrage & Dam") {
+                      searchQuery = "Barrage";
+                    } else if (categoryName === "Infrastructure") {
+                      searchQuery = "Infrastructure";
+                    }
+
+                    // Add priority filter if priority mode is active
+                    const priorityParam = usePriority ? "&filter=priority" : "";
+                    const searchParam = searchQuery
+                      ? `&search=${encodeURIComponent(searchQuery)}`
+                      : "";
+
+                    window.location.href = `/hierarchical-gantt?expand=all${priorityParam}${searchParam}`;
+                  }}
+                  style={{ cursor: "pointer" }}
                 >
                   {developmentData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.color}
+                      style={{ cursor: "pointer" }}
+                    />
                   ))}
                 </Pie>
                 <Tooltip formatter={(value, name) => [`${value}`, name]} />
@@ -490,9 +508,21 @@ const Portfolio = () => {
               </div>
             </div>
             <div style={styles.timelineYears}>
-              <span>{row.timeline_start_label || ""}</span>
-              <span>{row.timeline_mid_label || ""}</span>
-              <span>{row.timeline_end_label || ""}</span>
+              <span>
+                {usePriority
+                  ? src.timeline_start_label
+                  : row.timeline_start_label || ""}
+              </span>
+              <span>
+                {usePriority
+                  ? src.timeline_mid_label
+                  : row.timeline_mid_label || ""}
+              </span>
+              <span>
+                {usePriority
+                  ? src.timeline_end_label
+                  : row.timeline_end_label || ""}
+              </span>
             </div>
             <div style={styles.timelineBar}>
               <div style={styles.timelineElapsed} />
