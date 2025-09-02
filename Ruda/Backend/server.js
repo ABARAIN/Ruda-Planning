@@ -9,11 +9,13 @@ const ganttLogRoutes = require("./routes/ganttLogRoutes");
 const crudLogRoutes = require("./routes/crudLogRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const ganntCrudRoutes = require("./routes/ganntCrudRoutes");
+const authRoutes = require("./routes/authRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const logger = require("./utils/logger");
 const PortfolioLogModel = require("./models/PortfolioLogModel");
 const GanttLogModel = require("./models/GanttLogModel");
 const CrudLogModel = require("./models/CrudLogModel");
+const UserModel = require("./models/UserModel");
 const path = require("path");
 
 const app = express();
@@ -41,6 +43,7 @@ app.use("/api/portfoliolog", portfolioLogRoutes);
 app.use("/api/ganttlog", ganttLogRoutes);
 app.use("/api/crudlog", crudLogRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/auth", authRoutes);
 
 app.use("/api/ganntcrud", ganntCrudRoutes);
 
@@ -69,6 +72,9 @@ app.use(errorHandler);
 // Initialize all log tables on startup
 async function initializeDatabase() {
   try {
+    await UserModel.createUserTable();
+    logger.info("✅ Users table initialized");
+
     await PortfolioLogModel.createLogTable();
     logger.info("✅ Portfolio logs table initialized");
 
@@ -78,7 +84,7 @@ async function initializeDatabase() {
     await CrudLogModel.createLogTable();
     logger.info("✅ CRUD logs table initialized");
   } catch (error) {
-    logger.error("❌ Failed to initialize log tables:", error);
+    logger.error("❌ Failed to initialize database tables:", error);
   }
 }
 

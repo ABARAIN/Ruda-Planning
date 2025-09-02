@@ -356,6 +356,36 @@ const MainMapPage = () => {
             >
               Proposed Roads
             </Button>
+            {/* 🔹 Logout Button Added */}
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => {
+                localStorage.clear(); // Remove token and user
+                window.location.href = "/login"; // Redirect to login
+              }}
+              sx={{
+                backgroundColor: "rgb(69 102 149)", // Red color for logout
+                color: "#fff",
+                textTransform: "none",
+                fontSize: "0.75rem",
+                fontWeight: 300,
+                borderRadius: "6px",
+                padding: "5px 12px",
+                minWidth: "auto",
+                boxShadow: "none",
+                border: "1px solid rgba(255,255,255,0.3)",
+                "&:hover": {
+                  backgroundColor: "rgb(69 102 149)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  transform: "translateY(-1px)",
+                },
+                transition: "all 0.2s ease-in-out",
+                ml: 0, // Small margin-left from Proposed Roads
+              }}
+            >
+              Logout
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>
