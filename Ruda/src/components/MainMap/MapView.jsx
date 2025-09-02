@@ -85,6 +85,7 @@ const MapView = ({
     "Access Roads": "Access Road.geojson",
     "M Toll Plaze": "M2 Toll Plaza.geojson",
     Jhoke: "Development at Jhoke 158 acres.geojson",
+    "River": "River.geojson",
   };
 
   const geojson = {
@@ -200,7 +201,9 @@ const MapView = ({
       const layerPromises = Object.entries(layerFileMap).map(
         async ([layerName, fileName]) => {
           try {
-            const response = await fetch(`/geojson/${fileName}`);
+            // Determine the correct path for each file
+            const filePath = layerName === "River" ? `/${fileName}` : `/geojson/${fileName}`;
+            const response = await fetch(filePath);
             if (!response.ok) {
               throw new Error(`Failed to load ${fileName}`);
             }
@@ -240,7 +243,11 @@ const MapView = ({
       const sourceId = `layer-${layerName.replace(/\s+/g, "-").toLowerCase()}`;
       const fillLayerId = `${sourceId}-fill`;
       const lineLayerId = `${sourceId}-line`;
-      const isSelected = selectedProjects.includes(layerName);
+      const animatedLineLayerId = `${sourceId}-animated-line`;
+      // River only shows when district boundaries are present (Sheikhupura/Lahore)
+      const isSelected = layerName === "River"
+        ? (districtBoundaries && districtBoundaries.length > 0)
+        : selectedProjects.includes(layerName);
       const layerData = layersData[layerName];
 
       if (!layerData) return;
@@ -252,12 +259,20 @@ const MapView = ({
           data: layerData,
         });
 
+        // Regular layer handling for all layers including River
         map.addLayer({
           id: fillLayerId,
           type: "fill",
           source: sourceId,
           paint: {
-            "fill-color": colorMap[layerName] || "#ff6b35",
+            "fill-color": layerName === "River" ? [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              8, "#1E40AF", // Dark blue at low zoom
+              12, "#2563EB", // Medium blue at mid zoom
+              16, "#3B82F6"  // Light blue at high zoom
+            ] : (colorMap[layerName] || "#ff6b35"),
             "fill-opacity": 0.7,
           },
           layout: {
@@ -270,46 +285,61 @@ const MapView = ({
           type: "line",
           source: sourceId,
           paint: {
-            "line-color": colorMap[layerName] || "#ff6b35",
-            "line-width": 3,
+            "line-color": layerName === "River" ? "#0EA5E9" : (colorMap[layerName] || "#ff6b35"),
+            "line-width": layerName === "River" ? [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              8, 3,
+              12, 5,
+              16, 8
+            ] : 3,
           },
           layout: {
             visibility: isSelected ? "visible" : "none",
           },
         });
 
-        // Add popup for layer features (like ruda-fill)
-        map.on("mouseenter", fillLayerId, () => {
-          map.getCanvas().style.cursor = "pointer";
-        });
-        map.on("mouseleave", fillLayerId, () => {
-          map.getCanvas().style.cursor = "";
-        });
-        map.on("click", fillLayerId, (e) => {
-          const feature = e.features[0];
-          const props = feature.properties || {};
-          const popupHTML = `
-            <div style="font-family: 'Segoe UI', sans-serif; min-width:220px; padding:8px;">
-              <h3 style="margin:0 0 8px; font-size:16px; color:#1976d2;">${
-                props.name || layerName
-              }</h3>
-              <div style="font-size:14px; margin-bottom:8px;">
-                <strong>Layer:</strong> ${layerName}
+        // Add popup for layer features (skip River layer)
+        if (layerName !== "River") {
+          map.on("mouseenter", fillLayerId, () => {
+            map.getCanvas().style.cursor = "pointer";
+          });
+          map.on("mouseleave", fillLayerId, () => {
+            map.getCanvas().style.cursor = "";
+          });
+          map.on("click", fillLayerId, (e) => {
+            const feature = e.features[0];
+            const props = feature.properties || {};
+            const popupHTML = `
+              <div style="font-family: 'Segoe UI', sans-serif; min-width:220px; padding:8px;">
+                <h3 style="margin:0 0 8px; font-size:16px; color:#1976d2;">${
+                  props.name || layerName
+                }</h3>
+                <div style="font-size:14px; margin-bottom:8px;">
+                  <strong>Layer:</strong> ${layerName}
+                  ${layerName === "River" ? '<br><strong>Type:</strong> Water Body' : ''}
+                </div>
+                <a href="/details/${encodeURIComponent(
+                  props.name || layerName
+                )}" target="_blank" style="font-size:13px;color:#388e3c;font-weight:500;text-decoration:none;display:block;text-align:center;margin-top:2px;">
+                  🔍 View Details
+                </a>
               </div>
-              <a href="/details/${encodeURIComponent(
-                props.name || layerName
-              )}" target="_blank" style="font-size:13px;color:#388e3c;font-weight:500;text-decoration:none;display:block;text-align:center;margin-top:2px;">
-                🔍 View Details
-              </a>
-            </div>
-          `;
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(popupHTML)
-            .addTo(map);
-        });
+            `;
+            new mapboxgl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(popupHTML)
+              .addTo(map);
+          });
+        }
       } else {
         // Update visibility for existing layers
+        // River only shows when district boundaries are present (Sheikhupura/Lahore)
+        const isSelected = layerName === "River"
+          ? (districtBoundaries && districtBoundaries.length > 0)
+          : selectedProjects.includes(layerName);
+        
         if (map.getLayer(fillLayerId)) {
           map.setLayoutProperty(
             fillLayerId,
@@ -324,23 +354,43 @@ const MapView = ({
             isSelected ? "visible" : "none"
           );
         }
+        // Only update animated line layer visibility if it exists (not for River)
+        if (layerName !== "River" && map.getLayer(animatedLineLayerId)) {
+          map.setLayoutProperty(
+            animatedLineLayerId,
+            "visibility",
+            isSelected ? "visible" : "none"
+          );
+        }
       }
 
-      // Always move selected layers to the top
-      if (isSelected) {
+      // Always move selected layers to the top (River only when districts are present)
+      const shouldMoveToTop = layerName === "River"
+        ? (districtBoundaries && districtBoundaries.length > 0)
+        : isSelected;
+      if (shouldMoveToTop) {
         try {
           map.moveLayer(lineLayerId);
         } catch (e) {}
         try {
           map.moveLayer(fillLayerId);
         } catch (e) {}
+        // Only move animated line layer if it exists (not for River)
+        if (layerName !== "River") {
+          try {
+            map.moveLayer(animatedLineLayerId);
+          } catch (e) {}
+        }
       }
     });
 
-    // Fit map to selected layers bounds
-    const selectedLayerNames = allLayerNames.filter((layerName) =>
-      selectedProjects.includes(layerName)
-    );
+    // Fit map to selected layers bounds (include River only when districts are present)
+    const selectedLayerNames = allLayerNames.filter((layerName) => {
+      if (layerName === "River") {
+        return districtBoundaries && districtBoundaries.length > 0;
+      }
+      return selectedProjects.includes(layerName);
+    });
     if (selectedLayerNames.length > 0) {
       const selectedLayersData = selectedLayerNames
         .map((layerName) => layersData[layerName])
@@ -363,7 +413,7 @@ const MapView = ({
         }
       }
     }
-  }, [selectedProjects, layersData]);
+  }, [selectedProjects, layersData, districtBoundaries]);
 
   // Update layer colors when colorMap changes
   useEffect(() => {
@@ -374,6 +424,10 @@ const MapView = ({
       const sourceId = `layer-${layerName.replace(/\s+/g, "-").toLowerCase()}`;
       const fillLayerId = `${sourceId}-fill`;
       const lineLayerId = `${sourceId}-line`;
+      
+      // Skip color updates for River layer as it has custom styling
+      if (layerName === "River") return;
+      
       const color = colorMap[layerName] || "#ff6b35";
 
       if (map.getLayer(fillLayerId)) {
