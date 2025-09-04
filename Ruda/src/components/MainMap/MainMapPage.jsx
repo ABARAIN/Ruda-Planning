@@ -227,13 +227,10 @@ const MainMapPage = () => {
           {/* Button Container */}
           {/* Button Container */}
           <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
-           
             <Button
               variant="contained"
               size="small"
-              onClick={() =>
-                (window.location.href = "/hierarchical-gantt?filter=ongoing")
-              }
+              onClick={() => (window.location.href = "/ongoing-projects")}
               sx={{
                 backgroundColor: "rgba(255,255,255,0.15)",
                 color: "#fff",
