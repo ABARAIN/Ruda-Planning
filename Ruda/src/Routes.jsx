@@ -14,6 +14,7 @@ import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import OngoingProjects from "./components/MainMap/OngoingProjects";
+import OverallSummary from "./components/MainMap/OverallSummary";
 
 const AppRoutes = () => {
   const isAuthenticated = !!localStorage.getItem("token");
@@ -116,6 +117,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <OngoingProjects />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/overall-summary"
+        element={
+          <ProtectedRoute>
+            <OverallSummary />
           </ProtectedRoute>
         }
       />
