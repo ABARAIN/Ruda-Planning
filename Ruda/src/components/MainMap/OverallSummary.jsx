@@ -293,7 +293,19 @@ export default function OverallSummary() {
   };
 
   const getUniqueCategories = () => {
-    return Object.keys(data).sort();
+    const categoryOrder = [
+      "Feasibility, Design & Hydrological Studies",
+      "River Training Works",
+      "Barrage & Dam Works",
+      "WWTPs",
+      "Infrastructure",
+      "Other Projects",
+    ];
+
+    const categories = Object.keys(data);
+    return categoryOrder
+      .filter((cat) => categories.includes(cat))
+      .concat(categories.filter((cat) => !categoryOrder.includes(cat)));
   };
 
   const toggleCategory = (category) => {
@@ -416,13 +428,14 @@ export default function OverallSummary() {
     position: "sticky",
     top: 0,
     zIndex: 10,
+    padding: "12px 8px",
   };
 
   const headerCellStyle = {
     padding: "12px 28px",
     border: "1px solid #357abd",
     textAlign: "center",
-    fontWeight: "normal",
+    fontWeight: "bold",
     fontSize: "14px",
     verticalAlign: "middle",
   };
@@ -544,185 +557,226 @@ export default function OverallSummary() {
                 </td>
               </tr>
             ) : (
-              Object.keys(filteredData).map((category) => {
-                const isExpanded = expandedCategories[category];
-                const projects = filteredData[category];
+              getUniqueCategories()
+                .filter((category) => filteredData[category])
+                .map((category) => {
+                  const isExpanded = expandedCategories[category];
+                  const projects = filteredData[category];
 
-                return (
-                  <React.Fragment key={category}>
-                    {/* Category Header Row */}
-                    <tr
-                      style={{
-                        background: "#2d3748",
-                        color: "white",
-                        cursor: "pointer",
-                        fontSize: "16px",
-                      }}
-                      onClick={() => toggleCategory(category)}
-                    >
-                      <td
-                        colSpan="5"
+                  return (
+                    <React.Fragment key={category}>
+                      {/* Category Header Row */}
+                      <tr
                         style={{
-                          padding: "12px 15px",
-                          border: "1px solid #357abd",
-                          fontWeight: "normal",
-                          fontSize: "14px",
-                          textAlign: "left",
+                          background: "#2d3748",
+                          color: "white",
+                          cursor: "pointer",
+                          fontSize: "16px",
                         }}
+                        onClick={() => toggleCategory(category)}
                       >
-                        <span style={{ marginRight: "10px" }}>
-                          {isExpanded ? "▼" : "▶"}
-                        </span>
-                        {category} ({projects.length} projects)
-                      </td>
-                    </tr>
+                        <td
+                          colSpan="5"
+                          style={{
+                            padding: "12px 15px",
+                            border: "1px solid #357abd",
+                            fontWeight: "normal",
+                            fontSize: "14px",
+                            textAlign: "left",
+                          }}
+                        >
+                          <span style={{ marginRight: "10px" }}>
+                            {isExpanded ? "▼" : "▶"}
+                          </span>
+                          {category} ({projects.length} projects)
+                        </td>
+                      </tr>
 
-                    {/* Project Rows - Only show if expanded */}
-                    {isExpanded &&
-                      projects.map((project, index) => {
-                        const cellStyle = {
-                          padding: "10px 8px",
-                          border: "1px solid #e2e8f0",
-                          textAlign: "center",
-                          fontWeight: "500",
-                          fontSize: "14px",
-                        };
+                      {/* Project Rows - Only show if expanded */}
+                      {isExpanded &&
+                        projects.map((project, index) => {
+                          const cellStyle = {
+                            padding: "10px 8px",
+                            border: "1px solid #e2e8f0",
+                            textAlign: "center",
+                            fontWeight: "500",
+                            fontSize: "12px",
+                          };
 
-                        const nameCellStyle = {
-                          ...cellStyle,
-                          textAlign: "left",
-                          paddingLeft: "25px", // Indent sub-projects
-                          color: "#4a5568",
-                        };
+                          const nameCellStyle = {
+                            ...cellStyle,
+                            textAlign: "left",
+                            paddingLeft: "25px", // Indent sub-projects
+                            color: "#4a5568",
+                          };
 
-                        return (
-                          <tr
-                            key={`${category}-${index}`}
-                            style={{
-                              background: index % 2 === 0 ? "#f7fafc" : "white",
-                              borderLeft: "3px solid #cbd5e0",
-                            }}
-                          >
-                            <td style={nameCellStyle}>{project.projectName}</td>
-                            <td style={cellStyle}>
-                              <div style={{ fontSize: "14px" }}>
-                                <div>
-                                  <strong>Start:</strong>{" "}
-                                  {project.timeline.start}
+                          return (
+                            <tr
+                              key={`${category}-${index}`}
+                              style={{
+                                background:
+                                  index % 2 === 0 ? "#f7fafc" : "white",
+                                borderLeft: "3px solid #cbd5e0",
+                              }}
+                            >
+                              <td style={nameCellStyle}>
+                                {project.projectName}
+                              </td>
+                              <td style={cellStyle}>
+                                <div style={{ fontSize: "12px" }}>
+                                  <div>
+                                    <strong>Start:</strong>{" "}
+                                    {project.timeline.start}
+                                  </div>
+                                  <div>
+                                    <strong>Finish:</strong>{" "}
+                                    {project.timeline.finish}
+                                  </div>
                                 </div>
-                                <div>
-                                  <strong>Finish:</strong>{" "}
-                                  {project.timeline.finish}
+                              </td>
+                              <td style={cellStyle}>
+                                <div style={{ fontSize: "12px" }}>
+                                  <div>
+                                    <strong>Plan:</strong>{" "}
+                                    {project.physicalProgress.plan}%
+                                  </div>
+                                  <div>
+                                    <strong>Actual:</strong>{" "}
+                                    {project.physicalProgress.actual}%
+                                  </div>
+                                  {project.physicalProgress.actual !== "-" && (
+                                    <div
+                                      style={{
+                                        position: "relative",
+                                        marginTop: "4px",
+                                      }}
+                                    >
+                                      <div
+                                        style={{
+                                          width: "100%",
+                                          height: "12px",
+                                          backgroundColor: "#e2e8f0",
+                                          borderRadius: "4px",
+                                          overflow: "hidden",
+                                        }}
+                                      >
+                                        <div
+                                          style={{
+                                            width: `${project.physicalProgress.actual}%`,
+                                            height: "100%",
+                                            backgroundColor: "#4caf50",
+                                            borderRadius: "4px",
+                                            position: "relative",
+                                          }}
+                                        >
+                                          <span
+                                            style={{
+                                              position: "absolute",
+                                              top: "50%",
+                                              left: "50%",
+                                              transform:
+                                                "translate(-50%, -50%)",
+                                              fontSize: "8px",
+                                              fontWeight: "bold",
+                                              color: "white",
+                                              textShadow:
+                                                "1px 1px 1px rgba(0,0,0,0.5)",
+                                            }}
+                                          >
+                                            {project.physicalProgress.actual}%
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          fontSize: "10px",
+                                          marginTop: "2px",
+                                          color: "#666",
+                                        }}
+                                      >
+                                        <span>0%</span>
+                                        <span>100%</span>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
-                              </div>
-                            </td>
-                            <td style={cellStyle}>
-                              <div style={{ fontSize: "14px" }}>
-                                <div>
-                                  <strong>Plan:</strong>{" "}
-                                  {project.physicalProgress.plan}%
-                                </div>
-                                <div>
-                                  <strong>Actual:</strong>{" "}
-                                  {project.physicalProgress.actual}%
-                                </div>
-                                {project.physicalProgress.actual !== "-" && (
+                              </td>
+                              <td style={cellStyle}>
+                                <div
+                                  style={{
+                                    fontSize: "12px",
+                                    display: "flex",
+                                    alignItems: "center", // vertically center
+                                    justifyContent: "center", // horizontally center
+                                    gap: "20px", // text aur chart ke darmiyan gap
+                                  }}
+                                >
+                                  {/* Left side text */}
                                   <div
                                     style={{
-                                      width: "100%",
-                                      height: "8px",
-                                      backgroundColor: "#e2e8f0",
-                                      borderRadius: "4px",
-                                      marginTop: "4px",
-                                      overflow: "hidden",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: "4px",
+                                    }}
+                                  >
+                                    <div>
+                                      <strong>Available:</strong>{" "}
+                                      {project.landStatus.available}%
+                                    </div>
+                                    <div>
+                                      <strong>Remaining:</strong>{" "}
+                                      {project.landStatus.remaining}%
+                                    </div>
+                                  </div>
+
+                                  {/* Right side pie chart */}
+                                  <div
+                                    style={{
+                                      width: "80px",
+                                      height: "80px",
+                                      position: "relative",
+                                      borderRadius: "50%",
+                                      background: `conic-gradient(#56c159 0deg ${
+                                        project.landStatus.available * 3.6
+                                      }deg, #e92719 ${
+                                        project.landStatus.available * 3.6
+                                      }deg 360deg)`,
                                     }}
                                   >
                                     <div
                                       style={{
-                                        width: `${project.physicalProgress.actual}%`,
-                                        height: "100%",
-                                        backgroundColor: "#4caf50",
-                                        borderRadius: "4px",
+                                        position: "absolute",
+                                        top: "50%",
+                                        left: "50%",
+                                        transform: "translate(-50%, -50%)",
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "white",
                                       }}
-                                    ></div>
+                                    >
+                                      {project.landStatus.available}%
+                                    </div>
                                   </div>
-                                )}
-                              </div>
-                            </td>
-                            <td style={cellStyle}>
-                              <div
+                                </div>
+                              </td>
+
+                              <td
                                 style={{
-                                  fontSize: "14px",
-                                  display: "flex",
-                                  alignItems: "center", // vertically center
-                                  justifyContent: "center", // horizontally center
-                                  gap: "20px", // text aur chart ke darmiyan gap
+                                  ...cellStyle,
+                                  fontSize: "12px",
+                                  color: "#4a5568",
                                 }}
                               >
-                                {/* Left side text */}
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: "4px",
-                                  }}
-                                >
-                                  <div>
-                                    <strong>Available:</strong>{" "}
-                                    {project.landStatus.available}%
-                                  </div>
-                                  <div>
-                                    <strong>Remaining:</strong>{" "}
-                                    {project.landStatus.remaining}%
-                                  </div>
-                                </div>
-
-                                {/* Right side pie chart */}
-                                <div
-                                  style={{
-                                    width: "80px",
-                                    height: "80px",
-                                    position: "relative",
-                                    borderRadius: "50%",
-                                    background: `conic-gradient(#56c159 0deg ${
-                                      project.landStatus.available * 3.6
-                                    }deg, #e92719 ${
-                                      project.landStatus.available * 3.6
-                                    }deg 360deg)`,
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      position: "absolute",
-                                      top: "50%",
-                                      left: "50%",
-                                      transform: "translate(-50%, -50%)",
-                                      fontSize: "14px",
-                                      fontWeight: "bold",
-                                      color: "white",
-                                    }}
-                                  >
-                                    {project.landStatus.available}%
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-
-                            <td
-                              style={{
-                                ...cellStyle,
-                                fontSize: "14px",
-                                color: "#4a5568",
-                              }}
-                            >
-                              {project.status}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                  </React.Fragment>
-                );
-              })
+                                {project.status}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                    </React.Fragment>
+                  );
+                })
             )}
           </tbody>
         </table>
