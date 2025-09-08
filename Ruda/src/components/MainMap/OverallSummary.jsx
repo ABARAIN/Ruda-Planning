@@ -407,7 +407,7 @@ export default function OverallSummary() {
   const tableStyle = {
     width: "100%",
     borderCollapse: "collapse",
-    minWidth: "1600px",
+    minWidth: "1300px",
   };
 
   const headerRowStyle = {
@@ -419,11 +419,11 @@ export default function OverallSummary() {
   };
 
   const headerCellStyle = {
-    padding: "12px 8px",
+    padding: "12px 28px",
     border: "1px solid #357abd",
     textAlign: "center",
-    fontWeight: "bold",
-    fontSize: "12px",
+    fontWeight: "normal",
+    fontSize: "14px",
     verticalAlign: "middle",
   };
 
@@ -556,7 +556,7 @@ export default function OverallSummary() {
                         background: "#2d3748",
                         color: "white",
                         cursor: "pointer",
-                        fontSize: "12px",
+                        fontSize: "16px",
                       }}
                       onClick={() => toggleCategory(category)}
                     >
@@ -565,8 +565,8 @@ export default function OverallSummary() {
                         style={{
                           padding: "12px 15px",
                           border: "1px solid #357abd",
-                          fontWeight: "bold",
-                          fontSize: "12px",
+                          fontWeight: "normal",
+                          fontSize: "14px",
                           textAlign: "left",
                         }}
                       >
@@ -585,6 +585,7 @@ export default function OverallSummary() {
                           border: "1px solid #e2e8f0",
                           textAlign: "center",
                           fontWeight: "500",
+                          fontSize: "14px",
                         };
 
                         const nameCellStyle = {
@@ -604,7 +605,7 @@ export default function OverallSummary() {
                           >
                             <td style={nameCellStyle}>{project.projectName}</td>
                             <td style={cellStyle}>
-                              <div style={{ fontSize: "11px" }}>
+                              <div style={{ fontSize: "14px" }}>
                                 <div>
                                   <strong>Start:</strong>{" "}
                                   {project.timeline.start}
@@ -616,7 +617,7 @@ export default function OverallSummary() {
                               </div>
                             </td>
                             <td style={cellStyle}>
-                              <div style={{ fontSize: "11px" }}>
+                              <div style={{ fontSize: "14px" }}>
                                 <div>
                                   <strong>Plan:</strong>{" "}
                                   {project.physicalProgress.plan}%
@@ -649,25 +650,43 @@ export default function OverallSummary() {
                               </div>
                             </td>
                             <td style={cellStyle}>
-                              <div style={{ fontSize: "11px" }}>
-                                <div>
-                                  <strong>Available:</strong>{" "}
-                                  {project.landStatus.available}%
-                                </div>
-                                <div>
-                                  <strong>Remaining:</strong>{" "}
-                                  {project.landStatus.remaining}%
-                                </div>
+                              <div
+                                style={{
+                                  fontSize: "14px",
+                                  display: "flex",
+                                  alignItems: "center", // vertically center
+                                  justifyContent: "center", // horizontally center
+                                  gap: "20px", // text aur chart ke darmiyan gap
+                                }}
+                              >
+                                {/* Left side text */}
                                 <div
                                   style={{
-                                    width: "40px",
-                                    height: "40px",
-                                    margin: "4px auto",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "4px",
+                                  }}
+                                >
+                                  <div>
+                                    <strong>Available:</strong>{" "}
+                                    {project.landStatus.available}%
+                                  </div>
+                                  <div>
+                                    <strong>Remaining:</strong>{" "}
+                                    {project.landStatus.remaining}%
+                                  </div>
+                                </div>
+
+                                {/* Right side pie chart */}
+                                <div
+                                  style={{
+                                    width: "80px",
+                                    height: "80px",
                                     position: "relative",
                                     borderRadius: "50%",
-                                    background: `conic-gradient(#4caf50 0deg ${
+                                    background: `conic-gradient(#56c159 0deg ${
                                       project.landStatus.available * 3.6
-                                    }deg, #f44336 ${
+                                    }deg, #e92719 ${
                                       project.landStatus.available * 3.6
                                     }deg 360deg)`,
                                   }}
@@ -678,7 +697,7 @@ export default function OverallSummary() {
                                       top: "50%",
                                       left: "50%",
                                       transform: "translate(-50%, -50%)",
-                                      fontSize: "8px",
+                                      fontSize: "14px",
                                       fontWeight: "bold",
                                       color: "white",
                                     }}
@@ -688,10 +707,11 @@ export default function OverallSummary() {
                                 </div>
                               </div>
                             </td>
+
                             <td
                               style={{
                                 ...cellStyle,
-                                fontSize: "11px",
+                                fontSize: "14px",
                                 color: "#4a5568",
                               }}
                             >
