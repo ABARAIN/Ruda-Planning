@@ -19,6 +19,20 @@ export default function OngoingProjects() {
   const COL_PRIORITY = "Priority Projects";
   const COL_CHANGE = "Change Record";
 
+  // Simple logo set from public/ assets
+  const LOGOS = ["/Ruda.jpg", "/NLC-logo.jpg", "/Nespak.jpg", "/Habib.jpg"];
+
+  // Pick a logo for a given project. If we can detect a contractor keyword, use it; otherwise pick a stable pseudo-random logo.
+  const pickLogoForProject = (name, serialNumberHint = 0) => {
+    const n = (name || "").toLowerCase();
+    if (n.includes("nlc")) return "/NLC-logo.jpg";
+    if (n.includes("nespak")) return "/Nespak.jpg";
+    if (n.includes("habib") || n.includes("hcs")) return "/Habib.jpg";
+    // Stable pseudo-random choice based on serial number and name length
+    const idx = Math.abs((serialNumberHint + n.length) % LOGOS.length);
+    return LOGOS[idx];
+  };
+
   useEffect(() => {
     loadData();
   }, []);
@@ -78,8 +92,13 @@ export default function OngoingProjects() {
           physicalActual: calculatePhysicalActual(row),
           paymentsCertified: formatValue(row[COL_ACTUAL_EXP]),
           remarks: row[COL_CHANGE] || "-",
+          logoUrl: "", // filled below
         };
 
+        project.logoUrl = pickLogoForProject(
+          project.projectName,
+          project.serialNumber
+        );
         ongoingProjects.push(project);
       }
     });
@@ -597,7 +616,33 @@ export default function OngoingProjects() {
                             }}
                           >
                             <td style={cellStyle}>{project.serialNumber}</td>
-                            <td style={nameCellStyle}>{project.projectName}</td>
+                            <td style={nameCellStyle}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  gap: "8px",
+                                }}
+                              >
+                                <span style={{ flex: 1 }}>
+                                  {project.projectName}
+                                </span>
+                                {project.logoUrl && (
+                                  <img
+                                    src={project.logoUrl}
+                                    alt="project logo"
+                                    style={{
+                                      width: 48,
+                                      height: 48,
+                                      objectFit: "contain",
+                                      borderRadius: 3,
+                                    }}
+                                    loading="lazy"
+                                  />
+                                )}
+                              </div>
+                            </td>
                             <td style={cellStyle}>{project.startDate}</td>
                             <td style={cellStyle}>{project.finishDate}</td>
                             <td style={cellStyle}>{project.valueOfContract}</td>
