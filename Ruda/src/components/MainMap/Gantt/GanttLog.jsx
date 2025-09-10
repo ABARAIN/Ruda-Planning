@@ -140,7 +140,7 @@ if (typeof document !== "undefined") {
   document.head.appendChild(styleSheet);
 }
 
-const API_URL = "http://localhost:5000/api/ganttlog";
+const API_URL = "https://ruda-planning.onrender.com/api/ganttlog";
 
 export default function GanttLog({ onBack, activeTab, onTabChange }) {
   const [logs, setLogs] = useState([]);

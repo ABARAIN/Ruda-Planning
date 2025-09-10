@@ -140,7 +140,7 @@ if (typeof document !== "undefined") {
   document.head.appendChild(styleSheet);
 }
 
-const API_URL = "http://localhost:5000/api/crudlog";
+const API_URL = "https://ruda-planning.onrender.com/api/crudlog";
 
 export default function CrudLog({ onBack, activeTab, onTabChange }) {
   const [logs, setLogs] = useState([]);

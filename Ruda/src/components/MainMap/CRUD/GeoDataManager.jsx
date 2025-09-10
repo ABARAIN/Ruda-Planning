@@ -381,7 +381,7 @@ const GeoDataManager = () => {
       if (editingRow) {
         // Update existing record
         const response = await axios.put(
-          `http://localhost:5000/api/manage/all/${editingRow.gid}`,
+          `https://ruda-planning.onrender.com/api/manage/all/${editingRow.gid}`,
           parsedData
         );
         console.log("Update response:", response.data);
@@ -389,7 +389,7 @@ const GeoDataManager = () => {
       } else {
         // Create new record
         const response = await axios.post(
-          "http://localhost:5000/api/manage/all",
+          "https://ruda-planning.onrender.com/api/manage/all",
           parsedData
         );
         console.log("Create response:", response.data);
@@ -408,7 +408,7 @@ const GeoDataManager = () => {
   const handleDelete = async (gid) => {
     if (window.confirm("Are you sure you want to delete this record?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/manage/all/${gid}`);
+        await axios.delete(`https://ruda-planning.onrender.com/api/manage/all/${gid}`);
         showSnackbar("Record deleted successfully");
         fetchData(); // Refresh the data
       } catch (error) {

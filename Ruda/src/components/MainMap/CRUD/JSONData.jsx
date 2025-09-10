@@ -56,7 +56,7 @@ const JSONData = ({ formData, setFormData }) => {
       uploadFormData.append("image", file);
 
       const response = await axios.post(
-        "http://localhost:5000/api/upload/image",
+        "https://ruda-planning.onrender.com/api/upload/image",
         uploadFormData,
         {
           headers: {
@@ -180,7 +180,7 @@ const JSONData = ({ formData, setFormData }) => {
                         size="small"
                         onClick={() => {
                           const imageUrl = firm.img.startsWith("/uploads/")
-                            ? `http://localhost:5000${firm.img}`
+                            ? `https://ruda-planning.onrender.com${firm.img}`
                             : firm.img;
                           window.open(imageUrl, "_blank");
                         }}

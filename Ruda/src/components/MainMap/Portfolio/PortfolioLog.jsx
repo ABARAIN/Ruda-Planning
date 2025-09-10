@@ -139,7 +139,7 @@ if (typeof document !== "undefined") {
   document.head.appendChild(styleSheet);
 }
 
-const API_URL = "http://localhost:5000/api/portfoliolog";
+const API_URL = "https://ruda-planning.onrender.com/api/portfoliolog";
 
 export default function PortfolioLog({ onBack, activeTab, onTabChange }) {
   const [logs, setLogs] = useState([]);

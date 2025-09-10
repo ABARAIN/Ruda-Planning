@@ -2166,7 +2166,7 @@ const RudaTimeline = () => {
 
       // Log the view action for demonstration
       try {
-        await fetch("http://localhost:5000/api/ganttlog", {
+        await fetch("https://ruda-planning.onrender.com/api/ganttlog", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

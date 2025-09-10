@@ -33,7 +33,7 @@ import jsPDF from "jspdf";
 import ProjectMilestone from "../ProjectMilestone";
 import priorityData from "./portfolioPriorityData.json";
 
-const API_URL = "http://localhost:5000/api/portfoliocrud/";
+const API_URL = "https://ruda-planning.onrender.com/api/portfoliocrud/";
 
 // Safe number helpers
 const num = (v) => (v === null || v === undefined || v === "" ? 0 : Number(v));

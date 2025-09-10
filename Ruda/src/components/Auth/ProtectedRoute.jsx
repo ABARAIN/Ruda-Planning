@@ -17,7 +17,7 @@ const ProtectedRoute = ({ children }) => {
 
       try {
         // Validate token with backend
-        const response = await fetch("http://localhost:5000/api/auth/profile", {
+        const response = await fetch("https://ruda-planning.onrender.com/api/auth/profile", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

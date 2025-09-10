@@ -182,7 +182,7 @@ if (typeof document !== "undefined") {
   document.head.appendChild(styleSheet);
 }
 
-const API_URL = "http://localhost:5000/api/portfoliocrud";
+const API_URL = "https://ruda-planning.onrender.com/api/portfoliocrud";
 
 const numberKeys = new Set([
   "dev_residential_pct",
