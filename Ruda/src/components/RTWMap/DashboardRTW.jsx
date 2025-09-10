@@ -45,7 +45,7 @@ const getImageUrl = (imagePath) => {
 
   // If it's an uploaded image path, prepend the server URL
   if (imagePath.startsWith("/uploads/")) {
-    return `http://localhost:5000${imagePath}`;
+    return `https://ruda-planning.onrender.com${imagePath}`;
   }
 
   // If it's already a full URL or a relative path, return as is

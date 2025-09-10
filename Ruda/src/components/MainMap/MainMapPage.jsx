@@ -227,13 +227,10 @@ const MainMapPage = () => {
           {/* Button Container */}
           {/* Button Container */}
           <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
-           
             <Button
               variant="contained"
               size="small"
-              onClick={() =>
-                (window.location.href = "/hierarchical-gantt?filter=ongoing")
-              }
+              onClick={() => (window.location.href = "/ongoing-projects")}
               sx={{
                 backgroundColor: "rgba(255,255,255,0.15)",
                 color: "#fff",
@@ -304,6 +301,31 @@ const MainMapPage = () => {
               }}
             >
               Portfolio
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => (window.location.href = "/overall-summary")}
+              sx={{
+                backgroundColor: "rgba(255,255,255,0.15)",
+                color: "#fff",
+                textTransform: "none",
+                fontSize: "0.75rem",
+                fontWeight: 300,
+                borderRadius: "6px",
+                padding: "5px 10px",
+                minWidth: "auto",
+                boxShadow: "none",
+                border: "1px solid rgba(255,255,255,0.3)",
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  transform: "translateY(-1px)",
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              Summary
             </Button>
             <Button
               variant="contained"
