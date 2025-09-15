@@ -384,23 +384,40 @@ const MapView = ({
         }
       }
 
-      // Always move selected layers to the top (River only when districts are present)
+      // Move layers to appropriate z-index positions
       const shouldMoveToTop =
         layerName === "River"
-          ? districtBoundaries && districtBoundaries.length > 0
+          ? false // River should stay at bottom like district boundaries
           : isSelected;
+
       if (shouldMoveToTop) {
+        // Move non-River layers to top
         try {
           map.moveLayer(lineLayerId);
         } catch (e) {}
         try {
           map.moveLayer(fillLayerId);
         } catch (e) {}
-        // Only move animated line layer if it exists (not for River)
-        if (layerName !== "River") {
-          try {
-            map.moveLayer(animatedLineLayerId);
-          } catch (e) {}
+        try {
+          map.moveLayer(animatedLineLayerId);
+        } catch (e) {}
+      } else if (layerName === "River" && isSelected) {
+        // Keep River at bottom by moving it before district layers
+        try {
+          // Move River layers to bottom, similar to district boundaries
+          const districtFillLayer = "district-fill";
+          if (map.getLayer(districtFillLayer)) {
+            map.moveLayer(fillLayerId, districtFillLayer);
+            map.moveLayer(lineLayerId, districtFillLayer);
+          } else {
+            // If no district layer, move before ruda-fill to keep at bottom
+            if (map.getLayer("ruda-fill")) {
+              map.moveLayer(fillLayerId, "ruda-fill");
+              map.moveLayer(lineLayerId, "ruda-fill");
+            }
+          }
+        } catch (e) {
+          // If positioning fails, just keep River at current position
         }
       }
     });
@@ -671,18 +688,48 @@ const MapView = ({
   const handlePrintMap = async () => {
     try {
       const map = mapRef.current;
-      if (!map) return;
-
-      // Wait for map to be fully loaded
-      if (!map.isStyleLoaded()) {
-        await new Promise((resolve) => {
-          map.once("idle", resolve);
-        });
+      if (!map) {
+        alert("Map not ready. Please try again.");
+        return;
       }
 
-      // Use Mapbox's built-in canvas export
+      // Wait for map to be fully loaded and all sources to be loaded
+      await new Promise((resolve) => {
+        if (map.isStyleLoaded() && map.areTilesLoaded()) {
+          resolve();
+        } else {
+          const checkLoaded = () => {
+            if (map.isStyleLoaded() && map.areTilesLoaded()) {
+              map.off("idle", checkLoaded);
+              map.off("sourcedata", checkLoaded);
+              resolve();
+            }
+          };
+          map.on("idle", checkLoaded);
+          map.on("sourcedata", checkLoaded);
+        }
+      });
+
+      // Additional wait to ensure all layers are rendered
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Get the map canvas
       const canvas = map.getCanvas();
-      const dataURL = canvas.toDataURL("image/png");
+
+      // Ensure canvas has content
+      if (!canvas || canvas.width === 0 || canvas.height === 0) {
+        alert("Unable to capture map. Please try again.");
+        return;
+      }
+
+      // Convert to data URL with high quality
+      const dataURL = canvas.toDataURL("image/png", 1.0);
+
+      // Check if dataURL is valid (not empty/white)
+      if (!dataURL || dataURL === "data:,") {
+        alert("Map capture failed. Please try again.");
+        return;
+      }
 
       // Create PDF
       const pdf = new jsPDF({
@@ -691,33 +738,41 @@ const MapView = ({
         format: "a4",
       });
 
-      const imgWidth = 297; // A4 landscape width in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pdfWidth = 297; // A4 landscape width in mm
+      const pdfHeight = 210; // A4 landscape height in mm
 
-      // Add title
-      pdf.setFontSize(16);
-      pdf.text("RUDA Map Export", 10, 15);
+      // Calculate image dimensions to fit in PDF
+      const canvasAspectRatio = canvas.width / canvas.height;
+      const pdfAspectRatio = pdfWidth / pdfHeight;
 
-      // Add timestamp
-      pdf.setFontSize(10);
-      pdf.text(`Generated on: ${new Date().toLocaleString()}`, 10, 25);
+      let imgWidth, imgHeight;
+      if (canvasAspectRatio > pdfAspectRatio) {
+        // Canvas is wider, fit to width
+        imgWidth = pdfWidth - 20; // 10mm margin on each side
+        imgHeight = imgWidth / canvasAspectRatio;
+      } else {
+        // Canvas is taller, fit to height
+        imgHeight = pdfHeight - 40; // 20mm margin top, 20mm bottom
+        imgWidth = imgHeight * canvasAspectRatio;
+      }
 
-      // Add map image with some margin for title
-      const mapY = 30;
-      const availableHeight = 210 - mapY; // A4 height minus margins
-      const finalHeight = Math.min(imgHeight, availableHeight);
-      const finalWidth = (canvas.width * finalHeight) / canvas.height;
+      // Center the image
+      const x = (pdfWidth - imgWidth) / 2;
+      const y = (pdfHeight - imgHeight) / 2;
 
-      pdf.addImage(
-        dataURL,
-        "PNG",
-        (297 - finalWidth) / 2, // Center horizontally
-        mapY,
-        finalWidth,
-        finalHeight
-      );
+      // Add the map image
+      pdf.addImage(dataURL, "PNG", x, y, imgWidth, imgHeight);
 
-      pdf.save("ruda-map.pdf");
+      // Add title and timestamp
+      pdf.setFontSize(12);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text("RUDA Map Export", 10, 10);
+
+      pdf.setFontSize(8);
+      pdf.text(`Generated: ${new Date().toLocaleString()}`, 10, 16);
+
+      // Save the PDF
+      pdf.save(`ruda-map-${new Date().toISOString().split("T")[0]}.pdf`);
     } catch (error) {
       console.error("Error generating PDF:", error);
       alert("Error generating PDF. Please try again.");
@@ -768,7 +823,7 @@ const MapView = ({
           </FormControl>
         </Box>
 
-        {/* Print button */}
+        {/* Print button 
         <Button
           variant="contained"
           onClick={handlePrintMap}
@@ -791,7 +846,7 @@ const MapView = ({
           startIcon={<Print />}
         >
           Print
-        </Button>
+        </Button>*/}
 
         <ProposedRoadsLayer />
         <div ref={mapContainerRef} style={{ width: "100%", height: "100%" }} />
