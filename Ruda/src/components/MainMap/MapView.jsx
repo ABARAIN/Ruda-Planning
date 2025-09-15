@@ -16,7 +16,6 @@ import { Print } from "@mui/icons-material";
 import ProposedRoadsLayer from "./ProposedRoadsLayer";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
-import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -270,7 +269,7 @@ const MapView = ({
           data: layerData,
         });
 
-        // Regular layer handling for all layers including River
+        // Regular layer handling for all layers including
         map.addLayer({
           id: fillLayerId,
           type: "fill",
@@ -671,16 +670,19 @@ const MapView = ({
 
   const handlePrintMap = async () => {
     try {
-      const mapContainer = mapContainerRef.current;
-      if (!mapContainer) return;
+      const map = mapRef.current;
+      if (!map) return;
 
-      // Create canvas from the map container
-      const canvas = await html2canvas(mapContainer, {
-        useCORS: true,
-        allowTaint: true,
-        scale: 2, // Higher quality
-        backgroundColor: null,
-      });
+      // Wait for map to be fully loaded
+      if (!map.isStyleLoaded()) {
+        await new Promise((resolve) => {
+          map.once("idle", resolve);
+        });
+      }
+
+      // Use Mapbox's built-in canvas export
+      const canvas = map.getCanvas();
+      const dataURL = canvas.toDataURL("image/png");
 
       // Create PDF
       const pdf = new jsPDF({
@@ -692,14 +694,29 @@ const MapView = ({
       const imgWidth = 297; // A4 landscape width in mm
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
+      // Add title
+      pdf.setFontSize(16);
+      pdf.text("RUDA Map Export", 10, 15);
+
+      // Add timestamp
+      pdf.setFontSize(10);
+      pdf.text(`Generated on: ${new Date().toLocaleString()}`, 10, 25);
+
+      // Add map image with some margin for title
+      const mapY = 30;
+      const availableHeight = 210 - mapY; // A4 height minus margins
+      const finalHeight = Math.min(imgHeight, availableHeight);
+      const finalWidth = (canvas.width * finalHeight) / canvas.height;
+
       pdf.addImage(
-        canvas.toDataURL("image/png"),
+        dataURL,
         "PNG",
-        0,
-        0,
-        imgWidth,
-        imgHeight
+        (297 - finalWidth) / 2, // Center horizontally
+        mapY,
+        finalWidth,
+        finalHeight
       );
+
       pdf.save("ruda-map.pdf");
     } catch (error) {
       console.error("Error generating PDF:", error);

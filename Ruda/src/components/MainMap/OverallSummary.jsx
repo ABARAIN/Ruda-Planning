@@ -10,6 +10,31 @@ export default function OverallSummary() {
   const [expandedCategories, setExpandedCategories] = useState({});
   const scrollerRef = useRef(null);
 
+  // Helper function to extract main project name
+  const extractMainProjectName = (fullName) => {
+    if (!fullName) return "";
+
+    // Remove extra details like "3Km", "2.5Km", etc.
+    // Examples: "RTW Package-01 3Km" -> "RTW Package-01"
+    //           "RTW Package-02 2.5Km" -> "RTW Package-02"
+    //           "RTW Package-03 1.8Km" -> "RTW Package-03"
+    const cleaned = fullName.replace(/\s+\d+(\.\d+)?\s*km$/i, "").trim();
+
+    // Also handle other possible patterns like distances in parentheses
+    const finalCleaned = cleaned
+      .replace(/\s*\(\d+(\.\d+)?\s*km\)$/i, "")
+      .trim();
+
+    return finalCleaned;
+  };
+
+  // Function to navigate to RTW Dashboard
+  const navigateToRTWDashboard = (projectName) => {
+    const mainName = extractMainProjectName(projectName);
+    const encodedName = encodeURIComponent(mainName);
+    window.open(`/details/${encodedName}`, "_blank");
+  };
+
   // Constants for column mapping
   const COL_BREAKDOWN = "Project Amount Breakdown \nDevelopment Works";
   const COL_BUDGET_EST = "Budget Estimates\n(PKR Millions)";
@@ -608,6 +633,14 @@ export default function OverallSummary() {
                             textAlign: "left",
                             paddingLeft: "25px", // Indent sub-projects
                             color: "#4a5568",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                          };
+
+                          const nameCellHoverStyle = {
+                            ...nameCellStyle,
+                            backgroundColor: "#e2e8f0",
+                            color: "#2d3748",
                           };
 
                           return (
@@ -619,7 +652,24 @@ export default function OverallSummary() {
                                 borderLeft: "3px solid #cbd5e0",
                               }}
                             >
-                              <td style={nameCellStyle}>
+                              <td
+                                style={nameCellStyle}
+                                onClick={() =>
+                                  navigateToRTWDashboard(project.projectName)
+                                }
+                                onMouseEnter={(e) => {
+                                  Object.assign(
+                                    e.target.style,
+                                    nameCellHoverStyle
+                                  );
+                                }}
+                                onMouseLeave={(e) => {
+                                  Object.assign(e.target.style, nameCellStyle);
+                                }}
+                                title={`Click to view ${extractMainProjectName(
+                                  project.projectName
+                                )} dashboard`}
+                              >
                                 {project.projectName}
                               </td>
                               <td style={cellStyle}>
@@ -634,7 +684,27 @@ export default function OverallSummary() {
                                   </div>
                                 </div>
                               </td>
-                              <td style={cellStyle}>
+                              <td
+                                style={{
+                                  ...cellStyle,
+                                  cursor: "pointer",
+                                  transition: "all 0.2s ease",
+                                }}
+                                onClick={() =>
+                                  navigateToRTWDashboard(project.projectName)
+                                }
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor =
+                                    "#e2e8f0";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor =
+                                    index % 2 === 0 ? "#f7fafc" : "white";
+                                }}
+                                title={`Click to view ${extractMainProjectName(
+                                  project.projectName
+                                )} dashboard`}
+                              >
                                 <div style={{ fontSize: "12px" }}>
                                   <div>
                                     <strong>Plan:</strong>{" "}
@@ -703,7 +773,27 @@ export default function OverallSummary() {
                                   )}
                                 </div>
                               </td>
-                              <td style={cellStyle}>
+                              <td
+                                style={{
+                                  ...cellStyle,
+                                  cursor: "pointer",
+                                  transition: "all 0.2s ease",
+                                }}
+                                onClick={() =>
+                                  navigateToRTWDashboard(project.projectName)
+                                }
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor =
+                                    "#e2e8f0";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor =
+                                    index % 2 === 0 ? "#f7fafc" : "white";
+                                }}
+                                title={`Click to view ${extractMainProjectName(
+                                  project.projectName
+                                )} dashboard`}
+                              >
                                 <div
                                   style={{
                                     fontSize: "12px",
