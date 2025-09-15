@@ -9,11 +9,15 @@ import {
   MenuItem,
   InputLabel,
   useMediaQuery,
+  Button,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { Print } from "@mui/icons-material";
 import ProposedRoadsLayer from "./ProposedRoadsLayer";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -85,7 +89,7 @@ const MapView = ({
     "Access Roads": "Access Road.geojson",
     "M Toll Plaze": "M2 Toll Plaza.geojson",
     Jhoke: "Development at Jhoke 158 acres.geojson",
-    "River": "River.geojson",
+    River: "River.geojson",
   };
 
   const geojson = {
@@ -202,7 +206,8 @@ const MapView = ({
         async ([layerName, fileName]) => {
           try {
             // Determine the correct path for each file
-            const filePath = layerName === "River" ? `/${fileName}` : `/geojson/${fileName}`;
+            const filePath =
+              layerName === "River" ? `/${fileName}` : `/geojson/${fileName}`;
             const response = await fetch(filePath);
             if (!response.ok) {
               throw new Error(`Failed to load ${fileName}`);
@@ -235,19 +240,25 @@ const MapView = ({
     const map = mapRef.current;
     if (!map || Object.keys(layersData).length === 0) return;
 
-    // Get all available layer names
+    // Get all available layer names, with River first to ensure it has lower z-index
     const allLayerNames = Object.keys(layerFileMap);
+    const sortedLayerNames = allLayerNames.sort((a, b) => {
+      if (a === "River") return -1; // River comes first
+      if (b === "River") return 1; // River comes first
+      return 0; // Keep original order for other layers
+    });
 
     // Process each layer
-    allLayerNames.forEach((layerName) => {
+    sortedLayerNames.forEach((layerName) => {
       const sourceId = `layer-${layerName.replace(/\s+/g, "-").toLowerCase()}`;
       const fillLayerId = `${sourceId}-fill`;
       const lineLayerId = `${sourceId}-line`;
       const animatedLineLayerId = `${sourceId}-animated-line`;
       // River only shows when district boundaries are present (Sheikhupura/Lahore)
-      const isSelected = layerName === "River"
-        ? (districtBoundaries && districtBoundaries.length > 0)
-        : selectedProjects.includes(layerName);
+      const isSelected =
+        layerName === "River"
+          ? districtBoundaries && districtBoundaries.length > 0
+          : selectedProjects.includes(layerName);
       const layerData = layersData[layerName];
 
       if (!layerData) return;
@@ -265,14 +276,20 @@ const MapView = ({
           type: "fill",
           source: sourceId,
           paint: {
-            "fill-color": layerName === "River" ? [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
-              8, "#1E40AF", // Dark blue at low zoom
-              12, "#2563EB", // Medium blue at mid zoom
-              16, "#3B82F6"  // Light blue at high zoom
-            ] : (colorMap[layerName] || "#ff6b35"),
+            "fill-color":
+              layerName === "River"
+                ? [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    8,
+                    "#1E40AF", // Dark blue at low zoom
+                    12,
+                    "#2563EB", // Medium blue at mid zoom
+                    16,
+                    "#3B82F6", // Light blue at high zoom
+                  ]
+                : colorMap[layerName] || "#ff6b35",
             "fill-opacity": 0.7,
           },
           layout: {
@@ -285,15 +302,14 @@ const MapView = ({
           type: "line",
           source: sourceId,
           paint: {
-            "line-color": layerName === "River" ? "#0EA5E9" : (colorMap[layerName] || "#ff6b35"),
-            "line-width": layerName === "River" ? [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
-              8, 3,
-              12, 5,
-              16, 8
-            ] : 3,
+            "line-color":
+              layerName === "River"
+                ? "#0EA5E9"
+                : colorMap[layerName] || "#ff6b35",
+            "line-width":
+              layerName === "River"
+                ? ["interpolate", ["linear"], ["zoom"], 8, 3, 12, 5, 16, 8]
+                : 3,
           },
           layout: {
             visibility: isSelected ? "visible" : "none",
@@ -318,7 +334,11 @@ const MapView = ({
                 }</h3>
                 <div style="font-size:14px; margin-bottom:8px;">
                   <strong>Layer:</strong> ${layerName}
-                  ${layerName === "River" ? '<br><strong>Type:</strong> Water Body' : ''}
+                  ${
+                    layerName === "River"
+                      ? "<br><strong>Type:</strong> Water Body"
+                      : ""
+                  }
                 </div>
                 <a href="/details/${encodeURIComponent(
                   props.name || layerName
@@ -336,10 +356,11 @@ const MapView = ({
       } else {
         // Update visibility for existing layers
         // River only shows when district boundaries are present (Sheikhupura/Lahore)
-        const isSelected = layerName === "River"
-          ? (districtBoundaries && districtBoundaries.length > 0)
-          : selectedProjects.includes(layerName);
-        
+        const isSelected =
+          layerName === "River"
+            ? districtBoundaries && districtBoundaries.length > 0
+            : selectedProjects.includes(layerName);
+
         if (map.getLayer(fillLayerId)) {
           map.setLayoutProperty(
             fillLayerId,
@@ -365,9 +386,10 @@ const MapView = ({
       }
 
       // Always move selected layers to the top (River only when districts are present)
-      const shouldMoveToTop = layerName === "River"
-        ? (districtBoundaries && districtBoundaries.length > 0)
-        : isSelected;
+      const shouldMoveToTop =
+        layerName === "River"
+          ? districtBoundaries && districtBoundaries.length > 0
+          : isSelected;
       if (shouldMoveToTop) {
         try {
           map.moveLayer(lineLayerId);
@@ -424,10 +446,10 @@ const MapView = ({
       const sourceId = `layer-${layerName.replace(/\s+/g, "-").toLowerCase()}`;
       const fillLayerId = `${sourceId}-fill`;
       const lineLayerId = `${sourceId}-line`;
-      
+
       // Skip color updates for River layer as it has custom styling
       if (layerName === "River") return;
-      
+
       const color = colorMap[layerName] || "#ff6b35";
 
       if (map.getLayer(fillLayerId)) {
@@ -647,6 +669,44 @@ const MapView = ({
     }
   }
 
+  const handlePrintMap = async () => {
+    try {
+      const mapContainer = mapContainerRef.current;
+      if (!mapContainer) return;
+
+      // Create canvas from the map container
+      const canvas = await html2canvas(mapContainer, {
+        useCORS: true,
+        allowTaint: true,
+        scale: 2, // Higher quality
+        backgroundColor: null,
+      });
+
+      // Create PDF
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const imgWidth = 297; // A4 landscape width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(
+        canvas.toDataURL("image/png"),
+        "PNG",
+        0,
+        0,
+        imgWidth,
+        imgHeight
+      );
+      pdf.save("ruda-map.pdf");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Error generating PDF. Please try again.");
+    }
+  };
+
   return (
     <>
       <style>
@@ -690,6 +750,31 @@ const MapView = ({
             </Select>
           </FormControl>
         </Box>
+
+        {/* Print button */}
+        <Button
+          variant="contained"
+          onClick={handlePrintMap}
+          sx={{
+            position: "absolute",
+            bottom: isMobile ? 16 : 20,
+            right: isMobile ? 16 : 20,
+            zIndex: 10,
+            backgroundColor: "#2196f3",
+            color: "#fff",
+            minWidth: "auto",
+            padding: "8px 16px",
+            borderRadius: "6px",
+            boxShadow: 2,
+            "&:hover": {
+              backgroundColor: "#1976d2",
+              boxShadow: 3,
+            },
+          }}
+          startIcon={<Print />}
+        >
+          Print
+        </Button>
 
         <ProposedRoadsLayer />
         <div ref={mapContainerRef} style={{ width: "100%", height: "100%" }} />

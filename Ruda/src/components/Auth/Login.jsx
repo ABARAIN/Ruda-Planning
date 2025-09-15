@@ -1,9 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  // Check if user is already authenticated on component mount (only once)
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      // Simple redirect without validation to avoid interference
+      // The ProtectedRoute will handle token validation
+      navigate("/", { replace: true });
+    }
+  }, []); // Empty dependency array to run only once
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -42,23 +52,27 @@ const Login = () => {
     if (!validateForm()) return;
 
     setLoading(true);
+    setErrors({}); // Clear previous errors
 
     try {
-      const response = await fetch("https://ruda-planning.onrender.com/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }),
-      });
+      const response = await fetch(
+        "https://ruda-planning.onrender.com/api/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: formData.username,
+            password: formData.password,
+          }),
+        }
+      );
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (response.ok && data.token) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/");
+        navigate("/", { replace: true });
       } else {
         setErrors({ submit: data.message || "Login failed" });
       }
@@ -75,7 +89,6 @@ const Login = () => {
         <div className="auth-card">
           <div className="auth-header">
             <img src="/Ruda.jpg" alt="Ruda Logo" className="auth-header-logo" />
-           
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">

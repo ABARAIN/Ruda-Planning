@@ -17,13 +17,16 @@ const ProtectedRoute = ({ children }) => {
 
       try {
         // Validate token with backend
-        const response = await fetch("https://ruda-planning.onrender.com/api/auth/profile", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          "https://ruda-planning.onrender.com/api/auth/profile",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (response.ok) {
           setIsAuthenticated(true);
@@ -53,13 +56,34 @@ const ProtectedRoute = ({ children }) => {
       <div
         style={{
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           height: "100vh",
           fontSize: "18px",
+          backgroundColor: "#f5f5f5",
         }}
       >
-        Loading...
+        <div
+          style={{
+            width: "40px",
+            height: "40px",
+            border: "4px solid #e0e0e0",
+            borderTop: "4px solid #2196f3",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite",
+            marginBottom: "20px",
+          }}
+        />
+        <div>Authenticating...</div>
+        <style>
+          {`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}
+        </style>
       </div>
     );
   }

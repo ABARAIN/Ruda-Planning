@@ -300,22 +300,41 @@ const Portfolio = () => {
           {src.title || row.title || "RUDA DEVELOPMENT PORTFOLIO"}
         </h1>
 
-        <div
-          onClick={() => setUsePriority(!usePriority)}
-          title="Priority"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "6px 12px",
-            borderRadius: 6,
-            background: usePriority ? "#10b981" : "#e93131",
-            color: usePriority ? "#fff" : "#ffffff",
-            cursor: "pointer",
-            fontWeight: 600,
-          }}
-        >
-          Priority
+        <div style={{ display: "flex", gap: "8px" }}>
+          <div
+            onClick={() => (window.location.href = "/")}
+            title="Home"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "6px 12px",
+              borderRadius: 6,
+              background: "#2196f3",
+              color: "#ffffff",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
+          >
+            Home
+          </div>
+          <div
+            onClick={() => setUsePriority(!usePriority)}
+            title="Priority"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "6px 12px",
+              borderRadius: 6,
+              background: usePriority ? "#10b981" : "#e93131",
+              color: usePriority ? "#fff" : "#ffffff",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
+          >
+            Priority
+          </div>
         </div>
       </div>
 

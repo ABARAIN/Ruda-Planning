@@ -417,16 +417,23 @@ export default function RUDAPlanTimeline({
               setShowOngoing(false);
             }}
             style={{
-              background: showPriority ? "#16a34aff" : "#4a90e2",
+              background: showPriority ? "#dc2626" : "#ef4444",
               color: "white",
-              border: "none",
+              border: showPriority
+                ? "2px solid #991b1b"
+                : "2px solid transparent",
               padding: "8px 16px",
               borderRadius: "4px",
               cursor: "pointer",
               fontWeight: "bold",
+              boxShadow: showPriority
+                ? "0 2px 8px rgba(220, 38, 38, 0.3)"
+                : "none",
+              transform: showPriority ? "translateY(-1px)" : "none",
+              transition: "all 0.2s ease-in-out",
             }}
           >
-            {showPriority ? "PRIORITY" : "PRIORITY"}
+            PRIORITY
           </button>
           <button
             className={`completed-btn${showCompleted ? " active" : ""}`}
@@ -436,16 +443,23 @@ export default function RUDAPlanTimeline({
               setShowOngoing(false);
             }}
             style={{
-              background: showCompleted ? "#16a34aff" : "#4a90e2",
+              background: showCompleted ? "#16a34a" : "#22c55e",
               color: "white",
-              border: "none",
+              border: showCompleted
+                ? "2px solid #15803d"
+                : "2px solid transparent",
               padding: "8px 16px",
               borderRadius: "4px",
               cursor: "pointer",
               fontWeight: "bold",
+              boxShadow: showCompleted
+                ? "0 2px 8px rgba(22, 163, 74, 0.3)"
+                : "none",
+              transform: showCompleted ? "translateY(-1px)" : "none",
+              transition: "all 0.2s ease-in-out",
             }}
           >
-            {showCompleted ? "COMPLETED" : "COMPLETED"}
+            COMPLETED
           </button>
           <button
             className={`ongoing-btn${showOngoing ? " active" : ""}`}
@@ -455,16 +469,23 @@ export default function RUDAPlanTimeline({
               setShowCompleted(false);
             }}
             style={{
-              background: showOngoing ? "#16a34aff" : "#4a90e2",
+              background: showOngoing ? "#ea580c" : "#f97316",
               color: "white",
-              border: "none",
+              border: showOngoing
+                ? "2px solid #c2410c"
+                : "2px solid transparent",
               padding: "8px 16px",
               borderRadius: "4px",
               cursor: "pointer",
               fontWeight: "bold",
+              boxShadow: showOngoing
+                ? "0 2px 8px rgba(234, 88, 12, 0.3)"
+                : "none",
+              transform: showOngoing ? "translateY(-1px)" : "none",
+              transition: "all 0.2s ease-in-out",
             }}
           >
-            {showOngoing ? "ONGOING" : "ONGOING"}
+            ONGOING
           </button>
           <button
             className="home-btn"
@@ -801,31 +822,64 @@ export default function RUDAPlanTimeline({
           display: inline-block;
         }
         .priority-btn {
-          background: #4a90e2;
+          background: #ef4444;
           color: white;
-          border: none;
+          border: 2px solid transparent;
           padding: 8px 16px;
           border-radius: 4px;
           cursor: pointer;
           font-weight: bold;
+          transition: all 0.2s ease-in-out;
         }
         .priority-btn.active {
           background: #dc2626;
+          border: 2px solid #991b1b;
+          box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+          transform: translateY(-1px);
         }
         .priority-btn:hover {
-          background: #2c5282;
+          background: #dc2626;
+          transform: translateY(-1px);
+        }
+        .completed-btn {
+          background: #22c55e;
+          color: white;
+          border: 2px solid transparent;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: all 0.2s ease-in-out;
         }
         .completed-btn.active {
           background: #16a34a;
+          border: 2px solid #15803d;
+          box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+          transform: translateY(-1px);
         }
         .completed-btn:hover {
-          background: #12803a;
+          background: #16a34a;
+          transform: translateY(-1px);
+        }
+        .ongoing-btn {
+          background: #f97316;
+          color: white;
+          border: 2px solid transparent;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: all 0.2s ease-in-out;
         }
         .ongoing-btn.active {
-          background: #f59e42;
+          background: #ea580c;
+          border: 2px solid #c2410c;
+          box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3);
+          transform: translateY(-1px);
         }
         .ongoing-btn:hover {
-          background: #e07c00;
+          background: #ea580c;
+          transform: translateY(-1px);
         }
         .ruda-container {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

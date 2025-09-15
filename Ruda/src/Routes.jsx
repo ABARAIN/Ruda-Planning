@@ -17,19 +17,11 @@ import OngoingProjects from "./components/MainMap/OngoingProjects";
 import OverallSummary from "./components/MainMap/OverallSummary";
 
 const AppRoutes = () => {
-  const isAuthenticated = !!localStorage.getItem("token");
-
   return (
     <Routes>
       {/* Public routes */}
-      <Route
-        path="/login"
-        element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />}
-      />
-      <Route
-        path="/register"
-        element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />}
-      />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
       {/* Protected routes */}
       <Route
@@ -130,11 +122,8 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Redirect to login if not authenticated, otherwise to main page */}
-      <Route
-        path="*"
-        element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />}
-      />
+      {/* Redirect to login for unknown routes */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };
