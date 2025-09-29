@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useNavigate } from "react-router-dom";
 import styles from "./Portfolio/styles";
 
 const POINTS_GEOJSON_URL = "/geojson/points.geojson";
@@ -20,6 +21,7 @@ function getFixedCategory(idx) {
 }
 
 const ProjectMilestone = () => {
+  const navigate = useNavigate();
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const initialCounts = CATEGORIES.reduce((acc, cat) => {
@@ -28,6 +30,14 @@ const ProjectMilestone = () => {
   }, {});
 
   const [categoryCounts, setCategoryCounts] = useState(initialCounts);
+
+  // Handle category click - navigate to hierarchical-gantt for completed projects
+  const handleCategoryClick = (categoryKey) => {
+    if (categoryKey === 6) {
+      // Handover/Completed category
+      navigate("/hierarchical-gantt?filter=completed");
+    }
+  };
   useEffect(() => {
     let map;
     if (!mapRef.current) return;
@@ -131,7 +141,22 @@ const ProjectMilestone = () => {
               boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
               pointerEvents: "auto",
               opacity: 0.95,
+              cursor: cat.key === 6 ? "pointer" : "default",
+              transition: "all 0.2s ease-in-out",
+              "&:hover":
+                cat.key === 6
+                  ? {
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                    }
+                  : {},
             }}
+            onClick={() => handleCategoryClick(cat.key)}
+            title={
+              cat.key === 6
+                ? "Click to view completed projects in Hierarchical Gantt"
+                : ""
+            }
           >
             <div style={{ fontSize: 20, fontWeight: 700 }}>
               {categoryCounts[cat.key] || 0}
