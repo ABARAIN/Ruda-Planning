@@ -15,11 +15,9 @@ const ProgressUpdate = () => {
   const [sheetData, setSheetData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Available FY options
   const fyOptions = ["24-25", "25-26"];
 
   useEffect(() => {
-    // Load Sheet.json data
     fetch("/Sheet.json")
       .then((response) => response.json())
       .then((data) => {
@@ -32,11 +30,10 @@ const ProgressUpdate = () => {
       });
   }, []);
 
-  // Calculate values based on selected FY
   const calculateValues = () => {
     if (!sheetData || !sheetData.workbook?.sheets?.[0]?.rows) {
       return {
-        devBudget: 0,
+        devBudget: 15.96,
         plan: 12.94,
         certified: 6.85,
         paid: 6.11,
@@ -48,8 +45,6 @@ const ProgressUpdate = () => {
 
     const rows = sheetData.workbook.sheets[0].rows;
     const fyColumn = `FY ${selectedFY}`;
-
-    // Find the "Proposed Budget" row for dev budget
     const proposedBudgetRow = rows.find(
       (row) =>
         row["Project Amount Breakdown \nDevelopment Works"] ===
@@ -58,34 +53,30 @@ const ProgressUpdate = () => {
 
     let devBudget = 0;
     if (proposedBudgetRow && proposedBudgetRow[fyColumn]) {
-      devBudget = proposedBudgetRow[fyColumn] / 1000; // Convert to billions
+      devBudget = proposedBudgetRow[fyColumn] / 1000;
     }
 
-    // For FY 24-25, use actual values, for others use 0
     if (selectedFY === "24-25") {
       const plan = 12.94;
       const certified = 6.85;
       const paid = 6.11;
-
-      // Calculate percentages: PLAN % = PLAN/DEV BUDGET * 100, ACTUAL % = CERTIFIED/DEV BUDGET * 100
       const planPercent = devBudget > 0 ? (plan / devBudget) * 100 : 81;
       const actualPercent = devBudget > 0 ? (certified / devBudget) * 100 : 42;
       const performanceEfficiency =
         planPercent > 0 ? (actualPercent / planPercent) * 100 : 51;
 
       return {
-        devBudget: devBudget,
-        plan: plan,
-        certified: certified,
-        paid: paid,
+        devBudget,
+        plan,
+        certified,
+        paid,
         planPercent: Math.round(planPercent),
         actualPercent: Math.round(actualPercent),
         performanceEfficiency: Math.round(performanceEfficiency),
       };
     } else {
-      // For other years, show 0 values but keep headings
       return {
-        devBudget: devBudget,
+        devBudget,
         plan: 0,
         certified: 0,
         paid: 0,
@@ -98,16 +89,11 @@ const ProgressUpdate = () => {
 
   const values = calculateValues();
 
-  // Color determination based on percentage
   const getBoxColor = (value, type) => {
-    if (type === "green") return "#4CAF50"; // 90% to 100%
-    if (type === "orange") return "#FF9800"; // 75% to 89%
-    if (type === "blue") return "#2196F3"; // Below 75%
-
-    // Default color logic based on value
-    if (value >= 90) return "#4CAF50";
-    if (value >= 75) return "#FF9800";
-    return "#2196F3";
+    if (type === "green") return "#8CB971"; // Certified/Paid
+    if (type === "orange") return "#F4A261"; // Plan %
+    if (type === "blue") return "#2F80ED"; // Budget/Plan
+    return "#D9D9D9"; // Actual %
   };
 
   if (loading) {
@@ -127,8 +113,9 @@ const ProgressUpdate = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#fff",
         fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
+        padding: "10px",
       }}
     >
       {/* Header */}
@@ -136,24 +123,24 @@ const ProgressUpdate = () => {
         sx={{
           backgroundColor: "#2c5282",
           color: "white",
-          padding: "15px 20px",
+          padding: "10px 20px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
         }}
       >
         <Typography
-          variant="h5"
+          variant="h6"
           sx={{
             fontWeight: "bold",
-            margin: 0,
-            fontSize: "20px",
+            fontSize: "18px",
+            textTransform: "uppercase",
           }}
         >
-          PROGRESS UPDATE - CFY ONGOING WORKS
+          Progress Update – CFY Ongoing Works
         </Typography>
 
-        <FormControl sx={{ minWidth: 120 }}>
+        <FormControl sx={{ minWidth: 100 }}>
           <InputLabel sx={{ color: "white" }}>FY</InputLabel>
           <Select
             value={selectedFY}
@@ -161,12 +148,6 @@ const ProgressUpdate = () => {
             sx={{
               color: "white",
               "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "white",
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: "white",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                 borderColor: "white",
               },
               "& .MuiSvgIcon-root": {
@@ -183,295 +164,209 @@ const ProgressUpdate = () => {
         </FormControl>
       </Box>
 
-      {/* Main Content */}
-      <Box sx={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
-        {/* Main Grid Container - Exact layout from image */}
+      {/* Grid Layout */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "1fr 2fr",
+          gridTemplateRows: "1fr 1fr",
+          gap: "15px",
+          marginTop: "20px",
+          marginBottom: "20px",
+          height: "calc(100vh - 180px)",
+        }}
+      >
+        {/* DEV BUDGET */}
         <Box
           sx={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 1fr",
-            gridTemplateRows: "1fr 1fr",
-            gap: "8px",
-            height: "400px",
-            marginBottom: "20px",
+            gridColumn: "1 / 2",
+            gridRow: "1 / 3",
+            backgroundColor: getBoxColor(0, "blue"),
+            color: "white",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            textAlign: "center",
+            borderRadius: "6px",
           }}
         >
-          {/* DEV BUDGET Box - Large box on left spanning 2 rows */}
+          <Typography variant="subtitle2" sx={{ fontSize: "14px" }}>
+            DEV. BUDGET
+          </Typography>
+          <Typography variant="body2" sx={{ marginBottom: "10px" }}>
+            FY {selectedFY}
+          </Typography>
+          <Typography variant="h2" sx={{ fontWeight: "bold" }}>
+            {values.devBudget.toFixed(2)} B
+          </Typography>
+        </Box>
+
+        {/* TOP ROW (Plan, Certified, Paid) */}
+        <Box
+          sx={{
+            gridColumn: "2 / 3",
+            gridRow: "1 / 2",
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "15px",
+          }}
+        >
+          {/* PLAN */}
           <Box
             sx={{
-              gridColumn: "1 / 2",
-              gridRow: "1 / 3",
               backgroundColor: getBoxColor(0, "blue"),
               color: "white",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              textAlign: "center",
-              padding: "20px",
-              borderRadius: "4px",
+              borderRadius: "6px",
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: "bold", marginBottom: "8px", fontSize: "16px" }}
-            >
-              DEV. BUDGET
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ marginBottom: "15px", fontSize: "14px" }}
-            >
-              FY {selectedFY}
-            </Typography>
-            <Typography
-              variant="h3"
-              sx={{ fontWeight: "bold", fontSize: "48px" }}
-            >
-              {values.devBudget.toFixed(2)} B
-            </Typography>
+            <Typography variant="subtitle2">PLAN</Typography>
+            <Typography variant="body2">TILL DATE</Typography>
+            <Typography variant="h4">{values.plan.toFixed(2)} B</Typography>
           </Box>
 
-          {/* PLAN Box - Top row, second column */}
+          {/* CERTIFIED */}
           <Box
             sx={{
-              gridColumn: "2 / 3",
-              gridRow: "1 / 2",
-              backgroundColor: getBoxColor(0, "blue"),
-              color: "white",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              textAlign: "center",
-              padding: "15px",
-              borderRadius: "4px",
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: "bold", marginBottom: "5px", fontSize: "14px" }}
-            >
-              PLAN
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ marginBottom: "8px", fontSize: "12px" }}
-            >
-              TILL DATE
-            </Typography>
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: "bold", fontSize: "32px" }}
-            >
-              {values.plan.toFixed(2)} B
-            </Typography>
-          </Box>
-
-          {/* CERTIFIED Box - Top row, third column */}
-          <Box
-            sx={{
-              gridColumn: "3 / 4",
-              gridRow: "1 / 2",
               backgroundColor: getBoxColor(0, "green"),
-              color: "white",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              textAlign: "center",
-              padding: "15px",
-              borderRadius: "4px",
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: "bold", marginBottom: "5px", fontSize: "14px" }}
-            >
-              CERTIFIED
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ marginBottom: "8px", fontSize: "12px" }}
-            >
-              TILL DATE
-            </Typography>
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: "bold", fontSize: "32px" }}
-            >
-              {values.certified.toFixed(2)} B
-            </Typography>
-          </Box>
-
-          {/* PAID Box - Top row, fourth column */}
-          <Box
-            sx={{
-              gridColumn: "4 / 5",
-              gridRow: "1 / 2",
-              backgroundColor: getBoxColor(0, "green"),
-              color: "white",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              textAlign: "center",
-              padding: "15px",
-              borderRadius: "4px",
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: "bold", marginBottom: "5px", fontSize: "14px" }}
-            >
-              PAID
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ marginBottom: "8px", fontSize: "12px" }}
-            >
-              TILL DATE
-            </Typography>
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: "bold", fontSize: "32px" }}
-            >
-              {values.paid.toFixed(2)} B
-            </Typography>
-          </Box>
-
-          {/* PLAN % Box - Bottom row, second column */}
-          <Box
-            sx={{
-              gridColumn: "2 / 3",
-              gridRow: "2 / 3",
-              backgroundColor: getBoxColor(0, "orange"),
-              color: "white",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              textAlign: "center",
-              padding: "15px",
-              borderRadius: "4px",
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: "bold", marginBottom: "5px", fontSize: "14px" }}
-            >
-              PLAN %
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ marginBottom: "8px", fontSize: "12px" }}
-            >
-              TILL DATE
-            </Typography>
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: "bold", fontSize: "48px" }}
-            >
-              {values.planPercent}%
-            </Typography>
-          </Box>
-
-          {/* ACTUAL % Box - Bottom row, spans third and fourth columns */}
-          <Box
-            sx={{
-              gridColumn: "3 / 5",
-              gridRow: "2 / 3",
-              backgroundColor: "#B0B0B0", // Light gray as shown in image
               color: "black",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              textAlign: "center",
-              padding: "15px",
-              borderRadius: "4px",
+              borderRadius: "6px",
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: "bold", marginBottom: "5px", fontSize: "14px" }}
-            >
-              ACTUAL %
+            <Typography variant="subtitle2">CERTIFIED</Typography>
+            <Typography variant="body2">TILL DATE</Typography>
+            <Typography variant="h4">
+              {values.certified.toFixed(2)} B
             </Typography>
-            <Typography
-              variant="body2"
-              sx={{ marginBottom: "8px", fontSize: "12px" }}
-            >
-              TILL DATE
-            </Typography>
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: "bold", fontSize: "48px" }}
-            >
-              {values.actualPercent}%
-            </Typography>
+          </Box>
+
+          {/* PAID */}
+          <Box
+            sx={{
+              backgroundColor: getBoxColor(0, "green"),
+              color: "black",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: "6px",
+            }}
+          >
+            <Typography variant="subtitle2">PAID</Typography>
+            <Typography variant="body2">TILL DATE</Typography>
+            <Typography variant="h4">{values.paid.toFixed(2)} B</Typography>
           </Box>
         </Box>
 
-        {/* Legend */}
-        <Box sx={{ marginBottom: "20px" }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <Box
-                  sx={{
-                    width: "20px",
-                    height: "20px",
-                    backgroundColor: "#4CAF50",
-                    borderRadius: "2px",
-                  }}
-                />
-                <Typography variant="body2">90% to 100%</Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <Box
-                  sx={{
-                    width: "20px",
-                    height: "20px",
-                    backgroundColor: "#FF9800",
-                    borderRadius: "2px",
-                  }}
-                />
-                <Typography variant="body2">75% to 89%</Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <Box
-                  sx={{
-                    width: "20px",
-                    height: "20px",
-                    backgroundColor: "#2196F3",
-                    borderRadius: "2px",
-                  }}
-                />
-                <Typography variant="body2">Below 75%</Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-
-        {/* Performance Efficiency */}
-        <Paper
+        {/* BOTTOM ROW (Plan %, Actual %) */}
+        <Box
           sx={{
-            backgroundColor: "#333",
-            color: "white",
-            padding: "20px",
-            textAlign: "center",
+            gridColumn: "2 / 3",
+            gridRow: "2 / 3",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "15px",
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-            PERFORMANCE EFFICIENCY: {values.performanceEfficiency}%
-          </Typography>
-        </Paper>
+          {/* PLAN % */}
+          <Box
+            sx={{
+              backgroundColor: getBoxColor(0, "orange"),
+              color: "black",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: "6px",
+            }}
+          >
+            <Typography variant="subtitle2">PLAN %</Typography>
+            <Typography variant="body2">TILL DATE</Typography>
+            <Typography variant="h3">{values.planPercent}%</Typography>
+          </Box>
+
+          {/* ACTUAL % */}
+          <Box
+            sx={{
+              backgroundColor: "#F5F5F5",
+              color: "black",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: "6px",
+            }}
+          >
+            <Typography variant="subtitle2">ACTUAL %</Typography>
+            <Typography variant="body2">TILL DATE</Typography>
+            <Typography variant="h3">{values.actualPercent}%</Typography>
+          </Box>
+        </Box>
       </Box>
+
+      {/* Legend */}
+      <Box sx={{ marginBottom: "20px" }}>
+        <Grid container spacing={2}>
+          <Grid item xs={4}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Box
+                sx={{
+                  width: "20px",
+                  height: "20px",
+                  backgroundColor: "#8CB971",
+                }}
+              />
+              <Typography variant="body2">90% to 100%</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={4}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Box
+                sx={{
+                  width: "20px",
+                  height: "20px",
+                  backgroundColor: "#F4A261",
+                }}
+              />
+              <Typography variant="body2">75% to 89%</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={4}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Box
+                sx={{
+                  width: "20px",
+                  height: "20px",
+                  backgroundColor: "#2F80ED",
+                }}
+              />
+              <Typography variant="body2">Below 75%</Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Performance Efficiency */}
+      <Paper
+        sx={{
+          backgroundColor: "#000",
+          color: "white",
+          padding: "15px",
+          textAlign: "center",
+          fontWeight: "bold",
+          fontSize: "20px",
+        }}
+      >
+        PERFORMANCE EFFICIENCY: {values.performanceEfficiency}%
+      </Paper>
     </Box>
   );
 };
