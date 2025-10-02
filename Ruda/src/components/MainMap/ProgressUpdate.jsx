@@ -7,7 +7,6 @@ import {
   MenuItem,
   InputLabel,
   Paper,
-  Grid,
 } from "@mui/material";
 
 const ProgressUpdate = () => {
@@ -15,7 +14,20 @@ const ProgressUpdate = () => {
   const [sheetData, setSheetData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fyOptions = ["24-25", "25-26"];
+  const fyOptions = [
+    "24-25",
+    "25-26",
+    "26-27",
+    "27-28",
+    "28-29",
+    "29-30",
+    "30-31",
+    "31-32",
+    "32-33",
+    "33-34",
+    "34-35",
+    "35-36",
+  ];
 
   useEffect(() => {
     fetch("/Sheet.json")
@@ -115,7 +127,7 @@ const ProgressUpdate = () => {
         minHeight: "100vh",
         backgroundColor: "#fff",
         fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
-        padding: "10px",
+        padding: "0px",
       }}
     >
       {/* Header */}
@@ -133,15 +145,15 @@ const ProgressUpdate = () => {
           variant="h6"
           sx={{
             fontWeight: "bold",
-            fontSize: "18px",
+            fontSize: "24px",
             textTransform: "uppercase",
           }}
         >
           Progress Update – CFY Ongoing Works
         </Typography>
 
-        <FormControl sx={{ minWidth: 100 }}>
-          <InputLabel sx={{ color: "white" }}>FY</InputLabel>
+        <FormControl sx={{ minWidth: 100, minHeight: 50 }}>
+          <InputLabel sx={{ color: "white", fontSize: "18px" }}>FY</InputLabel>
           <Select
             value={selectedFY}
             onChange={(e) => setSelectedFY(e.target.value)}
@@ -173,7 +185,9 @@ const ProgressUpdate = () => {
           gap: "15px",
           marginTop: "20px",
           marginBottom: "20px",
-          height: "calc(100vh - 180px)",
+          marginLeft: "20px",
+          marginRight: "20px",
+          height: "calc(100vh - 220px)",
         }}
       >
         {/* DEV BUDGET */}
@@ -181,7 +195,7 @@ const ProgressUpdate = () => {
           sx={{
             gridColumn: "1 / 2",
             gridRow: "1 / 3",
-            backgroundColor: getBoxColor(0, "blue"),
+            backgroundColor: "#123959",
             color: "white",
             display: "flex",
             flexDirection: "column",
@@ -191,13 +205,23 @@ const ProgressUpdate = () => {
             borderRadius: "6px",
           }}
         >
-          <Typography variant="subtitle2" sx={{ fontSize: "14px" }}>
+          <Typography
+            variant="subtitle2"
+            sx={{ fontSize: "28px", fontWeight: "normal" }}
+          >
             DEV. BUDGET
           </Typography>
-          <Typography variant="body2" sx={{ marginBottom: "10px" }}>
+          <Typography
+            variant="body2"
+            sx={{
+              marginBottom: "10px",
+              fontSize: "24px",
+              fontWeight: "normal",
+            }}
+          >
             FY {selectedFY}
           </Typography>
-          <Typography variant="h2" sx={{ fontWeight: "bold" }}>
+          <Typography variant="h2" sx={{ fontWeight: "normal" }}>
             {values.devBudget.toFixed(2)} B
           </Typography>
         </Box>
@@ -215,7 +239,7 @@ const ProgressUpdate = () => {
           {/* PLAN */}
           <Box
             sx={{
-              backgroundColor: getBoxColor(0, "blue"),
+              backgroundColor: "#123959",
               color: "white",
               display: "flex",
               flexDirection: "column",
@@ -224,16 +248,28 @@ const ProgressUpdate = () => {
               borderRadius: "6px",
             }}
           >
-            <Typography variant="subtitle2">PLAN</Typography>
-            <Typography variant="body2">TILL DATE</Typography>
-            <Typography variant="h4">{values.plan.toFixed(2)} B</Typography>
+            <Typography
+              variant="subtitle2"
+              sx={{ fontSize: "28px", fontWeight: "normal" }}
+            >
+              PLAN
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ fontSize: "24px", fontWeight: "normal" }}
+            >
+              TILL DATE
+            </Typography>
+            <Typography variant="h2" sx={{ fontWeight: "normal" }}>
+              {values.plan.toFixed(2)} B
+            </Typography>
           </Box>
 
           {/* CERTIFIED */}
           <Box
             sx={{
-              backgroundColor: getBoxColor(0, "green"),
-              color: "black",
+              backgroundColor: "#2c712e",
+              color: "#ffffffe8",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
@@ -241,9 +277,19 @@ const ProgressUpdate = () => {
               borderRadius: "6px",
             }}
           >
-            <Typography variant="subtitle2">CERTIFIED</Typography>
-            <Typography variant="body2">TILL DATE</Typography>
-            <Typography variant="h4">
+            <Typography
+              variant="subtitle2"
+              sx={{ fontSize: "28px", fontWeight: "normal" }}
+            >
+              CERTIFIED
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ fontSize: "24px", fontWeight: "normal" }}
+            >
+              TILL DATE
+            </Typography>
+            <Typography variant="h2" sx={{ fontWeight: "normal" }}>
               {values.certified.toFixed(2)} B
             </Typography>
           </Box>
@@ -251,8 +297,8 @@ const ProgressUpdate = () => {
           {/* PAID */}
           <Box
             sx={{
-              backgroundColor: getBoxColor(0, "green"),
-              color: "black",
+              backgroundColor: "#2c712e",
+              color: "#ffffffe8",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
@@ -260,9 +306,21 @@ const ProgressUpdate = () => {
               borderRadius: "6px",
             }}
           >
-            <Typography variant="subtitle2">PAID</Typography>
-            <Typography variant="body2">TILL DATE</Typography>
-            <Typography variant="h4">{values.paid.toFixed(2)} B</Typography>
+            <Typography
+              variant="subtitle2"
+              sx={{ fontSize: "28px", fontWeight: "normal" }}
+            >
+              PAID
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ fontSize: "24px", fontWeight: "normal" }}
+            >
+              TILL DATE
+            </Typography>
+            <Typography variant="h2" sx={{ fontWeight: "normal" }}>
+              {values.paid.toFixed(2)} B
+            </Typography>
           </Box>
         </Box>
 
@@ -279,7 +337,7 @@ const ProgressUpdate = () => {
           {/* PLAN % */}
           <Box
             sx={{
-              backgroundColor: getBoxColor(0, "orange"),
+              backgroundColor: "#ef9e25",
               color: "black",
               display: "flex",
               flexDirection: "column",
@@ -288,15 +346,27 @@ const ProgressUpdate = () => {
               borderRadius: "6px",
             }}
           >
-            <Typography variant="subtitle2">PLAN %</Typography>
-            <Typography variant="body2">TILL DATE</Typography>
-            <Typography variant="h3">{values.planPercent}%</Typography>
+            <Typography
+              variant="subtitle2"
+              sx={{ fontSize: "28px", fontWeight: "normal" }}
+            >
+              PLAN %
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ fontSize: "24px", fontWeight: "normal" }}
+            >
+              TILL DATE
+            </Typography>
+            <Typography variant="h2" sx={{ fontWeight: "normal" }}>
+              {values.planPercent}%
+            </Typography>
           </Box>
 
           {/* ACTUAL % */}
           <Box
             sx={{
-              backgroundColor: "#F5F5F5",
+              backgroundColor: "#ef9e25",
               color: "black",
               display: "flex",
               flexDirection: "column",
@@ -305,68 +375,122 @@ const ProgressUpdate = () => {
               borderRadius: "6px",
             }}
           >
-            <Typography variant="subtitle2">ACTUAL %</Typography>
-            <Typography variant="body2">TILL DATE</Typography>
-            <Typography variant="h3">{values.actualPercent}%</Typography>
+            <Typography
+              variant="subtitle2"
+              sx={{ fontSize: "28px", fontWeight: "normal" }}
+            >
+              ACTUAL %
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                fontSize: "24px",
+                marginBottom: "10px",
+                fontWeight: "normal",
+              }}
+            >
+              TILL DATE
+            </Typography>
+            <Typography variant="h2" sx={{ fontWeight: "normal" }}>
+              {values.actualPercent}%
+            </Typography>
           </Box>
         </Box>
       </Box>
 
-      {/* Legend */}
-      <Box sx={{ marginBottom: "20px" }}>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <Box
-                sx={{
-                  width: "20px",
-                  height: "20px",
-                  backgroundColor: "#8CB971",
-                }}
-              />
-              <Typography variant="body2">90% to 100%</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <Box
-                sx={{
-                  width: "20px",
-                  height: "20px",
-                  backgroundColor: "#F4A261",
-                }}
-              />
-              <Typography variant="body2">75% to 89%</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <Box
-                sx={{
-                  width: "20px",
-                  height: "20px",
-                  backgroundColor: "#2F80ED",
-                }}
-              />
-              <Typography variant="body2">Below 75%</Typography>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
-
-      {/* Performance Efficiency */}
-      <Paper
+      {/* Legend and Performance Efficiency */}
+      <Box
         sx={{
-          backgroundColor: "#000",
-          color: "white",
-          padding: "15px",
-          textAlign: "center",
-          fontWeight: "bold",
-          fontSize: "20px",
+          marginBottom: "20px",
+          marginLeft: "20px",
+          marginRight: "20px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
         }}
       >
-        PERFORMANCE EFFICIENCY: {values.performanceEfficiency}%
-      </Paper>
+        {/* Legend - Three rows */}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "0px" }}>
+          {/* Green Legend */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <Box
+              sx={{
+                width: "60px",
+                height: "20px",
+                backgroundColor: "#2c712e",
+                borderRadius: "4px",
+              }}
+            />
+            <Typography
+              variant="body1"
+              sx={{ fontSize: "18px", fontWeight: "500" }}
+            >
+              90% to 100%
+            </Typography>
+          </Box>
+
+          {/* Orange Legend */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <Box
+              sx={{
+                width: "60px",
+                height: "20px",
+                backgroundColor: "#ef9e25",
+                borderRadius: "4px",
+              }}
+            />
+            <Typography
+              variant="body1"
+              sx={{ fontSize: "18px", fontWeight: "500" }}
+            >
+              75% to 89%
+            </Typography>
+          </Box>
+
+          {/* Blue Legend */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <Box
+              sx={{
+                width: "60px",
+                height: "20px",
+                backgroundColor: "#123959",
+                borderRadius: "4px",
+              }}
+            />
+            <Typography
+              variant="body1"
+              sx={{ fontSize: "18px", fontWeight: "500" }}
+            >
+              Below 75%
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Performance Efficiency */}
+        <Paper
+          sx={{
+            backgroundColor: "#000",
+            color: "white",
+            padding: "10px 10px",
+            textAlign: "center",
+            minWidth: "700px",
+            minHeight: "80px",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "normal", fontSize: "28px" }}
+          >
+            PERFORMANCE EFFICIENCY:{" "}
+            <Box
+              component="span"
+              sx={{ fontSize: "45px", fontWeight: "normal" }}
+            >
+              {values.actualPercent}%
+            </Box>
+          </Typography>
+        </Paper>
+      </Box>
     </Box>
   );
 };
