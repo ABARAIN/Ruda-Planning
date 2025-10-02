@@ -608,37 +608,37 @@ const MapView = ({
         "ruda-fill"
       );
     } // === Add Landmark Markers ===
-    landmarks.forEach((landmark) => {
-      const el = document.createElement("div");
+    // landmarks.forEach((landmark) => {
+    //   const el = document.createElement("div");
 
-      // Default size
-      let width = 32;
-      let height = 32;
+    //   // Default size
+    //   let width = 32;
+    //   let height = 32;
 
-      // Make Minar-e-Pakistan bigger
-      if (landmark.name === "Minar-e-Pakistan") {
-        width = 50; // bigger size
-        height = 50;
-      }
+    //   // Make Minar-e-Pakistan bigger
+    //   if (landmark.name === "Minar-e-Pakistan") {
+    //     width = 50; // bigger size
+    //     height = 50;
+    //   }
 
-      el.style.width = `${width}px`;
-      el.style.height = `${height}px`;
-      el.style.backgroundImage = `url("${landmark.icon}")`;
+    //   el.style.width = `${width}px`;
+    //   el.style.height = `${height}px`;
+    //   el.style.backgroundImage = `url("${landmark.icon}")`;
 
-      el.style.backgroundSize = "contain";
-      el.style.backgroundRepeat = "no-repeat";
+    //   el.style.backgroundSize = "contain";
+    //   el.style.backgroundRepeat = "no-repeat";
 
-      new mapboxgl.Marker(el)
-        .setLngLat(landmark.coords)
-        .setPopup(
-          new mapboxgl.Popup({ offset: 12 }).setHTML(`
-            <div style="font-family: 'Segoe UI'; font-size: 14px;">
-              <strong>${landmark.name}</strong>
-            </div>
-          `)
-        )
-        .addTo(map);
-    });
+    //   new mapboxgl.Marker(el)
+    //     .setLngLat(landmark.coords)
+    //     .setPopup(
+    //       new mapboxgl.Popup({ offset: 12 }).setHTML(`
+    //         <div style="font-family: 'Segoe UI'; font-size: 14px;">
+    //           <strong>${landmark.name}</strong>
+    //         </div>
+    //       `)
+    //     )
+    //     .addTo(map);
+    // });
   };
 
   let distancePopup = null;

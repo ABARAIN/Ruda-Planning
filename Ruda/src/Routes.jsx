@@ -15,6 +15,7 @@ import Register from "./components/Auth/Register";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import OngoingProjects from "./components/MainMap/OngoingProjects";
 import OverallSummary from "./components/MainMap/OverallSummary";
+import ProgressUpdate from "./components/MainMap/ProgressUpdate";
 
 const AppRoutes = () => {
   return (
@@ -118,6 +119,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <OverallSummary />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/progress-update"
+        element={
+          <ProtectedRoute>
+            <ProgressUpdate />
           </ProtectedRoute>
         }
       />
