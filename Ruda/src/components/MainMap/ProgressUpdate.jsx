@@ -486,7 +486,7 @@ const ProgressUpdate = () => {
               component="span"
               sx={{ fontSize: "45px", fontWeight: "normal" }}
             >
-              {values.actualPercent}%
+              {((values.actualPercent / values.planPercent) * 100).toFixed(0)}%
             </Box>
           </Typography>
         </Paper>
