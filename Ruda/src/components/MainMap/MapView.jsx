@@ -85,7 +85,7 @@ const MapView = ({
   const layerFileMap = {
     "Charhar Bhag": "Charhar Bhag_28-9-2022_2.geojson",
     "CB Enclave": "CB Enclave.geojson",
-    // "Access Roads": "Access Road.geojson",
+    "Access Roads": "Access Road.geojson",
     "M Toll Plaze": "M2 Toll Plaza.geojson",
     Jhoke: "Development at Jhoke 158 acres.geojson",
     River: "River.geojson",
