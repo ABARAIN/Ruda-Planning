@@ -17,6 +17,7 @@ import OngoingProjects from "./components/MainMap/OngoingProjects";
 import OverallSummary from "./components/MainMap/OverallSummary";
 import ProgressUpdate from "./components/MainMap/ProgressUpdate";
 import Dashboard from "./components/Dashboard/Dashboard";
+import MapView from "./components/MainMap/MapView";
 
 const AppRoutes = () => {
   return (
