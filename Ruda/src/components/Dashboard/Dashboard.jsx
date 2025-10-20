@@ -12,7 +12,8 @@ const Dashboard = () => {
         display: "flex",
         height: "100vh",
         width: "100%",
-        background: "linear-gradient(180deg, #333867 0%, #17193b 100%)",
+        background:
+          "radial-gradient(farthest-side ellipse at 10% 0, #333867 20%, #17193b)",
       }}
     >
       {/* Sidebar */}
