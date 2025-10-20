@@ -154,39 +154,32 @@ const RudaStatistics = () => {
         <div
           style={{
             display: "flex",
-            marginTop: "8px",
-            borderRadius: "8px",
-            overflow: "hidden",
+            alignItems: "center",
+            backgroundColor: "#17193b",
+            borderRadius: "4px",
+            padding: "6px 12px",
+            width: "90%",
+            maxWidth: "400px",
+            transition: "all 0.3s ease",
+            border: "1px solid rgba(255,255,255,0.2)",
+            backdropFilter: "blur(6px)",
+            marginTop: "20px",
           }}
         >
+          <Search size={18} color="#fff" style={{ marginRight: "8px" }} />
           <input
             type="text"
             placeholder="Search Project"
             style={{
               flex: 1,
               background: "transparent",
-              border: "1px solid #555",
-              padding: "6px 8px",
-              color: "#fff",
+              border: "none",
               outline: "none",
-              fontSize: "0.8rem",
+              color: "white",
               fontFamily: '"Open Sans", sans-serif',
+              fontSize: "0.9rem",
             }}
           />
-          <button
-            style={{
-              background: "#2196f3",
-              border: "none",
-              color: "#fff",
-              padding: "0 10px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Search size={16} />
-          </button>
         </div>
       </div>
     </div>
