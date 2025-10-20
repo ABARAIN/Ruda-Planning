@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import DashboardMap from "./LayoutComponent/DashboardMap";
 import RudaStatistics from "./LayoutComponent/RudaStatistics";
 import AvailableLandTable from "./LayoutComponent/AvailableLandTable";
@@ -7,20 +7,126 @@ import FirmsTable from "./LayoutComponent/FirmsTable";
 import ProgressBrief from "./LayoutComponent/ProgressBrief";
 import PriorityProjectsTable from "./LayoutComponent/PriorityProjectsTable";
 import OngoingProjectsTable from "./LayoutComponent/OngoingProjectsTable";
+// list of geojson files to load (relative to public/geojson)
+const layerFiles = [
+  "Access Road.geojson",
+  "CB Enclave.geojson",
+  "Charhar Bhag_28-9-2022_2.geojson",
+  "Development at Jhoke 158 acres.geojson",
+  "M2 Toll Plaza.geojson",
+  "River.geojson",
+];
 
-const DashboardLayout = () => {
+function mergeFeatures(list) {
+  return list.reduce((acc, g) => {
+    if (g && g.type === "FeatureCollection" && Array.isArray(g.features)) {
+      acc.push(...g.features);
+    }
+    return acc;
+  }, []);
+}
+const DashboardLayout = ({
+  // optional props from parent (Dashboard.jsx) — if provided, they will be used
+  features: propsFeatures,
+  setFeatures: propsSetFeatures,
+  colorMap: propsColorMap,
+  setColorMap: propsSetColorMap,
+  selectedPhases: propsSelectedPhases,
+  setSelectedPhases: propsSetSelectedPhases,
+  selectedPackages: propsSelectedPackages,
+  setSelectedPackages: propsSetSelectedPackages,
+  selectedCategories: propsSelectedCategories,
+  setSelectedCategories: propsSetSelectedCategories,
+  selectedProjects: propsSelectedProjects,
+  setSelectedProjects: propsSetSelectedProjects,
+  onColorChange: propsOnColorChange,
+}) => {
+  const [localFeatures, setLocalFeatures] = useState([]);
+  const [localColorMap, setLocalColorMap] = useState({});
+
+  const [localSelectedPhases, setLocalSelectedPhases] = useState([]);
+  const [localSelectedPackages, setLocalSelectedPackages] = useState([]);
+  const [localSelectedCategories, setLocalSelectedCategories] = useState([]);
+  const [localSelectedProjects, setLocalSelectedProjects] = useState([]);
+
+  const features = propsFeatures !== undefined ? propsFeatures : localFeatures;
+  const setFeatures =
+    propsSetFeatures !== undefined ? propsSetFeatures : setLocalFeatures;
+
+  const colorMap = propsColorMap !== undefined ? propsColorMap : localColorMap;
+  const setColorMap =
+    propsSetColorMap !== undefined ? propsSetColorMap : setLocalColorMap;
+
+  const selectedPhases =
+    propsSelectedPhases !== undefined
+      ? propsSelectedPhases
+      : localSelectedPhases;
+  const setSelectedPhases =
+    propsSetSelectedPhases !== undefined
+      ? propsSetSelectedPhases
+      : setLocalSelectedPhases;
+
+  const selectedPackages =
+    propsSelectedPackages !== undefined
+      ? propsSelectedPackages
+      : localSelectedPackages;
+  const setSelectedPackages =
+    propsSetSelectedPackages !== undefined
+      ? propsSetSelectedPackages
+      : setLocalSelectedPackages;
+
+  const selectedCategories =
+    propsSelectedCategories !== undefined
+      ? propsSelectedCategories
+      : localSelectedCategories;
+  const setSelectedCategories =
+    propsSetSelectedCategories !== undefined
+      ? propsSetSelectedCategories
+      : setLocalSelectedCategories;
+
+  const selectedProjects =
+    propsSelectedProjects !== undefined
+      ? propsSelectedProjects
+      : localSelectedProjects;
+  const setSelectedProjects =
+    propsSetSelectedProjects !== undefined
+      ? propsSetSelectedProjects
+      : setLocalSelectedProjects;
+
+  // load geojson files only when parent did not provide features
+  useEffect(() => {
+    if (propsFeatures !== undefined) return;
+    const base = "/geojson/";
+    Promise.all(
+      layerFiles.map((fn) =>
+        fetch(base + encodeURIComponent(fn))
+          .then((r) => (r.ok ? r.json() : null))
+          .catch(() => null)
+      )
+    ).then((data) => {
+      const merged = mergeFeatures(data.filter(Boolean));
+      setFeatures(merged);
+    });
+  }, [propsFeatures]);
+
+  const handleColorChange = (name, color) => {
+    if (propsOnColorChange) return propsOnColorChange(name, color);
+    setColorMap((m) => ({ ...m, [name]: color }));
+  };
+
+  const selectedNames = useMemo(() => {
+    return [...selectedPhases, ...selectedPackages, ...selectedProjects];
+  }, [selectedPhases, selectedPackages, selectedProjects]);
   return (
     <div
       style={{
         width: "100%",
         height: "calc(100vh - 60px)",
         background: "transparent",
-        padding: "20px",
-        overflowY: "auto",
-        fontFamily: '"Open Sans", sans-serif',
+        overflowY: "auto", // allow vertical scrolling to reach bottom tables without changing sizes
       }}
     >
-      {/* 🔹 Top Section: Map + Stats */}
+      {/* 🔹 Top Section: Map + Stats (Sidebar is rendered by parent `Dashboard.jsx`) */}
       <div
         style={{
           display: "grid",
@@ -30,6 +136,7 @@ const DashboardLayout = () => {
           height: "87vh",
         }}
       >
+        {/* Left: Map Card */}
         <div
           style={{
             background: "rgba(255,255,255,0.05)",
@@ -39,9 +146,14 @@ const DashboardLayout = () => {
             height: "100%",
           }}
         >
-          <DashboardMap />
+          <DashboardMap
+            features={features}
+            colorMap={colorMap}
+            selectedNames={selectedNames}
+          />
         </div>
 
+        {/* Right: Statistics Card */}
         <div
           style={{
             background: "rgba(255,255,255,0.05)",
@@ -49,6 +161,7 @@ const DashboardLayout = () => {
             border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
             height: "100%",
+            overflow: "auto",
           }}
         >
           <RudaStatistics />

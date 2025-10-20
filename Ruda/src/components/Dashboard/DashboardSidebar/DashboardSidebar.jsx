@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   Home,
   Layers,
@@ -20,25 +20,43 @@ import {
   OutlinedInput,
 } from "@mui/material";
 
-const DashboardSidebar = ({ features = [], colorMap = {}, onColorChange }) => {
-  const [openLayers, setOpenLayers] = useState(true);
-
-  const [selectedPhases, setSelectedPhases] = useState([]);
-  const [selectedPackages, setSelectedPackages] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedProjects, setSelectedProjects] = useState([]);
+const DashboardSidebar = ({
+  features = [],
+  colorMap = {},
+  onColorChange,
+  openLayers = true,
+  setOpenLayers = () => {},
+  selectedPhases = [],
+  setSelectedPhases = () => {},
+  selectedPackages = [],
+  setSelectedPackages = () => {},
+  selectedCategories = [],
+  setSelectedCategories = () => {},
+  selectedProjects = [],
+  setSelectedProjects = () => {},
+}) => {
+  // openLayers is now controlled by parent if needed; keep default true
 
   // 🔹 Derived dropdown options
-  const phaseOptions = useMemo(
-    () => [
-      ...new Set(
-        features
-          .filter((f) => f.properties?.name?.toLowerCase().startsWith("phase"))
-          .map((f) => f.properties.name)
-      ),
-    ],
-    [features]
-  );
+  const phaseOptions = useMemo(() => {
+    const setValues = new Set();
+    // collect from properties.name that start with 'phase'
+    features.forEach((f) => {
+      const name = f.properties?.name;
+      if (
+        name &&
+        typeof name === "string" &&
+        name.toLowerCase().startsWith("phase")
+      ) {
+        setValues.add(name);
+      }
+      const rudaPhase = f.properties?.ruda_phase;
+      if (rudaPhase && typeof rudaPhase === "string") {
+        setValues.add(rudaPhase);
+      }
+    });
+    return Array.from(setValues);
+  }, [features]);
 
   const packageOptions = useMemo(
     () =>
