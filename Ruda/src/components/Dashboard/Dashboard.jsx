@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [selectedPackages, setSelectedPackages] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedProjects, setSelectedProjects] = useState([]);
+  const [openLayers, setOpenLayers] = useState(true);
 
   useEffect(() => {
     // Load the same dataset MainMap uses so dropdowns match
@@ -60,40 +61,30 @@ const Dashboard = () => {
       className="dashboard-container"
       style={{
         display: "flex",
-        height: "100vh",
+        flexDirection: "column",
+        height: "100%",
         width: "100%",
         background:
           "radial-gradient(farthest-side ellipse at 10% 0, #333867 20%, #17193b)",
       }}
     >
-      {/* Sidebar */}
-      <DashboardSidebar
-        features={features}
-        colorMap={colorMap}
-        onColorChange={handleColorChange}
-        selectedPhases={selectedPhases}
-        setSelectedPhases={setSelectedPhases}
-        selectedPackages={selectedPackages}
-        setSelectedPackages={setSelectedPackages}
-        selectedCategories={selectedCategories}
-        setSelectedCategories={setSelectedCategories}
-        selectedProjects={selectedProjects}
-        setSelectedProjects={setSelectedProjects}
-      />
+      {/* Full-width header on top */}
+      <DashboardHeader />
 
-      {/* Right section (Header + Layout) */}
+      {/* Content below header: left sidebar, right layout */}
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
-          width: "calc(100% - 17%)",
+          flex: 1,
           minWidth: 0,
         }}
       >
-        <DashboardHeader />
-        <DashboardLayout
+        <DashboardSidebar
           features={features}
           colorMap={colorMap}
+          onColorChange={handleColorChange}
+          openLayers={openLayers}
+          setOpenLayers={setOpenLayers}
           selectedPhases={selectedPhases}
           setSelectedPhases={setSelectedPhases}
           selectedPackages={selectedPackages}
@@ -102,8 +93,23 @@ const Dashboard = () => {
           setSelectedCategories={setSelectedCategories}
           selectedProjects={selectedProjects}
           setSelectedProjects={setSelectedProjects}
-          onColorChange={handleColorChange}
         />
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <DashboardLayout
+            features={features}
+            colorMap={colorMap}
+            selectedPhases={selectedPhases}
+            setSelectedPhases={setSelectedPhases}
+            selectedPackages={selectedPackages}
+            setSelectedPackages={setSelectedPackages}
+            selectedCategories={selectedCategories}
+            setSelectedCategories={setSelectedCategories}
+            selectedProjects={selectedProjects}
+            setSelectedProjects={setSelectedProjects}
+            onColorChange={handleColorChange}
+          />
+        </div>
       </div>
     </div>
   );

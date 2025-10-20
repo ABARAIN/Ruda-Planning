@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import * as turf from "@turf/turf";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 const DashboardMap = ({
@@ -31,6 +32,113 @@ const DashboardMap = ({
     });
 
     return () => mapRef.current && mapRef.current.remove();
+  }, []);
+
+  // Proposed roads state: listen for toggle event and fetch on first show
+  const proposedRef = useRef({ data: null, visible: false });
+  useEffect(() => {
+    const onToggle = async () => {
+      const map = mapRef.current;
+      proposedRef.current.visible = !proposedRef.current.visible;
+
+      if (!proposedRef.current.data) {
+        try {
+          const res = await fetch(
+            "https://ruda-planning.onrender.com/api/purposed_ruda_road_network"
+          );
+          const data = await res.json();
+          proposedRef.current.data = data;
+        } catch (err) {
+          console.error("Failed to load proposed roads:", err);
+          return;
+        }
+      }
+
+      if (!map) return;
+
+      // ensure source exists
+      if (!map.getSource("proposed-roads")) {
+        map.addSource("proposed-roads", {
+          type: "geojson",
+          data: proposedRef.current.data,
+        });
+
+        map.addLayer({
+          id: "proposed-roads-line",
+          type: "line",
+          source: "proposed-roads",
+          layout: {
+            visibility: proposedRef.current.visible ? "visible" : "none",
+          },
+          paint: {
+            "line-color": [
+              "match",
+              ["get", "layer"],
+              "300' CL",
+              "#ff0000",
+              "300' ROW",
+              "#00bcd4",
+              "bridge",
+              "#9c27b0",
+              "Primary Roads (300'-Wide)",
+              "#2196f3",
+              "Secondary Road (200'-Wide)",
+              "#4caf50",
+              "Tertiary Roads",
+              "#ff9800",
+              "Tertiary Roads (80'-Wide)",
+              "#ff5722",
+              "Uti Walk Cycle",
+              "#8bc34a",
+              "#888888",
+            ],
+            "line-width": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              10,
+              1,
+              14,
+              3,
+              16,
+              6,
+            ],
+            "line-cap": "round",
+            "line-join": "round",
+          },
+        });
+
+        // click popup similar to ProposedRoadsLayer
+        map.on("click", "proposed-roads-line", (e) => {
+          const feature = e.features && e.features[0];
+          const layerName = feature?.properties?.layer || "Proposed Road";
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(`<strong>${layerName}</strong>`)
+            .addTo(map);
+        });
+
+        map.on(
+          "mouseenter",
+          "proposed-roads-line",
+          () => (map.getCanvas().style.cursor = "pointer")
+        );
+        map.on(
+          "mouseleave",
+          "proposed-roads-line",
+          () => (map.getCanvas().style.cursor = "")
+        );
+      } else {
+        map.setLayoutProperty(
+          "proposed-roads-line",
+          "visibility",
+          proposedRef.current.visible ? "visible" : "none"
+        );
+      }
+    };
+
+    window.addEventListener("toggleProposedRoads", onToggle);
+    return () => window.removeEventListener("toggleProposedRoads", onToggle);
   }, []);
 
   // update source & layers when features or colorMap change
@@ -129,6 +237,51 @@ const DashboardMap = ({
       map.once("load", upsert);
     }
   }, [features, colorMap, selectedNames]);
+
+  // Hover popup for ruda-dashboard-fill
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const onMove = (e) => {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ["ruda-dashboard-fill"],
+      });
+      if (features && features.length > 0) {
+        const f = features[0];
+        const name = f.properties?.name || "";
+        // compute area using turf if polygon
+        let areaText = "";
+        try {
+          if (f.geometry) {
+            const area = turf.area(f) / 1000000; // sq km
+            areaText = `\nArea: ${area.toFixed(2)} sq.km`;
+          }
+        } catch (e) {
+          // ignore
+        }
+
+        const popup = new mapboxgl.Popup({
+          closeButton: false,
+          closeOnClick: false,
+        })
+          .setLngLat(e.lngLat)
+          .setHTML(
+            `<strong>${name}</strong><div style="font-size:12px">${areaText}</div>`
+          )
+          .addTo(map);
+
+        map.once("mouseleave", "ruda-dashboard-fill", () => {
+          popup.remove();
+        });
+      }
+    };
+
+    map.on("mousemove", onMove);
+    return () => {
+      map.off("mousemove", onMove);
+    };
+  }, []);
 
   return (
     <div

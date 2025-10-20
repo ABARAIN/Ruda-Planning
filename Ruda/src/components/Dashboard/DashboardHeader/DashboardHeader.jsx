@@ -83,7 +83,16 @@ const DashboardHeader = () => {
       }}
     >
       {/* Left: Title */}
-      <h2 style={{ margin: 0, fontWeight: 600 }}></h2>
+      <p
+        style={{
+          margin: 0,
+          fontWeight: 300,
+          fontSize: "1.5rem",
+          color: "#ccc",
+        }}
+      >
+        Ravi Urban Development Authority
+      </p>
 
       {/* Middle: Search Bar */}
       <div

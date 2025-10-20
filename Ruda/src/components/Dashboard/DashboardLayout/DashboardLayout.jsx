@@ -121,7 +121,7 @@ const DashboardLayout = ({
     <div
       style={{
         width: "100%",
-        height: "calc(100vh - 60px)",
+        // height: "calc(100vh - 60px)",
         background: "transparent",
         overflowY: "auto", // allow vertical scrolling to reach bottom tables without changing sizes
       }}

@@ -25,7 +25,7 @@ const DashboardSidebar = ({
   colorMap = {},
   onColorChange,
   openLayers = true,
-  setOpenLayers = () => {},
+  setOpenLayers = undefined,
   selectedPhases = [],
   setSelectedPhases = () => {},
   selectedPackages = [],
@@ -35,7 +35,11 @@ const DashboardSidebar = ({
   selectedProjects = [],
   setSelectedProjects = () => {},
 }) => {
-  // openLayers is now controlled by parent if needed; keep default true
+  // Manage open/closed state for Layer Filters; prefer parent-controlled if provided
+  const [localOpen, setLocalOpen] = React.useState(true);
+  const isOpen = typeof setOpenLayers === "function" ? openLayers : localOpen;
+  const setOpen =
+    typeof setOpenLayers === "function" ? setOpenLayers : setLocalOpen;
 
   // 🔹 Derived dropdown options
   const phaseOptions = useMemo(() => {
@@ -211,21 +215,6 @@ const DashboardSidebar = ({
         overflowY: "auto",
       }}
     >
-      {/* 🔹 Header */}
-      <div style={{ textAlign: "Right", marginBottom: "15px" }}>
-        <h2
-          style={{
-            fontWeight: "Normal",
-            fontSize: "1.2rem",
-            color: "#fff",
-            letterSpacing: "0.5px",
-            lineHeight: "1.4",
-          }}
-        >
-          Ravi Urban Development Authority
-        </h2>
-      </div>
-
       {/* 🔹 Navigation + Filters + New Buttons */}
       <div
         style={{
@@ -261,7 +250,7 @@ const DashboardSidebar = ({
         {/* Layer Filters Section */}
         <div>
           <div
-            onClick={() => setOpenLayers(!openLayers)}
+            onClick={() => setOpen(!isOpen)}
             style={{
               display: "flex",
               alignItems: "center",
@@ -282,11 +271,11 @@ const DashboardSidebar = ({
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Layers size={18} /> Layer Filters
             </div>
-            {openLayers ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </div>
 
           {/* Dropdowns appear only when open */}
-          {openLayers && (
+          {isOpen && (
             <div
               style={{
                 paddingLeft: "10px",
@@ -338,7 +327,8 @@ const DashboardSidebar = ({
             {
               name: "Proposed Roads",
               icon: <Route size={18} />,
-              path: "/proposed-roads",
+              action: () =>
+                window.dispatchEvent(new CustomEvent("toggleProposedRoads")),
             },
             {
               name: "Priority Projects",
@@ -367,7 +357,10 @@ const DashboardSidebar = ({
                 borderRadius: "6px",
                 transition: "0.2s",
               }}
-              onClick={() => (window.location.href = btn.path)}
+              onClick={() => {
+                if (btn.action) return btn.action();
+                if (btn.path) window.location.href = btn.path;
+              }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor =
                   "rgba(255,255,255,0.1)")
