@@ -133,7 +133,7 @@ const DashboardLayout = ({
           gridTemplateColumns: "2fr 1fr", // Map takes more space
           gap: "20px",
           marginBottom: "20px",
-          height: "98vh",
+          height: "93vh",
         }}
       >
         {/* Left: Map Card */}

@@ -151,9 +151,30 @@ const DashboardMap = ({
       return selectedNames.includes(f.properties?.name);
     });
 
+    // Enrich features with normalized popup title and precomputed area (sq.km)
+    const enriched = (filtered || []).map((feat) => {
+      const title = feat.properties?.ruda_phase || feat.properties?.name || "";
+      let areaSqKm = null;
+      try {
+        if (feat && feat.geometry) {
+          areaSqKm = turf.area(feat) / 1000000; // convert m^2 to km^2
+        }
+      } catch (err) {
+        areaSqKm = null;
+      }
+      return {
+        ...feat,
+        properties: {
+          ...feat.properties,
+          __popupTitle: title,
+          __areaSqKm: areaSqKm,
+        },
+      };
+    });
+
     const geojson = {
       type: "FeatureCollection",
-      features: filtered,
+      features: enriched,
     };
 
     const upsert = () => {
@@ -238,48 +259,100 @@ const DashboardMap = ({
     }
   }, [features, colorMap, selectedNames]);
 
-  // Hover popup for ruda-dashboard-fill
+  // Hover popup for ruda-dashboard-fill — single reusable popup
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
+    const popupRef = { current: null };
+    const hoveredIdRef = { current: null };
+
     const onMove = (e) => {
+      // only proceed if layer + source exist
+      if (
+        !map.getSource("ruda-dashboard") ||
+        !map.getLayer("ruda-dashboard-fill")
+      )
+        return;
+
       const features = map.queryRenderedFeatures(e.point, {
         layers: ["ruda-dashboard-fill"],
       });
-      if (features && features.length > 0) {
-        const f = features[0];
-        const name = f.properties?.name || "";
-        // compute area using turf if polygon
-        let areaText = "";
-        try {
-          if (f.geometry) {
-            const area = turf.area(f) / 1000000; // sq km
-            areaText = `\nArea: ${area.toFixed(2)} sq.km`;
-          }
-        } catch (e) {
-          // ignore
-        }
 
-        const popup = new mapboxgl.Popup({
+      if (!features || features.length === 0) {
+        if (popupRef.current) {
+          popupRef.current.remove();
+          popupRef.current = null;
+        }
+        hoveredIdRef.current = null;
+        map.getCanvas().style.cursor = "";
+        return;
+      }
+
+      const f = features[0];
+      // Identify layer type (Project / Package / Phase)
+      const layerId = f.layer?.id?.toLowerCase() || "";
+      let typeLabel = "Feature";
+      if (layerId.includes("project")) typeLabel = "Project";
+      else if (layerId.includes("package")) typeLabel = "Package";
+      else if (layerId.includes("phase")) typeLabel = "Phase";
+
+      // Get title and area
+      const title =
+        f.properties?.__popupTitle ||
+        f.properties?.ruda_phase ||
+        f.properties?.name ||
+        "Unnamed Feature";
+
+      const areaVal = f.properties?.__areaSqKm;
+      const areaText =
+        typeof areaVal === "number"
+          ? `Area: ${areaVal.toFixed(2)} sq.km`
+          : "Area: N/A";
+
+      const id = title;
+      if (hoveredIdRef.current === id && popupRef.current) {
+        popupRef.current.setLngLat(e.lngLat);
+        return;
+      }
+
+      hoveredIdRef.current = id;
+      const html = `
+        <div style="font-size: 11px; color: #fff; background: rgba(0,0,0,0.7); padding: 6px 8px; border-radius: 4px;">
+            <div style="opacity:0.8;">${typeLabel}</div>
+            <div>${title}</div>
+            <div style="margin-top:3px;">${areaText}</div>
+        </div>`;
+
+      if (!popupRef.current)
+        popupRef.current = new mapboxgl.Popup({
           closeButton: false,
           closeOnClick: false,
-        })
-          .setLngLat(e.lngLat)
-          .setHTML(
-            `<strong>${name}</strong><div style="font-size:12px">${areaText}</div>`
-          )
-          .addTo(map);
-
-        map.once("mouseleave", "ruda-dashboard-fill", () => {
-          popup.remove();
         });
+
+      popupRef.current.setLngLat(e.lngLat).setHTML(html).addTo(map);
+      map.getCanvas().style.cursor = "pointer";
+    };
+
+    const onLeave = () => {
+      if (popupRef.current) {
+        popupRef.current.remove();
+        popupRef.current = null;
       }
+      hoveredIdRef.current = null;
+      map.getCanvas().style.cursor = "";
     };
 
     map.on("mousemove", onMove);
+    map.on("mouseleave", "ruda-dashboard-fill", onLeave);
+
     return () => {
       map.off("mousemove", onMove);
+      map.off("mouseleave", "ruda-dashboard-fill", onLeave);
+      if (popupRef.current) {
+        popupRef.current.remove();
+        popupRef.current = null;
+      }
     };
   }, []);
 
