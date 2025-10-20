@@ -9,6 +9,8 @@ import {
   BarChart3,
   ActivitySquare,
   Route,
+  Search,
+  Home,
 } from "lucide-react";
 
 const DashboardHeader = () => {
@@ -76,18 +78,58 @@ const DashboardHeader = () => {
         alignItems: "center",
         justifyContent: "space-between",
         padding: "0 20px",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         position: "relative",
         fontFamily: '"Open Sans", sans-serif',
       }}
     >
       {/* Left: Title */}
-      <h2 style={{ margin: 0, fontWeight: 600 }}>Dashboard</h2>
+      <h2 style={{ margin: 0, fontWeight: 600 }}></h2>
+
+      {/* Middle: Search Bar */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: "#17193b",
+          borderRadius: "4px",
+          padding: "6px 12px",
+          width: "60%",
+          maxWidth: "400px",
+          transition: "all 0.3s ease",
+          border: "1px solid rgba(255,255,255,0.2)",
+          backdropFilter: "blur(6px)",
+        }}
+      >
+        <Search size={18} color="#fff" style={{ marginRight: "8px" }} />
+        <input
+          type="text"
+          placeholder="Search Dashboard"
+          style={{
+            flex: 1,
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            color: "white",
+            fontFamily: '"Open Sans", sans-serif',
+            fontSize: "0.9rem",
+          }}
+        />
+      </div>
 
       {/* Right: Icons */}
       <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-        <Settings size={22} style={{ cursor: "pointer" }} title="Settings" />
-
+        <Home
+          size={22}
+          color="white"
+          style={{
+            cursor: "pointer",
+            transition: "transform 0.2s ease, color 0.2s ease",
+          }}
+          title="Home"
+          onClick={() => (window.location.href = "/")}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        />
         <div style={{ position: "relative" }} ref={menuRef}>
           <Layers
             size={22}
@@ -144,6 +186,8 @@ const DashboardHeader = () => {
             </div>
           )}
         </div>
+
+        <Settings size={22} style={{ cursor: "pointer" }} title="Settings" />
 
         <Power
           size={22}
