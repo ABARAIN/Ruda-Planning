@@ -157,6 +157,10 @@ const DashboardSidebar = ({
                 maxHeight: 300,
                 backgroundColor: "#1e1e1e",
                 color: "#fff",
+                fontSize: "0.5rem", // 👈 smaller font for all dropdown options
+                "& .MuiMenuItem-root": {
+                  fontSize: "0.5rem", // 👈 applies to each MenuItem
+                },
                 "&::-webkit-scrollbar": { width: "6px" },
                 "&::-webkit-scrollbar-thumb": {
                   backgroundColor: "#333",
@@ -235,6 +239,7 @@ const DashboardSidebar = ({
             borderRadius: "6px",
             transition: "0.2s",
             color: "#C1C3CF",
+            fontSize: "0.9rem",
           }}
           onClick={() => (window.location.href = "/")}
           onMouseEnter={(e) =>
@@ -260,6 +265,7 @@ const DashboardSidebar = ({
               cursor: "pointer",
               transition: "0.2s",
               color: "#C1C3CF",
+              fontSize: "0.9rem",
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)")
@@ -284,6 +290,7 @@ const DashboardSidebar = ({
                 flexDirection: "column",
                 gap: "6px",
                 transition: "0.3s",
+                fontSize: "0.9rem",
               }}
             >
               {renderDropdown(
@@ -321,6 +328,7 @@ const DashboardSidebar = ({
             display: "flex",
             flexDirection: "column",
             gap: "10px",
+            fontSize: "0.9rem",
           }}
         >
           {[
