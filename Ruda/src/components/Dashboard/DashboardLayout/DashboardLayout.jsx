@@ -27,7 +27,7 @@ const DashboardLayout = () => {
           gridTemplateColumns: "2fr 1fr", // Map takes more space
           gap: "20px",
           marginBottom: "20px",
-          height: "50vh",
+          height: "87vh",
         }}
       >
         <div
@@ -62,6 +62,7 @@ const DashboardLayout = () => {
           gridTemplateColumns: "repeat(3, 1fr)",
           gridTemplateRows: "repeat(2, auto)",
           gap: "20px",
+          height: "87vh",
         }}
       >
         <div
