@@ -9,7 +9,12 @@
 
 .dashboard-container {
   font-family: var(--font-family-sans-serif);
-  background: linear-gradient(180deg, #141a3a 0%, #1a2250 100%);
+  /* background: linear-gradient(180deg, #141a3a 0%, #1a2250 100%); */
+  background: radial-gradient(
+    farthest-side ellipse at 20% 0,
+    #333867 40%,
+    #23274b
+  );
   color: white;
   min-height: 100vh;
 }

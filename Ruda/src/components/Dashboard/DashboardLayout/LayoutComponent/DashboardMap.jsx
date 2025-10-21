@@ -327,10 +327,10 @@ const DashboardMap = ({
 
       hoveredIdRef.current = id;
       const html = `
-        <div style="font-size: 11px; color: #fff; background: rgba(0,0,0,0.7); padding: 6px 8px; border-radius: 4px;">
-            <div style="opacity:0.8;">${typeLabel}</div>
+        <div style="font-size: 11px; color: #242121; padding: 2px 2px; border-radius: 4px;">
+            <div style="opacity:0.5;">${typeLabel}</div>
             <div>${title}</div>
-            <div style="margin-top:3px;">${areaText}</div>
+            <div style="margin-top:2px;">${areaText}</div>
         </div>`;
 
       if (!popupRef.current)

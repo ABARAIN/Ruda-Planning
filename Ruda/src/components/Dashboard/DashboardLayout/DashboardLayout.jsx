@@ -203,16 +203,16 @@ const DashboardLayout = ({
           gridTemplateColumns: "repeat(3, 1fr)",
           gridTemplateRows: "repeat(2, auto)",
           gap: "20px",
-          height: "90vh",
-          marginRight: "10px",
+          // height: "90vh",
+          marginRight: "25px",
           marginBottom: "30px",
+          marginTop: "30px",
         }}
       >
         <div
           style={{
-            background: "#1e2141",
+            background: "#171931",
             borderRadius: "12px",
-            border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
           }}
         >
@@ -221,9 +221,8 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "#1e2141",
+            background: "#171931",
             borderRadius: "12px",
-            border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
           }}
         >
@@ -232,9 +231,8 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "#1e2141",
+            background: "#171931",
             borderRadius: "12px",
-            border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
           }}
         >
@@ -243,9 +241,8 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "#1e2141",
+            background: "#171931",
             borderRadius: "12px",
-            border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
           }}
         >
@@ -254,9 +251,8 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "#1e2141",
+            background: "#171931",
             borderRadius: "12px",
-            border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
           }}
         >
@@ -265,9 +261,8 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "#1e2141",
+            background: "#171931",
             borderRadius: "12px",
-            border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
           }}
         >
