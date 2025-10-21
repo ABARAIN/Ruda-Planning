@@ -71,12 +71,16 @@ const MapView = ({
   selectedNames,
   districtBoundaries = [],
   selectedProjects = [],
+  // New props
+  projectFeatures = [],
+  showProjectPopups = false,
 }) => {
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
   const [baseStyleKey, setBaseStyleKey] = useState("Streets");
   const [layersData, setLayersData] = useState({});
   const [loadedLayers, setLoadedLayers] = useState(new Set());
+  const projectPopupsRef = useRef([]);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -94,6 +98,16 @@ const MapView = ({
   const geojson = {
     type: "FeatureCollection",
     features: features || [],
+  };
+
+  // helper to compute center from bbox for polygon/multi features
+  const bboxCenter = (feature) => {
+    try {
+      const b = bbox(feature); // [minX, minY, maxX, maxY]
+      return [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2];
+    } catch (e) {
+      return null;
+    }
   };
 
   useEffect(() => {
@@ -197,6 +211,102 @@ const MapView = ({
       duration: 800,
     });
   }, [selectedNames]);
+
+  // Manage project popups: create when showProjectPopups is true, remove otherwise
+  useEffect(() => {
+    const map = mapRef.current;
+    // clear existing popups
+    if (projectPopupsRef.current?.length) {
+      projectPopupsRef.current.forEach((p) => p.remove());
+      projectPopupsRef.current = [];
+    }
+
+    if (
+      !map ||
+      !showProjectPopups ||
+      !projectFeatures ||
+      projectFeatures.length === 0
+    )
+      return;
+
+    // combine projectFeatures (from server) with any selected layer-based features
+    const allPopupFeatures = [];
+    if (Array.isArray(projectFeatures) && projectFeatures.length) {
+      allPopupFeatures.push(...projectFeatures);
+    }
+
+    // include features from selectedProjects that correspond to loaded layer files
+    selectedProjects.forEach((layerName) => {
+      const layerData = layersData[layerName];
+      if (layerData && Array.isArray(layerData.features)) {
+        allPopupFeatures.push(...layerData.features);
+      }
+    });
+
+    // dedupe by feature id or by name+geometry
+    const seen = new Set();
+    const uniqueFeatures = allPopupFeatures.filter((f) => {
+      const key =
+        f.id ||
+        `${f.properties?.name}_${JSON.stringify(
+          f.geometry?.coordinates?.slice?.(0, 3) || f.geometry
+        )}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    // create a popup for each project/ layer feature
+    uniqueFeatures.forEach((f) => {
+      try {
+        const coords =
+          f.geometry?.type === "Point"
+            ? f.geometry.coordinates
+            : bboxCenter(f) || f.properties?.centroid;
+
+        const name = f.properties?.name || "Unnamed";
+        const phase = f.properties?.ruda_phase || f.properties?.phase || "-";
+        const area = parseFloat(
+          f.properties?.area_sqkm || f.properties?.area || 0
+        ).toFixed(2);
+
+        const html = `
+          <div style="font-family: 'Segoe UI', sans-serif; min-width:110px; padding:-10px;">
+            <div style="font-size:11px;font-weight:500;color:#1976d2;margin-bottom:1px;">${name}</div>
+            <div style="font-size:11px;margin-bottom:1px;"><strong>Phase:</strong> ${phase}</div>
+            <div style="font-size:11px;"><strong>Area:</strong> ${area} sq.km</div>
+          </div>
+        `;
+
+        // Determine popup coordinates: try centroid for polygons
+        let lngLat = null;
+        if (f.geometry?.type === "Point") lngLat = coords;
+        else if (f.properties?.centroid) lngLat = f.properties.centroid;
+        else if (coords && Array.isArray(coords) && coords.length === 2)
+          lngLat = coords;
+
+        if (!lngLat) return;
+
+        const popup = new mapboxgl.Popup({ closeOnClick: false, offset: 12 })
+          .setLngLat(lngLat)
+          .setHTML(html)
+          .addTo(map);
+
+        projectPopupsRef.current.push(popup);
+      } catch (err) {
+        // ignore single popup errors
+        console.error("project popup error", err);
+      }
+    });
+
+    // cleanup when dependencies change
+    return () => {
+      if (projectPopupsRef.current?.length) {
+        projectPopupsRef.current.forEach((p) => p.remove());
+        projectPopupsRef.current = [];
+      }
+    };
+  }, [showProjectPopups, projectFeatures, layersData, selectedProjects]);
 
   // Pre-load all layer data to prevent flickering
   useEffect(() => {
