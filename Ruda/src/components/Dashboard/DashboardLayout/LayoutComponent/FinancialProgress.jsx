@@ -1,83 +1,126 @@
 import React from "react";
-import { Row, Col, ProgressBar } from "react-bootstrap";
-import { ArrowUp, ArrowDown, Plus } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 
 const FinancialProgress = () => {
   return (
-    <div>
-      <h2>Financial Progress</h2>
-      {/* 2️⃣ TRAFFIC VALUES (you can repurpose this for something else later) */}
-      <Col lg={6} xl={4} xs={12}>
+    <div
+      style={{
+        borderRadius: "12px",
+        padding: "10px",
+      }}
+    >
+      <div>
+        {/* Header */}
         <div
           style={{
-            background: "rgba(23,25,59,0.6)",
-            borderRadius: "12px",
-            padding: "16px",
-            border: "1px solid rgba(255,255,255,0.1)",
-            backdropFilter: "blur(6px)",
-            color: "#fff",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          <h6 style={{ fontSize: "0.9rem", letterSpacing: "0.5px" }}>
-            TRAFFIC VALUES
-          </h6>
-
-          <div
+          <h6
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: "12px",
-              fontSize: "0.85rem",
+              fontSize: "0.9rem",
+              fontWeight: 400,
+              margin: 0,
+              letterSpacing: "0.5px",
+              color: "#ccc",
             }}
           >
-            <div>
-              <div>Overall Values</div>
-              <div style={{ opacity: 0.8 }}>17,567,318</div>
+            FINANCIAL PROGRESS
+          </h6>
+          <span
+            style={{
+              color: "#888",
+              fontSize: "1rem",
+              cursor: "pointer",
+            }}
+          >
+            ⚙️
+          </span>
+        </div>
+
+        {/* Stats Row */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: "14px",
+            borderBottom: "1px solid rgba(255,255,255,0.05)",
+            paddingBottom: "10px",
+          }}
+        >
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>
+              Amount of Work Done
             </div>
-            <div>
-              <div>Monthly</div>
-              <div style={{ opacity: 0.8 }}>55,120</div>
-            </div>
-            <div>
-              <div>24h</div>
-              <div style={{ opacity: 0.8 }}>9,695</div>
+            <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
+              PKR 927 Million
             </div>
           </div>
 
-          <ProgressBar
-            now={60}
-            variant="danger"
-            style={{
-              height: "6px",
-              marginTop: "12px",
-              background: "rgba(255,255,255,0.1)",
-            }}
-          />
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>Amount Paid</div>
+            <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
+              PKR 740 Million
+            </div>
+          </div>
 
-          <p
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>Time Elapsed</div>
+            <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>10 Months</div>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div
+          style={{
+            height: "6px",
+            background: "rgba(255,255,255,0.1)",
+            borderRadius: "4px",
+            marginTop: "16px",
+            overflow: "hidden",
+          }}
+        >
+          <div
             style={{
-              marginTop: "8px",
-              fontSize: "0.8rem",
-              color: "#aaa",
+              width: "79%",
+              height: "100%",
+              background: "#00c46a",
+              borderRadius: "4px",
+              transition: "width 0.3s ease",
+            }}
+          ></div>
+        </div>
+
+        {/* Footer Text */}
+        <div
+          style={{
+            marginTop: "10px",
+            display: "flex",
+            alignItems: "center",
+            fontSize: "0.85rem",
+          }}
+        >
+          <div
+            style={{
+              background: "#1e537f",
+              borderRadius: "50%",
+              width: "22px",
+              height: "22px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginRight: "8px",
             }}
           >
-            <span
-              style={{
-                background: "#7f1e1e",
-                borderRadius: "50%",
-                padding: "3px 6px",
-                marginRight: "6px",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <ArrowDown size={12} color="#fff" />
-            </span>
-            <span style={{ color: "#fff" }}>8% lower than last month</span>
-          </p>
+            <ArrowUp size={14} color="#fff" />
+          </div>
+          <span>
+            <strong>79%</strong> of Amount Certified and Paid
+          </span>
         </div>
-      </Col>
+      </div>
     </div>
   );
 };

@@ -34,6 +34,13 @@ const DashboardSidebar = ({
   setSelectedCategories = () => {},
   selectedProjects = [],
   setSelectedProjects = () => {},
+  // popup toggles
+  showPhasePopups = false,
+  setShowPhasePopups = undefined,
+  showPackagePopups = false,
+  setShowPackagePopups = undefined,
+  showProjectPopups = false,
+  setShowProjectPopups = undefined,
 }) => {
   // Manage open/closed state for Layer Filters; prefer parent-controlled if provided
   const [localOpen, setLocalOpen] = React.useState(true);
@@ -252,6 +259,16 @@ const DashboardSidebar = ({
           <Home size={18} /> Dashboard
         </div>
 
+        {/* 🔹 Separator line */}
+        <div
+          style={{
+            height: "1px",
+            background: "rgba(255, 255, 255, 0.144)",
+            margin: "0px 0",
+            borderRadius: "10px",
+          }}
+        />
+
         {/* Layer Filters Section */}
         <div>
           <div
@@ -322,6 +339,7 @@ const DashboardSidebar = ({
         </div>
 
         {/* New Buttons Section */}
+        {/* 🔹 New Buttons Section */}
         <div
           style={{
             color: "#C1C3CF",
@@ -331,31 +349,171 @@ const DashboardSidebar = ({
             fontSize: "0.9rem",
           }}
         >
-          {[
-            {
-              name: "Proposed Roads",
-              icon: <Route size={18} />,
-              action: () =>
-                window.dispatchEvent(new CustomEvent("toggleProposedRoads")),
-            },
-            {
-              name: "Priority Projects",
-              icon: <MapPin size={18} />,
-              path: "/priority-projects",
-            },
-            {
-              name: "Available Land",
-              icon: <Landmark size={18} />,
-              path: "/available-land",
-            },
-            {
-              name: "RTW Dashboard",
-              icon: <LayoutDashboard size={18} />,
-              path: "/rtw-dashboard",
-            },
-          ].map((btn) => (
+          {/* 🔹 Separator line */}
+          <div
+            style={{
+              height: "0.5px",
+              background: "rgba(255, 255, 255, 0.144)",
+              margin: "0px 0",
+              borderRadius: "1px",
+              marginTop: "10px",
+            }}
+          />
+          {/* 🔹 Project Filters dropdown (new collapsible section) */}
+          {(() => {
+            const [openFilters, setOpenFilters] = React.useState(true);
+            return (
+              <div style={{ marginTop: 5 }}>
+                {/* Header with same style as Layer Filters */}
+                <div
+                  onClick={() => setOpenFilters(!openFilters)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "8px 10px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    transition: "0.2s",
+                    color: "#C1C3CF",
+                    fontSize: "0.9rem",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor =
+                      "rgba(255,255,255,0.1)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "transparent")
+                  }
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <MapPin size={16} /> Project Filters
+                  </div>
+                  {openFilters ? (
+                    <ChevronUp size={16} />
+                  ) : (
+                    <ChevronDown size={16} />
+                  )}
+                </div>
+
+                {/* Inner checkboxes appear when open */}
+                {openFilters && (
+                  <div
+                    style={{
+                      paddingLeft: "10px",
+                      marginTop: "8px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "11px",
+                      transition: "0.3s",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    {/* ✅ Phases */}
+                    <label
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        cursor: "pointer",
+                        padding: "6px 8px",
+                        borderRadius: "6px",
+                        transition: "0.2s",
+                        backgroundColor: "rgb(54 59 97)",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                          "rgba(255,255,255,0.05)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                          "rgb(54 59 97)")
+                      }
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!!showPhasePopups}
+                        onChange={(e) => setShowPhasePopups?.(e.target.checked)}
+                      />
+                      Phases
+                    </label>
+
+                    {/* ✅ Packages */}
+                    <label
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        cursor: "pointer",
+                        padding: "6px 8px",
+                        borderRadius: "6px",
+                        transition: "0.2s",
+                        backgroundColor: "rgb(54 59 97)",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                          "rgba(255,255,255,0.05)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                          "rgb(54 59 97)")
+                      }
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!!showPackagePopups}
+                        onChange={(e) =>
+                          setShowPackagePopups?.(e.target.checked)
+                        }
+                      />
+                      Packages
+                    </label>
+
+                    {/* ✅ Projects */}
+                    <label
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        cursor: "pointer",
+                        padding: "6px 8px",
+                        borderRadius: "6px",
+                        transition: "0.2s",
+                        backgroundColor: "rgb(54 59 97)",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                          "rgba(255,255,255,0.05)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                          "rgb(54 59 97)")
+                      }
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!!showProjectPopups}
+                        onChange={(e) =>
+                          setShowProjectPopups?.(e.target.checked)
+                        }
+                      />
+                      Projects
+                    </label>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {/* 🔹 Proposed Roads (separate line now) */}
             <div
-              key={btn.name}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -365,10 +523,9 @@ const DashboardSidebar = ({
                 borderRadius: "6px",
                 transition: "0.2s",
               }}
-              onClick={() => {
-                if (btn.action) return btn.action();
-                if (btn.path) window.location.href = btn.path;
-              }}
+              onClick={() =>
+                window.dispatchEvent(new CustomEvent("toggleProposedRoads"))
+              }
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor =
                   "rgba(255,255,255,0.1)")
@@ -377,9 +534,55 @@ const DashboardSidebar = ({
                 (e.currentTarget.style.backgroundColor = "transparent")
               }
             >
-              {btn.icon} {btn.name}
+              <Route size={18} /> Proposed Roads
             </div>
-          ))}
+
+            {/* 🔹 Available Land (below Proposed Roads) */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                cursor: "pointer",
+                padding: "8px 10px",
+                borderRadius: "6px",
+                transition: "0.2s",
+              }}
+              onClick={() => (window.location.href = "/available-land")}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "rgba(255,255,255,0.1)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "transparent")
+              }
+            >
+              <Landmark size={18} /> Available Land
+            </div>
+
+            {/* RTW Dashboard Button */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                cursor: "pointer",
+                padding: "8px 10px",
+                borderRadius: "6px",
+                transition: "0.2s",
+              }}
+              onClick={() => (window.location.href = "/rtw-dashboard")}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "rgba(255,255,255,0.1)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "transparent")
+              }
+            >
+              <LayoutDashboard size={18} /> RTW Dashboard
+            </div>
+          </div>
         </div>
       </div>
     </div>

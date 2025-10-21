@@ -5,23 +5,11 @@ const AvailableLandTable = () => {
   return (
     <div
       style={{
-        backgroundColor: "#181c3a",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "20px",
+        borderRadius: "12px",
+        padding: "10px",
       }}
     >
-      <div
-        style={{
-          background: "linear-gradient(180deg, #222654, #1b1f45)",
-          borderRadius: "12px",
-          padding: "20px 24px",
-          width: "340px",
-          color: "#fff",
-          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
-        }}
-      >
+      <div>
         {/* Header */}
         <div
           style={{
@@ -33,9 +21,10 @@ const AvailableLandTable = () => {
           <h6
             style={{
               fontSize: "0.9rem",
-              fontWeight: 600,
+              fontWeight: 400,
               margin: 0,
               letterSpacing: "0.5px",
+              color: "#ccc",
             }}
           >
             LAND AREA DISTRIBUTION
@@ -65,7 +54,7 @@ const AvailableLandTable = () => {
             <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>
               Total Project Area
             </div>
-            <div style={{ fontSize: "1rem", fontWeight: 600 }}>
+            <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
               114,357.35 Acres
             </div>
           </div>
@@ -74,7 +63,7 @@ const AvailableLandTable = () => {
             <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>
               Available Area
             </div>
-            <div style={{ fontSize: "1rem", fontWeight: 600 }}>
+            <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
               52,116.64 Acres
             </div>
           </div>
@@ -83,7 +72,7 @@ const AvailableLandTable = () => {
             <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>
               Unavailable Area
             </div>
-            <div style={{ fontSize: "1rem", fontWeight: 600 }}>
+            <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
               62,240.71 Acres
             </div>
           </div>

@@ -19,6 +19,10 @@ const Dashboard = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [openLayers, setOpenLayers] = useState(true);
+  // Popup toggles for dashboard
+  const [showPhasePopups, setShowPhasePopups] = useState(false);
+  const [showPackagePopups, setShowPackagePopups] = useState(false);
+  const [showProjectPopups, setShowProjectPopups] = useState(false);
 
   useEffect(() => {
     // Load the same dataset MainMap uses so dropdowns match
@@ -93,6 +97,13 @@ const Dashboard = () => {
           setSelectedCategories={setSelectedCategories}
           selectedProjects={selectedProjects}
           setSelectedProjects={setSelectedProjects}
+          // popup toggles
+          showPhasePopups={showPhasePopups}
+          setShowPhasePopups={setShowPhasePopups}
+          showPackagePopups={showPackagePopups}
+          setShowPackagePopups={setShowPackagePopups}
+          showProjectPopups={showProjectPopups}
+          setShowProjectPopups={setShowProjectPopups}
         />
 
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -108,6 +119,10 @@ const Dashboard = () => {
             selectedProjects={selectedProjects}
             setSelectedProjects={setSelectedProjects}
             onColorChange={handleColorChange}
+            // popup toggles passed down
+            showPhasePopups={showPhasePopups}
+            showPackagePopups={showPackagePopups}
+            showProjectPopups={showProjectPopups}
           />
         </div>
       </div>

@@ -1,83 +1,157 @@
 import React from "react";
-import { Row, Col, ProgressBar } from "react-bootstrap";
-import { ArrowUp, ArrowDown, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 const FirmsTable = () => {
   return (
     <div>
-      <h2>Firms Table</h2>
-      {/* 3️⃣ RANDOM VALUES */}
-      <Col lg={6} xl={4} xs={12}>
+      <div
+        style={{
+          borderRadius: "12px",
+          padding: "10px",
+        }}
+      >
+        {/* Header */}
+        <h6 style={{ fontSize: "0.9rem", letterSpacing: "0.5px" }}>
+          FIRMS AFFILIATED
+        </h6>
+
+        {/* 3 Firms Logos */}
         <div
           style={{
-            background: "rgba(23,25,59,0.6)",
-            borderRadius: "12px",
-            padding: "16px",
-            border: "1px solid rgba(255,255,255,0.1)",
-            backdropFilter: "blur(6px)",
-            color: "#fff",
+            display: "flex",
+            justifyContent: "space-around",
+            alignItems: "center",
+            marginTop: "20px",
           }}
         >
-          <h6 style={{ fontSize: "0.9rem", letterSpacing: "0.5px" }}>
-            RANDOM VALUES
-          </h6>
-
+          {/* RUDA */}
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
-              marginTop: "12px",
-              fontSize: "0.85rem",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <div>
-              <div>Overcome T.</div>
-              <div style={{ opacity: 0.8 }}>104.85%</div>
-            </div>
-            <div>
-              <div>Takeoff Angle</div>
-              <div style={{ opacity: 0.8 }}>14.29°</div>
-            </div>
-            <div>
-              <div>World Pop.</div>
-              <div style={{ opacity: 0.8 }}>7,211M</div>
-            </div>
+            <img
+              src="/Rudafirm.png"
+              alt="Ruda Logo"
+              className="auth-header-logo"
+              style={{
+                width: "60px",
+                height: "60px",
+                objectFit: "contain",
+                marginBottom: "4px",
+                display: "block",
+              }}
+            />
           </div>
 
-          <ProgressBar
-            now={60}
-            variant="primary"
+          {/* Nespak */}
+          <div
             style={{
-              height: "6px",
-              marginTop: "12px",
-              background: "rgba(255,255,255,0.1)",
-            }}
-          />
-
-          <p
-            style={{
-              marginTop: "8px",
-              fontSize: "0.8rem",
-              color: "#aaa",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <span
+            <img
+              src="/Nespakfirm.png"
+              alt="Nespak Logo"
+              className="auth-header-logo"
               style={{
-                background: "#1e537f",
-                borderRadius: "50%",
-                padding: "3px 6px",
-                marginRight: "6px",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
+                width: "60px",
+                height: "60px",
+                objectFit: "contain",
+                marginBottom: "4px",
+                display: "block",
               }}
-            >
-              <Plus size={12} color="#fff" />
-            </span>
-            <span style={{ color: "#fff" }}>8,734 higher than last month</span>
-          </p>
+            />
+          </div>
+
+          {/* Habib */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src="/Habibfirm.png"
+              alt="Habib Logo"
+              className="auth-header-logo"
+              style={{
+                width: "60px",
+                height: "60px",
+                objectFit: "contain",
+                marginBottom: "4px",
+                display: "block",
+              }}
+            />
+          </div>
+
+          {/* NLC */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src="/NLC-logo.jpg"
+              alt="NLC Logo"
+              className="auth-header-logo"
+              style={{
+                width: "60px",
+                height: "60px",
+                objectFit: "contain",
+                marginBottom: "4px",
+                display: "block",
+              }}
+            />
+          </div>
         </div>
-      </Col>
+
+        {/* Divider Line */}
+        <div
+          style={{
+            height: "1px",
+            background: "rgba(255,255,255,0.15)",
+            margin: "14px 0",
+          }}
+        ></div>
+
+        {/* Footer Text */}
+        <p
+          style={{
+            margin: 0,
+            fontSize: "0.8rem",
+            color: "#aaa",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <span
+            style={{
+              background: "#1e537f",
+              borderRadius: "50%",
+              padding: "3px 6px",
+              marginRight: "6px",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Plus size={12} color="#fff" />
+          </span>
+          <span style={{ color: "#fff" }}>All rights reserved</span>
+        </p>
+      </div>
     </div>
   );
 };

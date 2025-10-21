@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import DashboardMap from "./LayoutComponent/DashboardMap";
+import * as turf from "@turf/turf";
+import Popups from "./LayoutComponent/Popups";
 import RudaStatistics from "./LayoutComponent/RudaStatistics";
 import AvailableLandTable from "./LayoutComponent/AvailableLandTable";
 import FinancialProgress from "./LayoutComponent/FinancialProgress";
@@ -40,6 +42,9 @@ const DashboardLayout = ({
   selectedProjects: propsSelectedProjects,
   setSelectedProjects: propsSetSelectedProjects,
   onColorChange: propsOnColorChange,
+  showPhasePopups,
+  showPackagePopups,
+  showProjectPopups,
 }) => {
   const [localFeatures, setLocalFeatures] = useState([]);
   const [localColorMap, setLocalColorMap] = useState({});
@@ -130,7 +135,7 @@ const DashboardLayout = ({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "2fr 1fr", // Map takes more space
+          gridTemplateColumns: "3fr 1fr", // Map takes more space
           gap: "20px",
           marginBottom: "20px",
           height: "93vh",
@@ -152,6 +157,27 @@ const DashboardLayout = ({
             selectedNames={selectedNames}
           />
         </div>
+
+        {/* Popups for dashboard map (invisible component that manages mapbox popups) */}
+        <Popups
+          features={(features || []).map((f) => ({
+            ...f,
+            properties: {
+              ...f.properties,
+              __areaSqKm: (() => {
+                try {
+                  if (f && f.geometry) return turf.area(f) / 1000000;
+                } catch (e) {
+                  return null;
+                }
+                return null;
+              })(),
+            },
+          }))}
+          showPhasePopups={showPhasePopups}
+          showPackagePopups={showPackagePopups}
+          showProjectPopups={showProjectPopups}
+        />
 
         {/* Right: Statistics Card */}
         <div
@@ -184,7 +210,7 @@ const DashboardLayout = ({
       >
         <div
           style={{
-            background: "rgba(255,255,255,0.05)",
+            background: "#1e2141",
             borderRadius: "12px",
             border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
@@ -195,7 +221,7 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "rgba(255,255,255,0.05)",
+            background: "#1e2141",
             borderRadius: "12px",
             border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
@@ -206,7 +232,7 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "rgba(255,255,255,0.05)",
+            background: "#1e2141",
             borderRadius: "12px",
             border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
@@ -217,7 +243,7 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "rgba(255,255,255,0.05)",
+            background: "#1e2141",
             borderRadius: "12px",
             border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
@@ -228,7 +254,7 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "rgba(255,255,255,0.05)",
+            background: "#1e2141",
             borderRadius: "12px",
             border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",
@@ -239,7 +265,7 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "rgba(255,255,255,0.05)",
+            background: "#1e2141",
             borderRadius: "12px",
             border: "1px solid rgba(255,255,255,0.1)",
             padding: "10px",

@@ -5,19 +5,19 @@ const RudaStatistics = () => {
   const stats = [
     {
       title: "Priority Projects",
-      desc: "Progress Update of Priority Projects",
+      desc: "Progress of Priority Projects",
       color: "#2196f3",
       progress: 20,
     },
     {
       title: "Ongoing Projects",
-      desc: "Progress Update of Ongoing Projects",
+      desc: "Progress of Ongoing Projects",
       color: "#f44336",
       progress: 70,
     },
     {
       title: "Completed Projects",
-      desc: "Progress Update of PCompleted Projects",
+      desc: "Progress  of PCompleted Projects",
       color: "#4caf50",
       progress: 10,
     },
@@ -130,15 +130,6 @@ const RudaStatistics = () => {
 
       {/* 🔹 Bottom Info */}
       <div style={{ marginTop: "8px" }}>
-        <h6
-          style={{ marginBottom: "4px", fontWeight: "400", fontSize: "0.8rem" }}
-        >
-          Development Budget FY 24-25:{" "}
-          <span style={{ color: "#4caf50" }}>15.97 B</span>
-        </h6>
-
-        <p style={{ margin: "2px 0" }}>Performance Efficiency: 53%</p>
-
         <p
           style={{
             display: "flex",
@@ -148,7 +139,7 @@ const RudaStatistics = () => {
           }}
         >
           <Settings size={16} />
-          32 Projects in progress, 10 completed
+          32 Projects in progress
         </p>
 
         <div

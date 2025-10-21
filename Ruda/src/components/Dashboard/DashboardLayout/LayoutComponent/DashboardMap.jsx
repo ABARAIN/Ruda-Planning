@@ -31,7 +31,16 @@ const DashboardMap = ({
       attributionControl: false,
     });
 
-    return () => mapRef.current && mapRef.current.remove();
+    // expose for other components (Popups) to access the instance
+    window.__DASHBOARD_MAP__ = mapRef.current;
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        if (window.__DASHBOARD_MAP__ === mapRef.current)
+          delete window.__DASHBOARD_MAP__;
+      }
+    };
   }, []);
 
   // Proposed roads state: listen for toggle event and fetch on first show
