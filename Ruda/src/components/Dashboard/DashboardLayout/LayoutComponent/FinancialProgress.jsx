@@ -1,0 +1,128 @@
+import React from "react";
+import { ArrowUp } from "lucide-react";
+
+const FinancialProgress = () => {
+  return (
+    <div
+      style={{
+        borderRadius: "12px",
+        padding: "10px",
+      }}
+    >
+      <div>
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <h6
+            style={{
+              fontSize: "0.9rem",
+              fontWeight: 400,
+              margin: 0,
+              letterSpacing: "0.5px",
+              color: "#ccc",
+            }}
+          >
+            FINANCIAL PROGRESS
+          </h6>
+          <span
+            style={{
+              color: "#888",
+              fontSize: "1rem",
+              cursor: "pointer",
+            }}
+          >
+            ⚙️
+          </span>
+        </div>
+
+        {/* Stats Row */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: "14px",
+            borderBottom: "1px solid rgba(255,255,255,0.05)",
+            paddingBottom: "10px",
+          }}
+        >
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>
+              Amount of Work Done
+            </div>
+            <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
+              PKR 927 Million
+            </div>
+          </div>
+
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>Amount Paid</div>
+            <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
+              PKR 740 Million
+            </div>
+          </div>
+
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>Time Elapsed</div>
+            <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>10 Months</div>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div
+          style={{
+            height: "6px",
+            background: "rgba(255,255,255,0.1)",
+            borderRadius: "4px",
+            marginTop: "16px",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              width: "79%",
+              height: "100%",
+              background: "#00c46a",
+              borderRadius: "4px",
+              transition: "width 0.3s ease",
+            }}
+          ></div>
+        </div>
+
+        {/* Footer Text */}
+        <div
+          style={{
+            marginTop: "10px",
+            display: "flex",
+            alignItems: "center",
+            fontSize: "0.85rem",
+          }}
+        >
+          <div
+            style={{
+              background: "#1e537f",
+              borderRadius: "50%",
+              width: "22px",
+              height: "22px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginRight: "8px",
+            }}
+          >
+            <ArrowUp size={14} color="#fff" />
+          </div>
+          <span>
+            <strong>79%</strong> of Amount Certified and Paid
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FinancialProgress;

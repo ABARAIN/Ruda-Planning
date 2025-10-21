@@ -112,7 +112,7 @@ const LayerFilterPanel = ({
   const layerPhaseMap = {
     "Charhar Bhag": "Phase 1",
     "CB Enclave": "Phase 1",
-    //  "Access Roads": "Phase 1",
+    // "Access Roads": "Phase 1",
     "M Toll Plaze": "Phase 2A",
     Jhoke: "Phase 3",
   };

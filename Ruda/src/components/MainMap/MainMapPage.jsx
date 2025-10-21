@@ -31,6 +31,7 @@ const MainMapPage = () => {
   const [colorMap, setColorMap] = useState({});
   const [districtBoundaries, setDistrictBoundaries] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showProjectPopups, setShowProjectPopups] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -112,6 +113,11 @@ const MainMapPage = () => {
 
   const filteredFeatures = features.filter((f) =>
     selectedNames.includes(f.properties.name)
+  );
+
+  // Compute features for selected projects (include project layers added via LayerFilterPanel)
+  const projectFeatures = features.filter((f) =>
+    selectedProjects.includes(f.properties?.name)
   );
 
   const handleColorChange = (name, newColor) => {
@@ -328,6 +334,27 @@ const MainMapPage = () => {
               Summary
             </Button>
             <Button
+              variant={showProjectPopups ? "contained" : "outlined"}
+              size="small"
+              onClick={() => setShowProjectPopups((s) => !s)}
+              sx={{
+                backgroundColor: showProjectPopups
+                  ? "rgba(255,255,255,0.15)"
+                  : "transparent",
+                color: "#fff",
+                textTransform: "none",
+                fontSize: "0.75rem",
+                fontWeight: 300,
+                borderRadius: "6px",
+                padding: "5px 5px",
+                minWidth: "auto",
+                boxShadow: "none",
+                border: "1px solid rgba(255,255,255,0.3)",
+              }}
+            >
+              Projects
+            </Button>
+            <Button
               variant="contained"
               size="small"
               onClick={() => (window.location.href = "/progress-update")}
@@ -449,6 +476,8 @@ const MainMapPage = () => {
               selectedNames={selectedNames}
               districtBoundaries={districtBoundaries}
               selectedProjects={selectedProjects}
+              projectFeatures={projectFeatures}
+              showProjectPopups={showProjectPopups}
             />
           </Box>
         </>
@@ -490,6 +519,8 @@ const MainMapPage = () => {
               selectedNames={selectedNames}
               districtBoundaries={districtBoundaries}
               selectedProjects={selectedProjects}
+              projectFeatures={projectFeatures}
+              showProjectPopups={showProjectPopups}
             />
           </Box>
         </Box>

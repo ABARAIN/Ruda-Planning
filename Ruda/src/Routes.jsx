@@ -16,6 +16,8 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import OngoingProjects from "./components/MainMap/OngoingProjects";
 import OverallSummary from "./components/MainMap/OverallSummary";
 import ProgressUpdate from "./components/MainMap/ProgressUpdate";
+import Dashboard from "./components/Dashboard/Dashboard";
+import MapView from "./components/MainMap/MapView";
 
 const AppRoutes = () => {
   return (
@@ -128,6 +130,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <ProgressUpdate />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
           </ProtectedRoute>
         }
       />
