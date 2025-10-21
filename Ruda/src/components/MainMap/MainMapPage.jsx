@@ -364,18 +364,22 @@ const MainMapPage = () => {
               size="small"
               onClick={() => setShowProjectPopups((s) => !s)}
               sx={{
-                backgroundColor: showProjectPopups
-                  ? "rgba(255,255,255,0.15)"
-                  : "transparent",
+                backgroundColor: "rgba(255,255,255,0.15)",
                 color: "#fff",
                 textTransform: "none",
-                fontSize: "0.75rem",
+                fontSize: "0.75rem", // Smaller font
                 fontWeight: 300,
                 borderRadius: "6px",
-                padding: "5px 5px",
+                padding: "5px 10px",
                 minWidth: "auto",
                 boxShadow: "none",
                 border: "1px solid rgba(255,255,255,0.3)",
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  transform: "translateY(-1px)",
+                },
+                transition: "all 0.2s ease-in-out",
               }}
             >
               Projects
