@@ -216,16 +216,6 @@ const DashboardLayout = ({
             padding: "10px",
           }}
         >
-          <AvailableLandTable />
-        </div>
-
-        <div
-          style={{
-            background: "#171931",
-            borderRadius: "12px",
-            padding: "10px",
-          }}
-        >
           <FinancialProgress />
         </div>
 
@@ -267,6 +257,15 @@ const DashboardLayout = ({
           }}
         >
           <OngoingProjectsTable />
+        </div>
+        <div
+          style={{
+            background: "#171931",
+            borderRadius: "12px",
+            padding: "10px",
+          }}
+        >
+          <AvailableLandTable />
         </div>
       </div>
     </div>

@@ -1,7 +1,16 @@
 import React from "react";
 import { ArrowUp } from "lucide-react";
+import RTWMap from "../../../RTWMap/RTWMap";
+import { useNavigate } from "react-router-dom";
 
 const AvailableLandTable = () => {
+  const navigate = useNavigate();
+
+  // 🔹 When clicking mini map → open full RTWMap page
+  const handleMapClick = () => {
+    navigate("/rtwmap"); // or whatever your route is for the full map page
+  };
+
   return (
     <div
       style={{
@@ -9,8 +18,8 @@ const AvailableLandTable = () => {
         padding: "10px",
       }}
     >
+      {/* Header */}
       <div>
-        {/* Header */}
         <div
           style={{
             display: "flex",
@@ -40,7 +49,7 @@ const AvailableLandTable = () => {
           </span>
         </div>
 
-        {/* Stats Row */}
+        {/* Stats */}
         <div
           style={{
             display: "flex",
@@ -99,7 +108,7 @@ const AvailableLandTable = () => {
           ></div>
         </div>
 
-        {/* Footer Text */}
+        {/* Footer */}
         <div
           style={{
             marginTop: "10px",
@@ -126,6 +135,33 @@ const AvailableLandTable = () => {
             <strong>45.5%</strong> of Land is available
           </span>
         </div>
+      </div>
+
+      {/* 🔹 Embedded Mini Map */}
+      <div
+        onClick={handleMapClick}
+        style={{
+          marginTop: "16px",
+          borderRadius: "10px",
+          overflow: "hidden",
+          height: "250px", // smaller height for dashboard
+          width: "100",
+          cursor: "pointer",
+          position: "relative",
+        }}
+      >
+        {/* Overlay for click effect */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 5,
+            background: "transparent",
+          }}
+        ></div>
+
+        {/* Mini version of RTWMap */}
+        <RTWMap isEmbedded={true} defaultFilter="showAll" />
       </div>
     </div>
   );
