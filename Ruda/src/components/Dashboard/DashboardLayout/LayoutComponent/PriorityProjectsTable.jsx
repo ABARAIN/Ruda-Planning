@@ -17,31 +17,61 @@ const PriorityProjectsTable = () => {
 
         if (!sheet?.rows) throw new Error("Invalid data");
 
+        const COL_BREAKDOWN = "Project Amount Breakdown \nDevelopment Works";
+        const COL_BUDGET_EST = "Budget Estimates\n(PKR Millions)";
+        const COL_BUDGET_REV0 = "Budget Estimates \nRev-0\n(PKR Millions)";
+        const COL_PRIORITY = "Priority Projects";
+
+        const get = (obj, key, fallbacks = []) => {
+          if (!obj) return undefined;
+          if (key in obj) return obj[key];
+          const k = Object.keys(obj).find(
+            (kk) => kk.trim().toLowerCase() === key.trim().toLowerCase()
+          );
+          if (k) return obj[k];
+          for (const fb of fallbacks) if (fb in obj) return obj[fb];
+          return undefined;
+        };
+
+        const toNum = (v) => {
+          if (v === null || v === undefined || v === "" || v === "-")
+            return null;
+          const n = Number(String(v).toString().replace(/,/g, ""));
+          return Number.isFinite(n) ? n : null;
+        };
+
         const priorityProjects = [];
         let serial = 1;
 
-        sheet.rows.forEach((row) => {
-          const projectName =
-            row["Project Amount Breakdown \nDevelopment Works"];
-          const category = row["Project Category"];
-          const budget = row["Project Cost (PKR Million)"];
+        for (const row of sheet.rows) {
+          const name = String(get(row, COL_BREAKDOWN) ?? "").trim();
+          if (!name) continue;
 
-          // Only include priority projects
-          if (
-            category &&
-            category.toLowerCase().includes("priority") &&
-            projectName
-          ) {
-            priorityProjects.push({
-              id: serial++,
-              projectName,
-              budget: budget ? `PKR ${Number(budget).toLocaleString()} M` : "-",
-            });
-          }
-        });
+          const priorityVal = get(row, COL_PRIORITY);
+          const isPriority =
+            (typeof priorityVal === "string" &&
+              String(priorityVal).trim().toUpperCase() === "YES") ||
+            Number(priorityVal) === 1;
 
-        setProjects(priorityProjects.slice(0, 8)); // Show top few
-        setFiltered(priorityProjects.slice(0, 8));
+          if (!isPriority) continue;
+
+          const rawBudget =
+            get(row, COL_BUDGET_EST) ??
+            get(row, COL_BUDGET_REV0) ??
+            get(row, "Budget Estimates \nRev-0\n(PKR Millions)") ??
+            get(row, "Project Cost (PKR Million)");
+          const budgetNum = toNum(rawBudget);
+
+          priorityProjects.push({
+            id: serial++,
+            projectName: name,
+            budget: budgetNum ? `PKR ${budgetNum.toLocaleString()} M` : "-",
+            checked: false,
+          });
+        }
+
+        setProjects(priorityProjects);
+        setFiltered(priorityProjects);
       } catch (e) {
         console.error(e);
       } finally {
@@ -56,6 +86,12 @@ const PriorityProjectsTable = () => {
     const query = q.toLowerCase();
     setFiltered(
       projects.filter((p) => p.projectName.toLowerCase().includes(query))
+    );
+  };
+
+  const toggleCheckbox = (id) => {
+    setFiltered((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, checked: !p.checked } : p))
     );
   };
 
@@ -93,11 +129,25 @@ const PriorityProjectsTable = () => {
             key={p.id}
             className="list-group-item text-left"
             style={styles.projectButton}
-            onClick={() => navigate("/priority-projects")}
+            onClick={() => navigate("/hierarchical-gantt")}
           >
-            <div>
-              <h6 style={styles.projectName}>{p.projectName}</h6>
-              <p style={styles.projectBudget}>Budget: {p.budget}</p>
+            <div style={styles.projectRow}>
+              {/* Checkbox */}
+              <div
+                style={styles.checkbox}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleCheckbox(p.id);
+                }}
+              >
+                {p.checked && <div style={styles.tick}></div>}
+              </div>
+
+              {/* Project Info */}
+              <div style={styles.projectInfo}>
+                <h6 style={styles.projectName}>{p.projectName}</h6>
+                <p style={styles.projectBudget}>{p.budget}</p>
+              </div>
             </div>
           </button>
         ))}
@@ -150,21 +200,47 @@ const styles = {
     borderBottom: "1px solid rgba(255,255,255,0.05)",
     transition: "background 0.2s",
   },
+  projectRow: {
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+    padding: "8px 0",
+  },
+  checkbox: {
+    width: "18px",
+    height: "18px",
+    border: "2px solid white",
+    borderRadius: "4px",
+    marginRight: "10px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+  },
+  tick: {
+    width: "8px",
+    height: "8px",
+    backgroundColor: "white",
+    clipPath: "polygon(14% 44%, 0 65%, 50% 100%, 100% 22%, 80% 0%, 43% 62%)",
+  },
+  projectInfo: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    lineHeight: "1.3",
+  },
   projectName: {
     margin: 0,
     fontSize: "0.9rem",
     fontWeight: 500,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
+    color: "#ccc",
   },
   projectBudget: {
     margin: 0,
-    fontSize: "0.8rem",
+    fontSize: "0.75rem",
     opacity: 0.7,
   },
   footer: {
-    background: "rgba(255,255,255,0.02)",
     padding: "10px 12px",
   },
   searchInput: {

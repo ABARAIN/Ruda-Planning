@@ -190,9 +190,9 @@ const styles = {
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
+    color: "#ccc",
   },
   footer: {
-    background: "rgba(255,255,255,0.02)",
     padding: "10px 12px",
   },
   searchInput: {

@@ -139,7 +139,7 @@ const RudaStatistics = () => {
           }}
         >
           <Settings size={16} />
-          32 Projects in progress
+          150 Projects in progress
         </p>
 
         <div
