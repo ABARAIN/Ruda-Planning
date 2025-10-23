@@ -8,7 +8,7 @@ const AvailableLandTable = () => {
 
   // 🔹 When clicking mini map → open full RTWMap page
   const handleMapClick = () => {
-    navigate("/rtwmap"); // or whatever your route is for the full map page
+    navigate("/map"); // navigate to main map page
   };
 
   return (
@@ -29,11 +29,11 @@ const AvailableLandTable = () => {
         >
           <h6
             style={{
-              fontSize: "0.9rem",
-              fontWeight: 400,
+              fontSize: "1rem",
+              fontWeight: 500,
               margin: 0,
               letterSpacing: "0.5px",
-              color: "#ccc",
+              color: "#ffffff",
             }}
           >
             LAND AREA DISTRIBUTION
@@ -145,7 +145,8 @@ const AvailableLandTable = () => {
           borderRadius: "10px",
           overflow: "hidden",
           height: "250px", // smaller height for dashboard
-          width: "100",
+          width: "100%",
+          maxWidth: "100%",
           cursor: "pointer",
           position: "relative",
         }}
@@ -160,8 +161,10 @@ const AvailableLandTable = () => {
           }}
         ></div>
 
-        {/* Mini version of RTWMap */}
-        <RTWMap isEmbedded={true} defaultFilter="showAll" />
+        {/* Mini version of RTWMap - pass embedded flag and defaultFilter 'Show All' */}
+        <div style={{ height: "100%", width: "100%" }}>
+          <RTWMap isEmbedded={true} defaultFilter="Show All" />
+        </div>
       </div>
     </div>
   );

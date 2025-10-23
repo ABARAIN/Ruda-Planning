@@ -10,7 +10,7 @@ import RTWProjectList from "./RTWProjectList";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
-const RTWMap = () => {
+const RTWMap = ({ isEmbedded = false, defaultFilter = null }) => {
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
   const [loading, setLoading] = useState(true);
@@ -123,7 +123,7 @@ const RTWMap = () => {
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/satellite-streets-v12",
       center: [74.3, 31.5],
-      zoom: 11,
+      zoom: isEmbedded ? 10 : 11,
     });
 
     // mapRef.current.addControl(new mapboxgl.NavigationControl());
@@ -211,7 +211,8 @@ const RTWMap = () => {
             (b, [lng, lat]) => b.extend([lng, lat]),
             new mapboxgl.LngLatBounds(coords[0], coords[0])
           );
-          mapRef.current.fitBounds(bounds, { padding: 50 });
+          // For embedded map we want a softer fit so it looks good in small container
+          mapRef.current.fitBounds(bounds, { padding: isEmbedded ? 30 : 50 });
         }
 
         const response = await fetch("/Final.geojson");
@@ -278,9 +279,70 @@ const RTWMap = () => {
             ["fill", "line"].forEach((type) => {
               const layerId = `rtw2-${type}`;
               if (mapRef.current.getLayer(layerId)) {
-                mapRef.current.setLayoutProperty(layerId, "visibility", "visible");
+                mapRef.current.setLayoutProperty(
+                  layerId,
+                  "visibility",
+                  "visible"
+                );
               }
             });
+          }
+        }
+
+        // If this instance is embedded and defaultFilter is 'Show All', make all project layers visible
+        if (isEmbedded && defaultFilter === "Show All") {
+          const visMap = {};
+          sanitizedFeatures.forEach((f) => {
+            const nm = f.properties.name;
+            visMap[nm] = true;
+            const id = nm.replace(/\s+/g, "-").toLowerCase();
+            ["fill", "line"].forEach((type) => {
+              const layerId = `project-${id}-${type}`;
+              if (mapRef.current.getLayer(layerId)) {
+                mapRef.current.setLayoutProperty(
+                  layerId,
+                  "visibility",
+                  "visible"
+                );
+              }
+            });
+          });
+          setProjectVisibility(visMap);
+          // Also, show green available layer if any matches
+          setLayerVisibility((prev) => ({ ...prev, available: true }));
+          // Try to set green layer features to all available
+          const greenSource = mapRef.current.getSource("rtw2-public");
+          if (greenSource) {
+            greenSource.setData({
+              type: "FeatureCollection",
+              features: allAvailableFeaturesRef.current,
+            });
+            ["fill", "line"].forEach((type) => {
+              const layerId = `rtw2-${type}`;
+              if (mapRef.current.getLayer(layerId)) {
+                mapRef.current.setLayoutProperty(
+                  layerId,
+                  "visibility",
+                  "visible"
+                );
+              }
+            });
+          }
+          // Center/fit the embedded map to include all project features
+          try {
+            const allCoords = sanitizedFeatures
+              .map((f) => f.geometry.coordinates)
+              .flat(3);
+            if (allCoords && allCoords.length > 0) {
+              const initial = allCoords[0];
+              const bounds = allCoords.reduce(
+                (b, [lng, lat]) => b.extend([lng, lat]),
+                new mapboxgl.LngLatBounds(initial, initial)
+              );
+              mapRef.current.fitBounds(bounds, { padding: 20, duration: 800 });
+            }
+          } catch (e) {
+            console.warn("Could not compute bounds for embedded fit:", e);
           }
         }
 
@@ -296,161 +358,162 @@ const RTWMap = () => {
     };
   }, []);
 
-
-
-
-
   const hasRunRef = useRef(false);
 
-// 🔧 Helper to retry showing green layer
-const tryShowGreenLayer = (features) => {
-  const map = mapRef.current;
-  const source = map.getSource("rtw2-public");
+  // 🔧 Helper to retry showing green layer
+  const tryShowGreenLayer = (features) => {
+    const map = mapRef.current;
+    const source = map.getSource("rtw2-public");
 
-  if (!source || !map.getLayer("rtw2-fill")) {
-    console.warn("🕒 Green layer not ready. Retrying...");
-    setTimeout(() => tryShowGreenLayer(features), 200);
-    return;
-  }
-
-  source.setData({
-    type: "FeatureCollection",
-    features,
-  });
-
-  ["fill", "line"].forEach((type) => {
-    const layerId = `rtw2-${type}`;
-    if (map.getLayer(layerId)) {
-      map.setLayoutProperty(layerId, "visibility", "visible");
+    if (!source || !map.getLayer("rtw2-fill")) {
+      console.warn("🕒 Green layer not ready. Retrying...");
+      setTimeout(() => tryShowGreenLayer(features), 200);
+      return;
     }
-  });
 
-  console.log("✅ Green layer displayed");
-};
+    source.setData({
+      type: "FeatureCollection",
+      features,
+    });
 
-// 🔁 Always recalculate stats on visibility change
-useEffect(() => {
-  recalculateAreaStats();
-}, [projectVisibility, layerVisibility]);
-
-// 🚀 Load project from URL param (?selected=...)
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  const selectedName = params.get("selected");
-  console.log("📌 Query param selected:", selectedName);
-
-  if (
-    hasRunRef.current ||
-    !selectedName ||
-    projectFeatures.length === 0 ||
-    Object.keys(projectVisibility).length === 0
-  ) {
-    return;
-  }
-
-  hasRunRef.current = true;
-
-  const matchedFeature = projectFeatures.find(
-    (f) => f.properties?.name?.trim() === selectedName.trim()
-  );
-
-  if (!matchedFeature) {
-    console.warn("⚠️ Feature not found for:", selectedName);
-    return;
-  }
-
-  // 1. Show red layer
-  const id = selectedName.replace(/\s+/g, "-").toLowerCase();
-  ["fill", "line"].forEach((type) => {
-    const layerId = `project-${id}-${type}`;
-    if (mapRef.current.getLayer(layerId)) {
-      mapRef.current.setLayoutProperty(layerId, "visibility", "visible");
-    }
-  });
-
-  // 2. Show green layer (deferred if layer not yet ready)
-  const selectedNorm = selectedName.trim().toLowerCase();
-  console.log(
-    "Available green polygons:",
-    allAvailableFeaturesRef.current.map((f) => f.properties?.name)
-  );
-  const matchingGreen = allAvailableFeaturesRef.current.filter((f) => {
-    const n = (f.properties?.name || "").trim().toLowerCase();
-    // Match if name equals or contains the selected name
-    return n === selectedNorm || n.includes(selectedNorm);
-  });
-
-  if (matchingGreen.length > 0) {
-    tryShowGreenLayer(matchingGreen);
-    // Force green layer visibility ON immediately
-    setLayerVisibility((prev) => ({ ...prev, available: true }));
-    // Also, ensure the green layer is visible in the map (in case state is not enough)
     ["fill", "line"].forEach((type) => {
       const layerId = `rtw2-${type}`;
+      if (map.getLayer(layerId)) {
+        map.setLayoutProperty(layerId, "visibility", "visible");
+      }
+    });
+
+    console.log("✅ Green layer displayed");
+  };
+
+  // 🔁 Always recalculate stats on visibility change
+  useEffect(() => {
+    recalculateAreaStats();
+  }, [projectVisibility, layerVisibility]);
+
+  // 🚀 Load project from URL param (?selected=...)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const selectedName = params.get("selected");
+    console.log("📌 Query param selected:", selectedName);
+
+    if (
+      hasRunRef.current ||
+      !selectedName ||
+      projectFeatures.length === 0 ||
+      Object.keys(projectVisibility).length === 0
+    ) {
+      return;
+    }
+
+    hasRunRef.current = true;
+
+    const matchedFeature = projectFeatures.find(
+      (f) => f.properties?.name?.trim() === selectedName.trim()
+    );
+
+    if (!matchedFeature) {
+      console.warn("⚠️ Feature not found for:", selectedName);
+      return;
+    }
+
+    // 1. Show red layer
+    const id = selectedName.replace(/\s+/g, "-").toLowerCase();
+    ["fill", "line"].forEach((type) => {
+      const layerId = `project-${id}-${type}`;
       if (mapRef.current.getLayer(layerId)) {
         mapRef.current.setLayoutProperty(layerId, "visibility", "visible");
       }
     });
-  }
 
-  // 3. Enable green layer toggle flag in state
-  setLayerVisibility((prev) => ({ ...prev, available: true }));
+    // 2. Show green layer (deferred if layer not yet ready)
+    const selectedNorm = selectedName.trim().toLowerCase();
+    console.log(
+      "Available green polygons:",
+      allAvailableFeaturesRef.current.map((f) => f.properties?.name)
+    );
+    const matchingGreen = allAvailableFeaturesRef.current.filter((f) => {
+      const n = (f.properties?.name || "").trim().toLowerCase();
+      // Match if name equals or contains the selected name
+      return n === selectedNorm || n.includes(selectedNorm);
+    });
 
-  // 4. Set selected red project as visible in state
-  setProjectVisibility((prev) => ({
-    ...prev,
-    [selectedName]: true,
-  }));
+    if (matchingGreen.length > 0) {
+      tryShowGreenLayer(matchingGreen);
+      // Force green layer visibility ON immediately
+      setLayerVisibility((prev) => ({ ...prev, available: true }));
+      // Also, ensure the green layer is visible in the map (in case state is not enough)
+      ["fill", "line"].forEach((type) => {
+        const layerId = `rtw2-${type}`;
+        if (mapRef.current.getLayer(layerId)) {
+          mapRef.current.setLayoutProperty(layerId, "visibility", "visible");
+        }
+      });
+    }
 
-  // 5. Zoom and show chart
-  setShowChart(true);
-  const bounds = turf.bbox(matchedFeature);
-  mapRef.current.fitBounds(bounds, { padding: 60, duration: 1000 });
-}, [projectFeatures, projectVisibility]);
+    // 3. Enable green layer toggle flag in state
+    setLayerVisibility((prev) => ({ ...prev, available: true }));
 
-// ✅ Optional: force recalculate stats after green layer toggle (in case needed)
-useEffect(() => {
-  if (!hasRunRef.current) return;
-  if (layerVisibility.available) {
-    console.log("✅ Recalculating stats after green layer toggled on");
-    recalculateAreaStats();
-  }
-}, [layerVisibility.available]);
+    // 4. Set selected red project as visible in state
+    setProjectVisibility((prev) => ({
+      ...prev,
+      [selectedName]: true,
+    }));
 
+    // 5. Zoom and show chart
+    setShowChart(true);
+    const bounds = turf.bbox(matchedFeature);
+    mapRef.current.fitBounds(bounds, { padding: 60, duration: 1000 });
+  }, [projectFeatures, projectVisibility]);
 
-
-
-
+  // ✅ Optional: force recalculate stats after green layer toggle (in case needed)
+  useEffect(() => {
+    if (!hasRunRef.current) return;
+    if (layerVisibility.available) {
+      console.log("✅ Recalculating stats after green layer toggled on");
+      recalculateAreaStats();
+    }
+  }, [layerVisibility.available]);
 
   return (
-    <Box sx={{ position: "relative", height: "100vh", width: "100vw" }}>
+    <Box
+      sx={{
+        position: "relative",
+        height: isEmbedded ? "100%" : "100vh",
+        width: "100%",
+      }}
+    >
       <Box ref={mapContainer} sx={{ height: "100%", width: "100%" }} />
 
-      <RTWLeftSidebar
-        areaStats={areaStats}
-        showChart={showChart}
-        setShowChart={setShowChart}
-        projectFeatures={projectFeatures}
-        projectVisibility={projectVisibility}
-        allAvailableFeaturesRef={allAvailableFeaturesRef}
-      />
+      {!isEmbedded && (
+        <RTWLeftSidebar
+          areaStats={areaStats}
+          showChart={showChart}
+          setShowChart={setShowChart}
+          projectFeatures={projectFeatures}
+          projectVisibility={projectVisibility}
+          allAvailableFeaturesRef={allAvailableFeaturesRef}
+        />
+      )}
 
-      <RTWRightSidebar
-        showToggle={showToggle}
-        setShowToggle={setShowToggle}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        projectVisibility={projectVisibility}
-        setProjectVisibility={setProjectVisibility}
-        layerVisibility={layerVisibility}
-        setLayerVisibility={setLayerVisibility}
-        mapRef={mapRef}
-        toggleLayer={toggleLayer}
-        recalculateAreaStats={recalculateAreaStats}
-        allAvailableFeaturesRef={allAvailableFeaturesRef}
-        projectFeatures={projectFeatures}
-        setShowChart={setShowChart}
-      />
+      {!isEmbedded && (
+        <RTWRightSidebar
+          showToggle={showToggle}
+          setShowToggle={setShowToggle}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          projectVisibility={projectVisibility}
+          setProjectVisibility={setProjectVisibility}
+          layerVisibility={layerVisibility}
+          setLayerVisibility={setLayerVisibility}
+          mapRef={mapRef}
+          toggleLayer={toggleLayer}
+          recalculateAreaStats={recalculateAreaStats}
+          allAvailableFeaturesRef={allAvailableFeaturesRef}
+          projectFeatures={projectFeatures}
+          setShowChart={setShowChart}
+        />
+      )}
 
       {/* <RTWProjectList
         showToggle={showToggle}
