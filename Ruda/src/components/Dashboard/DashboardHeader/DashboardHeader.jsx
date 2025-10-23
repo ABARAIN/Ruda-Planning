@@ -91,7 +91,7 @@ const DashboardHeader = () => {
           color: "#ccc",
         }}
       >
-        Ravi Urban Development Authority
+        RAVI URBAN DEVELOPMENT AUTHORITY
       </p>
 
       {/* Middle: Search Bar */}

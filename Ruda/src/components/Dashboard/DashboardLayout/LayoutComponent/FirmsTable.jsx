@@ -13,9 +13,10 @@ const FirmsTable = () => {
         {/* Header */}
         <h6
           style={{
-            fontSize: "0.9rem",
+            fontSize: "1rem",
+            fontWeight: 500,
             letterSpacing: "0.5px",
-            fontWeight: 400,
+            color: "#ffffff",
           }}
         >
           FIRMS AFFILIATED

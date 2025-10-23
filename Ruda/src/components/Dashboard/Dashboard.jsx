@@ -68,8 +68,6 @@ const Dashboard = () => {
         flexDirection: "column",
         height: "100%",
         width: "100%",
-        background:
-          "radial-gradient(farthest-side ellipse at 10% 0, #2b3059 20%, #17193b)",
       }}
     >
       {/* Full-width header on top */}

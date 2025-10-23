@@ -4,9 +4,12 @@ import { ArrowUp } from "lucide-react";
 const FinancialProgress = () => {
   return (
     <div
+      onClick={() => (window.location.href = "/progress-update")}
       style={{
         borderRadius: "12px",
         padding: "10px",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
       }}
     >
       <div>
@@ -20,11 +23,11 @@ const FinancialProgress = () => {
         >
           <h6
             style={{
-              fontSize: "0.9rem",
-              fontWeight: 400,
+              fontSize: "1rem",
+              fontWeight: 500,
               margin: 0,
               letterSpacing: "0.5px",
-              color: "#ccc",
+              color: "#ffffff",
             }}
           >
             FINANCIAL PROGRESS
@@ -50,8 +53,24 @@ const FinancialProgress = () => {
             paddingBottom: "10px",
           }}
         >
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>
+          {/* 1️⃣ Amount of Work Done */}
+          <div
+            style={{
+              flex: 1,
+              textAlign: "left",
+              borderRight: "1px solid rgba(255,255,255,0.05)",
+              paddingRight: "10px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "0.8rem",
+                opacity: 0.8,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
               Amount of Work Done
             </div>
             <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
@@ -59,15 +78,50 @@ const FinancialProgress = () => {
             </div>
           </div>
 
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>Amount Paid</div>
+          {/* 2️⃣ Amount Paid */}
+          <div
+            style={{
+              flex: 1,
+              textAlign: "left",
+              borderRight: "1px solid rgba(255,255,255,0.05)",
+              padding: "0 10px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "0.8rem",
+                opacity: 0.8,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              Amount Paid
+            </div>
             <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
               PKR 740 Million
             </div>
           </div>
 
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>Time Elapsed</div>
+          {/* 3️⃣ Time Elapsed */}
+          <div
+            style={{
+              flex: 1,
+              textAlign: "left",
+              paddingLeft: "10px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "0.8rem",
+                opacity: 0.8,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              Time Elapsed
+            </div>
             <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>10 Months</div>
           </div>
         </div>

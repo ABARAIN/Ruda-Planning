@@ -182,14 +182,14 @@ const DashboardLayout = ({
         {/* Right: Statistics Card */}
         <div
           style={{
-            // background: "rgba(255,255,255,0.05)",
+            background: "rgb(30 33 65)",
             borderRadius: "12px",
             // border: "1px solid rgba(255,255,255,0.1)",
             padding: "20px",
-            height: "100%",
+            height: "460px",
             overflow: "auto",
-            marginTop: "100px",
-            marginRight: "10px",
+            marginTop: "120px",
+            marginRight: "20px",
           }}
         >
           <RudaStatistics />
@@ -211,7 +211,7 @@ const DashboardLayout = ({
       >
         <div
           style={{
-            background: "#171931",
+            background: "rgb(30 33 65)",
             borderRadius: "12px",
             padding: "10px",
           }}
@@ -221,7 +221,7 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "#171931",
+            background: "rgb(30 33 65)",
             borderRadius: "12px",
             padding: "10px",
           }}
@@ -231,7 +231,7 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "#171931",
+            background: "rgb(30 33 65)",
             borderRadius: "12px",
             padding: "10px",
           }}
@@ -241,7 +241,7 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "#171931",
+            background: "rgb(30 33 65)",
             borderRadius: "12px",
             padding: "10px",
           }}
@@ -251,7 +251,7 @@ const DashboardLayout = ({
 
         <div
           style={{
-            background: "#171931",
+            background: "rgb(30 33 65)",
             borderRadius: "12px",
             padding: "10px",
           }}
@@ -260,7 +260,7 @@ const DashboardLayout = ({
         </div>
         <div
           style={{
-            background: "#171931",
+            background: "rgb(30 33 65)",
             borderRadius: "12px",
             padding: "10px",
           }}

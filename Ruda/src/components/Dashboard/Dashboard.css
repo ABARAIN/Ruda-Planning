@@ -9,12 +9,24 @@
 
 .dashboard-container {
   font-family: var(--font-family-sans-serif);
-  /* background: linear-gradient(180deg, #141a3a 0%, #1a2250 100%); */
   background: radial-gradient(
     farthest-side ellipse at 20% 0,
     #333867 40%,
     #23274b
   );
+  background-attachment: fixed; /* 👈 keeps gradient fixed while scrolling */
+  background-repeat: no-repeat;
+  background-size: cover; /* makes sure it fills the whole screen */
   color: white;
   min-height: 100vh;
+}
+
+/* Hide scrollbar but keep scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
 }

@@ -59,8 +59,24 @@ const AvailableLandTable = () => {
             paddingBottom: "10px",
           }}
         >
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>
+          {/* 1️⃣ Total Project Area */}
+          <div
+            style={{
+              flex: 1,
+              textAlign: "left",
+              borderRight: "1px solid rgba(255,255,255,0.05)",
+              paddingRight: "10px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "0.8rem",
+                opacity: 0.8,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
               Total Project Area
             </div>
             <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
@@ -68,8 +84,24 @@ const AvailableLandTable = () => {
             </div>
           </div>
 
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>
+          {/* 2️⃣ Available Area */}
+          <div
+            style={{
+              flex: 1,
+              textAlign: "left",
+              borderRight: "1px solid rgba(255,255,255,0.05)",
+              padding: "0 10px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "0.8rem",
+                opacity: 0.8,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
               Available Area
             </div>
             <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
@@ -77,8 +109,23 @@ const AvailableLandTable = () => {
             </div>
           </div>
 
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>
+          {/* 3️⃣ Unavailable Area */}
+          <div
+            style={{
+              flex: 1,
+              textAlign: "left",
+              paddingLeft: "10px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "0.8rem",
+                opacity: 0.8,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
               Unavailable Area
             </div>
             <div style={{ fontSize: "0.8rem", fontWeight: 400 }}>
