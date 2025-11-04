@@ -45,6 +45,8 @@ const DashboardLayout = ({
   showPhasePopups,
   showPackagePopups,
   showProjectPopups,
+  // showTop: whether to render the top Map + Statistics section. Default true.
+  showTop = true,
 }) => {
   const [localFeatures, setLocalFeatures] = useState([]);
   const [localColorMap, setLocalColorMap] = useState({});
@@ -131,70 +133,72 @@ const DashboardLayout = ({
         overflowY: "auto", // allow vertical scrolling to reach bottom tables without changing sizes
       }}
     >
-      {/* 🔹 Top Section: Map + Stats (Sidebar is rendered by parent `Dashboard.jsx`) */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "3fr 1fr", // Map takes more space
-          gap: "20px",
-          marginBottom: "20px",
-          height: "93vh",
-        }}
-      >
-        {/* Left: Map Card */}
+      {/* Top Section: Map + Stats (can be hidden by prop `showTop`) */}
+      {showTop && (
         <div
           style={{
-            // background: "rgba(255,255,255,0.05)",
-            borderRadius: "12px",
-            // border: "1px solid rgba(255,255,255,0.1)",
-            padding: "10px",
-            height: "100%",
+            display: "grid",
+            gridTemplateColumns: "3fr 1fr", // Map takes more space
+            gap: "20px",
+            marginBottom: "20px",
+            height: "93vh",
           }}
         >
-          <DashboardMap
-            features={features}
-            colorMap={colorMap}
-            selectedNames={selectedNames}
-          />
-        </div>
+          {/* Left: Map Card */}
+          <div
+            style={{
+              // background: "rgba(255,255,255,0.05)",
+              borderRadius: "12px",
+              // border: "1px solid rgba(255,255,255,0.1)",
+              padding: "10px",
+              height: "100%",
+            }}
+          >
+            <DashboardMap
+              features={features}
+              colorMap={colorMap}
+              selectedNames={selectedNames}
+            />
+          </div>
 
-        {/* Popups for dashboard map (invisible component that manages mapbox popups) */}
-        <Popups
-          features={(features || []).map((f) => ({
-            ...f,
-            properties: {
-              ...f.properties,
-              __areaSqKm: (() => {
-                try {
-                  if (f && f.geometry) return turf.area(f) / 1000000;
-                } catch (e) {
+          {/* Popups for dashboard map (invisible component that manages mapbox popups) */}
+          <Popups
+            features={(features || []).map((f) => ({
+              ...f,
+              properties: {
+                ...f.properties,
+                __areaSqKm: (() => {
+                  try {
+                    if (f && f.geometry) return turf.area(f) / 1000000;
+                  } catch (e) {
+                    return null;
+                  }
                   return null;
-                }
-                return null;
-              })(),
-            },
-          }))}
-          showPhasePopups={showPhasePopups}
-          showPackagePopups={showPackagePopups}
-          showProjectPopups={showProjectPopups}
-        />
+                })(),
+              },
+            }))}
+            showPhasePopups={showPhasePopups}
+            showPackagePopups={showPackagePopups}
+            showProjectPopups={showProjectPopups}
+          />
 
-        {/* Right: Statistics Card */}
-        <div
-          style={{
-            background: "rgb(30 33 65)",
-            borderRadius: "12px",
-            // border: "1px solid rgba(255,255,255,0.1)",
-            padding: "20px",
-            height: "460px",
-            overflow: "auto",
-            marginTop: "120px",
-            marginRight: "20px",
-          }}
-        >
-          <RudaStatistics />
+          {/* Right: Statistics Card */}
+          <div
+            style={{
+              background: "rgb(30 33 65)",
+              borderRadius: "12px",
+              // border: "1px solid rgba(255,255,255,0.1)",
+              padding: "20px",
+              height: "400px",
+              overflow: "auto",
+              marginTop: "120px",
+              marginRight: "20px",
+            }}
+          >
+            <RudaStatistics />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 🔹 Bottom Section: 6 Boxes (2 Rows × 3 Columns) */}
       <div
@@ -204,9 +208,10 @@ const DashboardLayout = ({
           gridTemplateRows: "repeat(2, auto)",
           gap: "20px",
           // height: "90vh",
-          marginRight: "25px",
+          marginRight: "40px",
           marginBottom: "30px",
           marginTop: "30px",
+          marginLeft: "40px",
         }}
       >
         <div

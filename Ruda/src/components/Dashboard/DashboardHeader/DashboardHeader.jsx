@@ -86,9 +86,9 @@ const DashboardHeader = () => {
       <p
         style={{
           margin: 0,
-          fontWeight: 300,
+          fontWeight: 100,
           fontSize: "1.5rem",
-          color: "#ccc",
+          color: "#fff",
         }}
       >
         RAVI URBAN DEVELOPMENT AUTHORITY

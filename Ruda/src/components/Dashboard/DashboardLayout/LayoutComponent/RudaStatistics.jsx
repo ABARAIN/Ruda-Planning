@@ -29,7 +29,7 @@ const RudaStatistics = () => {
         width: "100%",
         height: "100%",
         borderRadius: "12px",
-        color: "#ccc",
+        color: "#fff",
         padding: "16px",
         fontFamily: '"Open Sans", sans-serif',
         display: "flex",
@@ -43,7 +43,7 @@ const RudaStatistics = () => {
           style={{ fontSize: "1.2rem", marginBottom: "8px", fontWeight: "400" }}
         >
           Ruda{" "}
-          <span style={{ color: "#ccc", fontWeight: "bold" }}>Statistics</span>
+          <span style={{ color: "#fff", fontWeight: "bold" }}>Statistics</span>
         </h3>
 
         <p style={{ marginBottom: "10px" }}>Status: Live</p>
@@ -85,7 +85,7 @@ const RudaStatistics = () => {
                     marginBottom: "4px",
                     fontSize: "0.95rem",
                     fontWeight: "300",
-                    color: "#ccc",
+                    color: "#fff",
                   }}
                 >
                   {item.title}
@@ -142,7 +142,7 @@ const RudaStatistics = () => {
           150 Projects in progress
         </p>
 
-        <div
+        {/* <div
           style={{
             display: "flex",
             alignItems: "center",
@@ -171,7 +171,7 @@ const RudaStatistics = () => {
               fontSize: "0.9rem",
             }}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );

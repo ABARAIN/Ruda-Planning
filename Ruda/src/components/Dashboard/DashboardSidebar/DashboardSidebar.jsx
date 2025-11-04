@@ -41,6 +41,8 @@ const DashboardSidebar = ({
   setShowPackagePopups = undefined,
   showProjectPopups = false,
   setShowProjectPopups = undefined,
+  // optional style to override the root container (useful for overlaying on map)
+  containerStyle = undefined,
 }) => {
   // Manage open/closed state for Layer Filters; prefer parent-controlled if provided
   const [localOpen, setLocalOpen] = React.useState(true);
@@ -189,12 +191,12 @@ const DashboardSidebar = ({
             <MenuItem key={opt} value={opt}>
               <Checkbox
                 checked={value.includes(opt)}
-                sx={{ color: "#ccc", "&.Mui-checked": { color: "#2196f3" } }}
+                sx={{ color: "#fff", "&.Mui-checked": { color: "#2196f3" } }}
               />
               <ListItemText primary={opt} />
               <input
                 type="color"
-                value={colorMap[opt] || "#cccccc"}
+                value={colorMap[opt] || "#fff"}
                 onChange={(e) => onColorChange?.(opt, e.target.value)}
                 style={{
                   marginLeft: 10,
@@ -213,19 +215,19 @@ const DashboardSidebar = ({
     );
   };
 
+  const rootStyle = {
+    width: "17%",
+    height: "100vh",
+    color: "white",
+    display: "flex",
+    flexDirection: "column",
+    padding: "20px 15px",
+    fontFamily: '"Open Sans", sans-serif',
+    overflowY: "auto",
+  };
+
   return (
-    <div
-      style={{
-        width: "17%",
-        height: "100vh",
-        color: "white",
-        display: "flex",
-        flexDirection: "column",
-        padding: "20px 15px",
-        fontFamily: '"Open Sans", sans-serif',
-        overflowY: "auto",
-      }}
-    >
+    <div style={{ ...rootStyle, ...(containerStyle || {}) }}>
       {/* 🔹 Navigation + Filters + New Buttons */}
       <div
         style={{

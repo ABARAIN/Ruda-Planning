@@ -3,6 +3,8 @@ import axios from "axios";
 import DashboardSidebar from "./DashboardSidebar/DashboardSidebar";
 import DashboardHeader from "./DashboardHeader/DashboardHeader";
 import DashboardLayout from "./DashboardLayout/DashboardLayout";
+import DashboardMap from "./DashboardLayout/LayoutComponent/DashboardMap";
+import RudaStatistics from "./DashboardLayout/LayoutComponent/RudaStatistics";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -73,41 +75,38 @@ const Dashboard = () => {
       {/* Full-width header on top */}
       <DashboardHeader />
 
-      {/* Content below header: left sidebar, right layout */}
-      <div
-        style={{
-          display: "flex",
-          flex: 1,
-          minWidth: 0,
-        }}
-      >
-        <DashboardSidebar
+      {/* Top: map with overlayed sidebar (left) and statistics (right) */}
+      <div style={{ position: "relative", width: "100%", height: "93vh" }}>
+        <DashboardMap
           features={features}
           colorMap={colorMap}
-          onColorChange={handleColorChange}
-          openLayers={openLayers}
-          setOpenLayers={setOpenLayers}
-          selectedPhases={selectedPhases}
-          setSelectedPhases={setSelectedPhases}
-          selectedPackages={selectedPackages}
-          setSelectedPackages={setSelectedPackages}
-          selectedCategories={selectedCategories}
-          setSelectedCategories={setSelectedCategories}
-          selectedProjects={selectedProjects}
-          setSelectedProjects={setSelectedProjects}
-          // popup toggles
-          showPhasePopups={showPhasePopups}
-          setShowPhasePopups={setShowPhasePopups}
-          showPackagePopups={showPackagePopups}
-          setShowPackagePopups={setShowPackagePopups}
-          showProjectPopups={showProjectPopups}
-          setShowProjectPopups={setShowProjectPopups}
+          selectedNames={[
+            ...selectedPhases,
+            ...selectedPackages,
+            ...selectedProjects,
+          ]}
         />
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <DashboardLayout
+        {/* Overlayed sidebar on the left of the map */}
+        <div
+          style={{
+            position: "absolute",
+            left: 8,
+            top: 50,
+            zIndex: 1200,
+            width: 280,
+            height: "88%",
+            overflow: "auto",
+            background: "rgb(30 33 65)",
+            borderRadius: 12,
+          }}
+        >
+          <DashboardSidebar
             features={features}
             colorMap={colorMap}
+            onColorChange={handleColorChange}
+            openLayers={openLayers}
+            setOpenLayers={setOpenLayers}
             selectedPhases={selectedPhases}
             setSelectedPhases={setSelectedPhases}
             selectedPackages={selectedPackages}
@@ -116,13 +115,55 @@ const Dashboard = () => {
             setSelectedCategories={setSelectedCategories}
             selectedProjects={selectedProjects}
             setSelectedProjects={setSelectedProjects}
-            onColorChange={handleColorChange}
-            // popup toggles passed down
+            // popup toggles
             showPhasePopups={showPhasePopups}
+            setShowPhasePopups={setShowPhasePopups}
             showPackagePopups={showPackagePopups}
+            setShowPackagePopups={setShowPackagePopups}
             showProjectPopups={showProjectPopups}
+            setShowProjectPopups={setShowProjectPopups}
+            // ensure sidebar uses full area of this wrapper
+            containerStyle={{ width: "100%", height: "100%", padding: 12 }}
           />
         </div>
+
+        {/* Overlayed statistics on the right of the map */}
+        <div
+          style={{
+            position: "absolute",
+            right: 12,
+            top: 270,
+            zIndex: 1200,
+            width: 300,
+            height: 380,
+            background: "rgb(30 33 65)",
+            borderRadius: 12,
+            overflow: "hidden",
+          }}
+        >
+          <RudaStatistics />
+        </div>
+      </div>
+
+      {/* Bottom: dashboard layout (only bottom cards) */}
+      <div style={{ width: "100%" }}>
+        <DashboardLayout
+          features={features}
+          colorMap={colorMap}
+          selectedPhases={selectedPhases}
+          setSelectedPhases={setSelectedPhases}
+          selectedPackages={selectedPackages}
+          setSelectedPackages={setSelectedPackages}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+          selectedProjects={selectedProjects}
+          setSelectedProjects={setSelectedProjects}
+          onColorChange={handleColorChange}
+          showPhasePopups={showPhasePopups}
+          showPackagePopups={showPackagePopups}
+          showProjectPopups={showProjectPopups}
+          showTop={false}
+        />
       </div>
     </div>
   );

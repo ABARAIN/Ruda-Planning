@@ -20,12 +20,13 @@ const DashboardMap = ({
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: {
-        version: 8,
-        name: "Transparent",
-        sources: {},
-        layers: [],
-      },
+      // style: {
+      //   version: 8,
+      //   name: "Transparent",
+      //   sources: {},
+      //   layers: [],
+      // },
+      style: "mapbox://styles/mapbox/streets-v12",
       center,
       zoom,
       attributionControl: false,
