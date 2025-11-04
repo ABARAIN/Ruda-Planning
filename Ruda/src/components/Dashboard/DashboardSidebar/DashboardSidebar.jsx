@@ -41,6 +41,9 @@ const DashboardSidebar = ({
   setShowPackagePopups = undefined,
   showProjectPopups = false,
   setShowProjectPopups = undefined,
+  // control right-side RudaStatistics overlay in Dashboard
+  showRudaStatistics = false,
+  setShowRudaStatistics = undefined,
   // optional style to override the root container (useful for overlaying on map)
   containerStyle = undefined,
 }) => {
@@ -363,7 +366,7 @@ const DashboardSidebar = ({
           />
           {/* 🔹 Project Filters dropdown (new collapsible section) */}
           {(() => {
-            const [openFilters, setOpenFilters] = React.useState(true);
+            const [openFilters, setOpenFilters] = React.useState(false);
             return (
               <div style={{ marginTop: 5 }}>
                 {/* Header with same style as Layer Filters */}
@@ -514,6 +517,32 @@ const DashboardSidebar = ({
           })()}
 
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {/* Ruda Statistics toggle (above Proposed Roads) */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                cursor: "pointer",
+                padding: "8px 10px",
+                borderRadius: "6px",
+                transition: "0.2s",
+                background: showRudaStatistics
+                  ? "rgba(255,255,255,0.04)"
+                  : "transparent",
+              }}
+              onClick={() => setShowRudaStatistics?.(!showRudaStatistics)}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "rgba(255,255,255,0.1)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "transparent")
+              }
+            >
+              <Settings size={18} /> Ruda Statistics
+            </div>
+
             {/* 🔹 Proposed Roads (separate line now) */}
             <div
               style={{

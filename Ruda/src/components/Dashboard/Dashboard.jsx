@@ -28,6 +28,8 @@ const Dashboard = () => {
   const [showPhasePopups, setShowPhasePopups] = useState(false);
   const [showPackagePopups, setShowPackagePopups] = useState(false);
   const [showProjectPopups, setShowProjectPopups] = useState(false);
+  // toggle display of the right-side RudaStatistics card on the dashboard map
+  const [showRudaStatistics, setShowRudaStatistics] = useState(false);
 
   useEffect(() => {
     // Load the same dataset MainMap uses so dropdowns match
@@ -119,10 +121,10 @@ const Dashboard = () => {
           style={{
             position: "absolute",
             left: 8,
-            top: 50,
+            top: 18,
             zIndex: 1200,
             width: 280,
-            height: "88%",
+            height: "92%",
             overflow: "auto",
             background: "rgb(30 33 65)",
             borderRadius: 12,
@@ -149,27 +151,32 @@ const Dashboard = () => {
             setShowPackagePopups={setShowPackagePopups}
             showProjectPopups={showProjectPopups}
             setShowProjectPopups={setShowProjectPopups}
+            // Ruda Statistics toggle
+            showRudaStatistics={showRudaStatistics}
+            setShowRudaStatistics={setShowRudaStatistics}
             // ensure sidebar uses full area of this wrapper
             containerStyle={{ width: "100%", height: "100%", padding: 12 }}
           />
         </div>
 
-        {/* Overlayed statistics on the right of the map */}
-        <div
-          style={{
-            position: "absolute",
-            right: 12,
-            top: 270,
-            zIndex: 1200,
-            width: 300,
-            height: 380,
-            background: "rgb(30 33 65)",
-            borderRadius: 12,
-            overflow: "hidden",
-          }}
-        >
-          <RudaStatistics />
-        </div>
+        {/* Overlayed statistics on the right of the map (toggleable) */}
+        {showRudaStatistics && (
+          <div
+            style={{
+              position: "absolute",
+              right: 12,
+              top: 290,
+              zIndex: 1200,
+              width: 280,
+              height: 360,
+              background: "rgb(30 33 65)",
+              borderRadius: 12,
+              overflow: "hidden",
+            }}
+          >
+            <RudaStatistics />
+          </div>
+        )}
       </div>
 
       {/* Bottom: dashboard layout (only bottom cards) */}

@@ -163,7 +163,9 @@ const DashboardMap = ({
 
     // Enrich features with normalized popup title and precomputed area (sq.km)
     const enriched = (filtered || []).map((feat) => {
-      const title = feat.properties?.ruda_phase || feat.properties?.name || "";
+      const props = feat.properties || {};
+      const title =
+        props.ruda_phase || props.name || props.Name || props.map_name || "";
       let areaSqKm = null;
       try {
         if (feat && feat.geometry) {
@@ -172,12 +174,31 @@ const DashboardMap = ({
       } catch (err) {
         areaSqKm = null;
       }
+
+      const landAvailable =
+        props.land_available_pct ??
+        props.land_available_km ??
+        props.land_available ??
+        props.land_available_pct ??
+        null;
+      const physicalPct =
+        props.physical_actual_pct ??
+        props.physical_actual ??
+        props.physical_pct ??
+        null;
+
       return {
         ...feat,
         properties: {
-          ...feat.properties,
+          ...props,
           __popupTitle: title,
           __areaSqKm: areaSqKm,
+          __name: props.name || props.Name || props.map_name || title,
+          __landAvailablePct: landAvailable,
+          __physicalPct: physicalPct,
+          __phase: props.ruda_phase || props.phase || null,
+          __package: props.rtw_pkg || props.package || null,
+          __category: props.category || props.rtw_category || null,
         },
       };
     });
@@ -211,25 +232,39 @@ const DashboardMap = ({
               const feature = e.features && e.features[0];
               if (!feature) return;
               const props = feature.properties || {};
-              const name = props.name || props.__popupTitle || "Unnamed";
+              const name =
+                props.__name || props.name || props.__popupTitle || "Unnamed";
               const area =
                 parseFloat(
-                  props.area_sqkm || props.__areaSqKm || props.area || 0
+                  props.__areaSqKm ?? props.area_sqkm ?? props.area ?? 0
                 ) || 0;
               const landPct =
-                props.land_available_pct || props.land_available_km || 0;
-              const physPct = props.physical_actual_pct || 0;
+                props.__landAvailablePct ??
+                props.land_available_pct ??
+                props.land_available_km ??
+                0;
+              const physPct =
+                props.__physicalPct ??
+                props.physical_actual_pct ??
+                props.physical_actual ??
+                0;
+
+              const isProject =
+                !!(props.__category || props.__package) && !!props.__name;
+              const selectedParam = isProject
+                ? name
+                : props.__package || props.__phase || name;
 
               const popupHTML = `
   <div style="font-family: 'Segoe UI', sans-serif; min-width:180px; ">
     <h3 style="margin:0 0 8px; font-size:12px; color:#606162;">${name}</h3>
-    <div style="font-size:10px; margin-bottom:8px;color:#606162;">
+    <div style="font-size:12px; margin-bottom:8px;color:#606162;">
       <strong>Area:</strong> ${area.toFixed(2)} sq.km
     </div>
 
     <div style="display:flex; flex-direction:column; gap:8px; font-size:13px; margin-bottom:8px;">
       <a href="/map?selected=${encodeURIComponent(
-        name
+        selectedParam
       )}" target="_blank" rel="noopener noreferrer"
         style="text-decoration:none; display:block;">
         <div style="
@@ -240,13 +275,15 @@ const DashboardMap = ({
           text-align:center;
           font-weight:400;
           border:none;
-          font-size:10px;
+          font-size:12px;
         ">
           Land Available — ${landPct || 0}%
         </div>
       </a>
 
-      <a href="/phase2-gantt" target="_blank"
+      <a href="/phase2-gantt?selected=${encodeURIComponent(
+        selectedParam
+      )}" target="_blank"
         style="text-decoration:none; display:block;">
         <div style="
           background:#17193b;
@@ -256,13 +293,13 @@ const DashboardMap = ({
           text-align:center;
           font-weight:400;
           border:none;
-          font-size:10px;
+          font-size:12px;
         ">
           Physical Progress — ${physPct || 0}%
         </div>
       </a>
 
-      <a href="/details/${encodeURIComponent(name)}" target="_blank"
+      <a href="/details/${encodeURIComponent(selectedParam)}" target="_blank"
         style="text-decoration:none; display:block;">
         <div style="
           background:#17193b;
@@ -272,7 +309,7 @@ const DashboardMap = ({
           text-align:center;
           font-weight:400;
           border:none;
-          font-size:10px;
+          font-size:12px;
         ">
          View Details
         </div>
@@ -452,7 +489,6 @@ const DashboardMap = ({
       style={{
         width: "100%",
         height: "100%",
-        borderRadius: "12px",
         overflow: "hidden",
         background: "transparent",
       }}

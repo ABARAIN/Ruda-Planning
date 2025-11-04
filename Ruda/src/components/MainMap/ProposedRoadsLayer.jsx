@@ -126,15 +126,15 @@ const ProposedRoadsLayer = () => {
         <div
           style={{
             position: "absolute",
-            bottom: 20,
-            right: 20,
-            backgroundColor: "#1a1a1a",
+            bottom: 36,
+            right: 16,
+            backgroundColor: "#252845",
             color: "#fff",
             padding: "10px 12px",
             borderRadius: "8px",
             fontSize: "15px",
             zIndex: 999,
-            maxWidth: 250,
+            maxWidth: 300,
             border: "1px solid rgba(255,255,255,0.1)",
             boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
           }}

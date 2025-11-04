@@ -34,39 +34,117 @@ const Popups = ({
     else if (showPackagePopups) showMode = "package";
     else if (showPhasePopups) showMode = "phase";
 
-    features.forEach((f) => {
-      const props = f.properties || {};
-      const name = props.name || "Unnamed";
-      const phase = props.ruda_phase || props.phase || null;
-      const pkg = props.rtw_pkg || props.package || null;
-      const area =
-        typeof props.__areaSqKm === "number"
-          ? props.__areaSqKm
-          : parseFloat(props.area_sqkm || props.area || 0);
+    // Grouped popups for phase/package: produce one popup per title (centroid of all matching features)
+    if (showMode === "phase") {
+      const groups = new Map();
+      features.forEach((f) => {
+        const props = f.properties || {};
+        const phase = props.ruda_phase || props.phase || null;
+        const area =
+          typeof props.__areaSqKm === "number"
+            ? props.__areaSqKm
+            : parseFloat(props.area_sqkm || props.area || 0) || 0;
+        if (!phase) return;
+        if (!groups.has(phase)) groups.set(phase, { features: [], area: 0 });
+        groups.get(phase).features.push(f);
+        groups.get(phase).area += area;
+      });
 
-      if (showMode === "phase" && phase) {
-        toShow.push({ feature: f, label: "phase", title: phase, area });
-      } else if (showMode === "package" && pkg) {
-        toShow.push({ feature: f, label: "package", title: pkg, phase, area });
-      } else if (
-        showMode === "project" &&
-        (props.rtw_pkg || props.package) &&
-        (props.category || props.rtw_category)
-      ) {
-        toShow.push({ feature: f, label: "project", title: name, phase, area });
-      }
-    });
+      groups.forEach((g, title) => {
+        try {
+          const b = bbox({ type: "FeatureCollection", features: g.features });
+          const center = [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2];
+          toShow.push({
+            feature: { properties: { centroid: center } },
+            label: "phase",
+            title,
+            area: g.area,
+          });
+        } catch (e) {
+          // ignore grouping errors
+        }
+      });
+    } else if (showMode === "package") {
+      const groups = new Map();
+      features.forEach((f) => {
+        const props = f.properties || {};
+        const pkg = props.rtw_pkg || props.package || null;
+        const phase = props.ruda_phase || props.phase || null;
+        const area =
+          typeof props.__areaSqKm === "number"
+            ? props.__areaSqKm
+            : parseFloat(props.area_sqkm || props.area || 0) || 0;
+        if (!pkg) return;
+        if (!groups.has(pkg))
+          groups.set(pkg, { features: [], area: 0, phase: phase });
+        groups.get(pkg).features.push(f);
+        groups.get(pkg).area += area;
+      });
+
+      groups.forEach((g, title) => {
+        try {
+          const b = bbox({ type: "FeatureCollection", features: g.features });
+          const center = [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2];
+          toShow.push({
+            feature: { properties: { centroid: center } },
+            label: "package",
+            title,
+            phase: g.phase,
+            area: g.area,
+          });
+        } catch (e) {
+          // ignore errors
+        }
+      });
+    } else {
+      // project mode: still show individual project popups
+      features.forEach((f) => {
+        const props = f.properties || {};
+        const name = props.name || "Unnamed";
+        const phase = props.ruda_phase || props.phase || null;
+        const pkg = props.rtw_pkg || props.package || null;
+        const area =
+          typeof props.__areaSqKm === "number"
+            ? props.__areaSqKm
+            : parseFloat(props.area_sqkm || props.area || 0) || 0;
+
+        if (
+          (props.rtw_pkg || props.package) &&
+          (props.category || props.rtw_category)
+        ) {
+          toShow.push({
+            feature: f,
+            label: "project",
+            title: name,
+            phase,
+            area,
+          });
+        }
+      });
+    }
 
     const seen = new Set();
     const unique = toShow.filter((item) => {
-      const f = item.feature;
+      const f = item.feature || {};
       const geom = f.geometry;
-      const coordKey =
-        geom && geom.type === "Point"
-          ? `${geom.coordinates[0].toFixed(6)}_${geom.coordinates[1].toFixed(
-              6
-            )}`
-          : JSON.stringify(bbox(f));
+      let coordKey = null;
+      if (f.properties && Array.isArray(f.properties.centroid)) {
+        coordKey = `${f.properties.centroid[0].toFixed(
+          6
+        )}_${f.properties.centroid[1].toFixed(6)}`;
+      } else if (geom && geom.type === "Point") {
+        coordKey = `${geom.coordinates[0].toFixed(
+          6
+        )}_${geom.coordinates[1].toFixed(6)}`;
+      } else {
+        try {
+          coordKey = JSON.stringify(bbox(f));
+        } catch (e) {
+          // fallback to title so grouping still dedupes
+          coordKey = item.title;
+        }
+      }
+
       const key = `${item.label}::${item.title}::${coordKey}`;
       if (seen.has(key)) return false;
       seen.add(key);
@@ -77,7 +155,7 @@ const Popups = ({
       try {
         const f = item.feature;
         let lngLat = null;
-        if (f.geometry && f.geometry.type === "Point")
+        if (f?.geometry && f.geometry.type === "Point")
           lngLat = f.geometry.coordinates;
         else lngLat = f.properties?.centroid || bboxCenter(f);
         if (!lngLat) return;
@@ -117,9 +195,8 @@ const Popups = ({
           .setLngLat(lngLat)
           .setHTML(popupHtml)
           .addTo(map);
-
         popupsRef.current.push(popup);
-      } catch {
+      } catch (err) {
         // ignore individual popup errors
       }
     });
