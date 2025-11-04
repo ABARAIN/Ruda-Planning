@@ -5,6 +5,9 @@ import DashboardHeader from "./DashboardHeader/DashboardHeader";
 import DashboardLayout from "./DashboardLayout/DashboardLayout";
 import DashboardMap from "./DashboardLayout/LayoutComponent/DashboardMap";
 import RudaStatistics from "./DashboardLayout/LayoutComponent/RudaStatistics";
+import Popups from "./DashboardLayout/LayoutComponent/Popups";
+import * as turf from "@turf/turf";
+import ProposedRoadsLayer from "../MainMap/ProposedRoadsLayer";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -86,6 +89,30 @@ const Dashboard = () => {
             ...selectedProjects,
           ]}
         />
+
+        {/* Popups for dashboard map (Phase / Package / Project popups) */}
+        <Popups
+          features={(features || []).map((f) => ({
+            ...f,
+            properties: {
+              ...f.properties,
+              __areaSqKm: (() => {
+                try {
+                  if (f && f.geometry) return turf.area(f) / 1000000;
+                } catch (e) {
+                  return null;
+                }
+                return null;
+              })(),
+            },
+          }))}
+          showPhasePopups={showPhasePopups}
+          showPackagePopups={showPackagePopups}
+          showProjectPopups={showProjectPopups}
+        />
+
+        {/* Proposed roads legend & layer manager (works with dashboard map instance) */}
+        <ProposedRoadsLayer />
 
         {/* Overlayed sidebar on the left of the map */}
         <div

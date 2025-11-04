@@ -26,7 +26,7 @@ const DashboardMap = ({
       //   sources: {},
       //   layers: [],
       // },
-      style: "mapbox://styles/mapbox/streets-v12",
+      style: "mapbox://styles/mapbox/outdoors-v12",
       center,
       zoom,
       attributionControl: false,
@@ -205,6 +205,86 @@ const DashboardMap = ({
                 "fill-color": buildFillExpression(filtered, colorMap),
                 "fill-opacity": 0.6,
               },
+            });
+            // click behavior: show detailed popup with links and metrics (similar to MainMap MapView)
+            map.on("click", "ruda-dashboard-fill", (e) => {
+              const feature = e.features && e.features[0];
+              if (!feature) return;
+              const props = feature.properties || {};
+              const name = props.name || props.__popupTitle || "Unnamed";
+              const area =
+                parseFloat(
+                  props.area_sqkm || props.__areaSqKm || props.area || 0
+                ) || 0;
+              const landPct =
+                props.land_available_pct || props.land_available_km || 0;
+              const physPct = props.physical_actual_pct || 0;
+
+              const popupHTML = `
+  <div style="font-family: 'Segoe UI', sans-serif; min-width:180px; ">
+    <h3 style="margin:0 0 8px; font-size:12px; color:#606162;">${name}</h3>
+    <div style="font-size:10px; margin-bottom:8px;color:#606162;">
+      <strong>Area:</strong> ${area.toFixed(2)} sq.km
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:8px; font-size:13px; margin-bottom:8px;">
+      <a href="/map?selected=${encodeURIComponent(
+        name
+      )}" target="_blank" rel="noopener noreferrer"
+        style="text-decoration:none; display:block;">
+        <div style="
+          background:#17193b;
+          color:#fff;
+          border-radius:6px;
+          padding:4px;
+          text-align:center;
+          font-weight:400;
+          border:none;
+          font-size:10px;
+        ">
+          Land Available — ${landPct || 0}%
+        </div>
+      </a>
+
+      <a href="/phase2-gantt" target="_blank"
+        style="text-decoration:none; display:block;">
+        <div style="
+          background:#17193b;
+          color:#fff;
+          border-radius:6px;
+          padding:4px;
+          text-align:center;
+          font-weight:400;
+          border:none;
+          font-size:10px;
+        ">
+          Physical Progress — ${physPct || 0}%
+        </div>
+      </a>
+
+      <a href="/details/${encodeURIComponent(name)}" target="_blank"
+        style="text-decoration:none; display:block;">
+        <div style="
+          background:#17193b;
+          color:#fff;
+          border-radius:6px;
+          padding:4px;
+          text-align:center;
+          font-weight:400;
+          border:none;
+          font-size:10px;
+        ">
+         View Details
+        </div>
+      </a>
+    </div>
+  </div>
+`;
+
+              new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(popupHTML)
+                .addTo(map);
             });
           }
 

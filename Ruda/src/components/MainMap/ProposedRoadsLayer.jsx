@@ -39,7 +39,8 @@ const ProposedRoadsLayer = () => {
 
   // 🗺️ Add/Update layer on map
   useEffect(() => {
-    const map = window.__MAPBOX_INSTANCE__;
+    // support both main map and dashboard map instances
+    const map = window.__MAPBOX_INSTANCE__ || window.__DASHBOARD_MAP__;
     if (!map || !proposedRoads) return;
 
     if (!map.getSource("proposed-roads")) {
