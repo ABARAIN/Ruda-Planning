@@ -96,8 +96,8 @@ const Popups = ({
           // ignore errors
         }
       });
-    } else {
-      // project mode: still show individual project popups
+    } else if (showMode === "project") {
+      // Only show individual project popups when the Projects filter is explicitly selected
       features.forEach((f) => {
         const props = f.properties || {};
         const name = props.name || "Unnamed";
@@ -121,6 +121,8 @@ const Popups = ({
           });
         }
       });
+    } else {
+      // none selected -> show nothing
     }
 
     const seen = new Set();

@@ -250,7 +250,7 @@ const DashboardSidebar = ({
             padding: "8px 10px",
             borderRadius: "6px",
             transition: "0.2s",
-            color: "#C1C3CF",
+            color: "#fff",
             fontSize: "0.9rem",
           }}
           onClick={() => (window.location.href = "/")}
@@ -286,7 +286,7 @@ const DashboardSidebar = ({
               borderRadius: "6px",
               cursor: "pointer",
               transition: "0.2s",
-              color: "#C1C3CF",
+              color: "#fff",
               fontSize: "0.9rem",
             }}
             onMouseEnter={(e) =>
@@ -347,7 +347,7 @@ const DashboardSidebar = ({
         {/* 🔹 New Buttons Section */}
         <div
           style={{
-            color: "#C1C3CF",
+            color: "#fff",
             display: "flex",
             flexDirection: "column",
             gap: "10px",
@@ -380,7 +380,7 @@ const DashboardSidebar = ({
                     borderRadius: "6px",
                     cursor: "pointer",
                     transition: "0.2s",
-                    color: "#C1C3CF",
+                    color: "#fff",
                     fontSize: "0.9rem",
                   }}
                   onMouseEnter={(e) =>
