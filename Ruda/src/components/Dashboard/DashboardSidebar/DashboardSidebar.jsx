@@ -20,6 +20,13 @@ import {
   OutlinedInput,
 } from "@mui/material";
 
+// Helper function to normalize phase names (removes "Ruda " prefix)
+const normalize = (str) =>
+  (str || "")
+    .toLowerCase()
+    .replace(/ruda\s+/i, "")
+    .trim();
+
 const DashboardSidebar = ({
   features = [],
   colorMap = {},
@@ -66,12 +73,23 @@ const DashboardSidebar = ({
       ) {
         setValues.add(name);
       }
-      const rudaPhase = f.properties?.ruda_phase;
-      if (rudaPhase && typeof rudaPhase === "string") {
-        setValues.add(rudaPhase);
-      }
     });
-    return Array.from(setValues);
+    return Array.from(setValues).sort((a, b) => {
+      // Custom sort to maintain proper phase order
+      const order = [
+        "Phase 1",
+        "Phase 2A",
+        "Phase 2B",
+        "Phase 3",
+        "Phase 1 Extension",
+      ];
+      const indexA = order.indexOf(a);
+      const indexB = order.indexOf(b);
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      return a.localeCompare(b);
+    });
   }, [features]);
 
   const packageOptions = useMemo(
@@ -85,8 +103,7 @@ const DashboardSidebar = ({
                 f.properties?.ruda_phase &&
                 selectedPhases.some(
                   (phase) =>
-                    f.properties.ruda_phase?.toLowerCase() ===
-                    phase?.toLowerCase()
+                    normalize(f.properties.ruda_phase) === normalize(phase)
                 )
             )
             .map((f) => f.properties.name)
