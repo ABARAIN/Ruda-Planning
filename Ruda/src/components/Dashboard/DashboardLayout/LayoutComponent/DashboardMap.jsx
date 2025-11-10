@@ -1,7 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import * as turf from "@turf/turf";
+import { Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+
+const baseStyles = {
+  Light: "mapbox://styles/mapbox/light-v11",
+  Dark: "mapbox://styles/mapbox/dark-v11",
+  Satellite: "mapbox://styles/mapbox/satellite-streets-v12",
+  Streets: "mapbox://styles/mapbox/streets-v12",
+  Outdoors: "mapbox://styles/mapbox/outdoors-v12",
+};
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 const DashboardMap = ({
@@ -13,6 +22,7 @@ const DashboardMap = ({
 }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
+  const [baseStyleKey, setBaseStyleKey] = useState("Outdoors");
 
   // initialize map once with transparent (empty) style
   useEffect(() => {
@@ -20,13 +30,7 @@ const DashboardMap = ({
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      // style: {
-      //   version: 8,
-      //   name: "Transparent",
-      //   sources: {},
-      //   layers: [],
-      // },
-      style: "mapbox://styles/mapbox/outdoors-v12",
+      style: baseStyles[baseStyleKey],
       center,
       zoom,
       attributionControl: false,
@@ -43,6 +47,22 @@ const DashboardMap = ({
       }
     };
   }, []);
+
+  // Handle basemap style changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const center = map.getCenter();
+    const zoom = map.getZoom();
+
+    map.once("style.load", () => {
+      map.setCenter(center);
+      map.setZoom(zoom);
+    });
+
+    map.setStyle(baseStyles[baseStyleKey]);
+  }, [baseStyleKey]);
 
   // Proposed roads state: listen for toggle event and fetch on first show
   const proposedRef = useRef({ data: null, visible: false });
@@ -157,7 +177,7 @@ const DashboardMap = ({
     if (!map) return;
 
     const filtered = (features || []).filter((f) => {
-      if (!selectedNames || selectedNames.length === 0) return true;
+      if (!selectedNames || selectedNames.length === 0) return false;
       return selectedNames.includes(f.properties?.name);
     });
 
@@ -484,15 +504,48 @@ const DashboardMap = ({
   }, []);
 
   return (
-    <div
-      ref={mapContainerRef}
-      style={{
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-        background: "transparent",
-      }}
-    />
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      {/* Basemap dropdown */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 12,
+          right: 12,
+          zIndex: 10,
+          background: "#fff",
+          p: 1,
+          borderRadius: 1,
+          boxShadow: 2,
+          minWidth: 120,
+        }}
+      >
+        <FormControl size="small" fullWidth>
+          <InputLabel>Basemap</InputLabel>
+          <Select
+            label="Basemap"
+            value={baseStyleKey}
+            onChange={(e) => setBaseStyleKey(e.target.value)}
+          >
+            {Object.keys(baseStyles).map((label) => (
+              <MenuItem key={label} value={label}>
+                {label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
+      {/* Map container */}
+      <div
+        ref={mapContainerRef}
+        style={{
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+          background: "transparent",
+        }}
+      />
+    </div>
   );
 };
 
