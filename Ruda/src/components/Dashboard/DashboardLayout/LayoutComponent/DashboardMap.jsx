@@ -22,7 +22,7 @@ const DashboardMap = ({
 }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
-  const [baseStyleKey, setBaseStyleKey] = useState("Outdoors");
+  const [baseStyleKey, setBaseStyleKey] = useState("Streets");
 
   // initialize map once with transparent (empty) style
   useEffect(() => {
