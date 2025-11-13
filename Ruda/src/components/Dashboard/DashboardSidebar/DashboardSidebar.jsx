@@ -9,6 +9,7 @@ import {
   MapPin,
   Landmark,
   LayoutDashboard,
+  Map, // ⬅️ NEW: icon for Ruda Boundaries
 } from "lucide-react";
 import {
   FormControl,
@@ -59,6 +60,42 @@ const DashboardSidebar = ({
   const isOpen = typeof setOpenLayers === "function" ? openLayers : localOpen;
   const setOpen =
     typeof setOpenLayers === "function" ? setOpenLayers : setLocalOpen;
+
+  // 🔹 LOCAL STATE: Ruda Boundaries dropdown
+  const [selectedBoundary, setSelectedBoundary] = React.useState("");
+
+  const handleBoundaryChange = (event) => {
+    const value = event.target.value;
+    setSelectedBoundary(value);
+
+    // Build detail object for the map to consume
+    const detail = {
+      lahore: false,
+      sheikhupura: false,
+      rtw: false,
+      // explicit order to help with zIndex logic in the map
+      order: ["lahore", "sheikhupura", "rtw"],
+    };
+
+    if (value === "lahore") {
+      detail.lahore = true;
+    } else if (value === "sheikhupura") {
+      detail.sheikhupura = true;
+    } else if (value === "rtw") {
+      detail.rtw = true;
+    } else if (value === "all") {
+      detail.lahore = true;
+      detail.sheikhupura = true;
+      detail.rtw = true;
+    }
+
+    // Fire a global event so the map can react
+    window.dispatchEvent(
+      new CustomEvent("rudaBoundariesChange", {
+        detail,
+      })
+    );
+  };
 
   // 🔹 Derived dropdown options
   const phaseOptions = useMemo(() => {
@@ -172,12 +209,12 @@ const DashboardSidebar = ({
             height: "38px",
             display: "flex",
             alignItems: "center",
-            paddingLeft: "10px", // make text more centered horizontally
-            paddingRight: "30px", // keep icon space balanced
+            paddingLeft: "10px",
+            paddingRight: "30px",
             ".MuiSelect-select": {
               display: "flex",
               alignItems: "center",
-              padding: "0 !important", // remove internal offset
+              padding: "0 !important",
             },
           }}
           MenuProps={{
@@ -186,9 +223,9 @@ const DashboardSidebar = ({
                 maxHeight: 300,
                 backgroundColor: "#1e1e1e",
                 color: "#fff",
-                fontSize: "0.5rem", // 👈 smaller font for all dropdown options
+                fontSize: "0.5rem",
                 "& .MuiMenuItem-root": {
-                  fontSize: "0.5rem", // 👈 applies to each MenuItem
+                  fontSize: "0.5rem",
                 },
                 "&::-webkit-scrollbar": { width: "6px" },
                 "&::-webkit-scrollbar-thumb": {
@@ -253,7 +290,7 @@ const DashboardSidebar = ({
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "10px", // uniform spacing between sections
+          gap: "10px",
           marginBottom: "25px",
         }}
       >
@@ -279,6 +316,76 @@ const DashboardSidebar = ({
           }
         >
           <Home size={18} /> Dashboard
+        </div>
+
+        {/* 🔹 NEW: Ruda Boundaries dropdown */}
+        <div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "8px 10px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              transition: "0.2s",
+              color: "#fff",
+              fontSize: "0.9rem",
+              marginTop: "2px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Map size={16} /> Ruda Boundaries
+            </div>
+          </div>
+
+          <div
+            style={{
+              paddingLeft: "10px",
+              marginTop: "6px",
+            }}
+          >
+            <FormControl fullWidth>
+              <InputLabel
+                sx={{ color: "#bbb", top: "-3px", fontSize: "0.8rem" }}
+              >
+                Ruda Boundaries
+              </InputLabel>
+              <Select
+                value={selectedBoundary}
+                label="Ruda Boundaries"
+                onChange={handleBoundaryChange}
+                sx={{
+                  color: "#fff",
+                  background: "rgba(255,255,255,0.05)",
+                  borderRadius: "6px",
+                  "& .MuiSvgIcon-root": { color: "#fff" },
+                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#444" },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#666",
+                  },
+                  height: "38px",
+                  display: "flex",
+                  alignItems: "center",
+                  paddingLeft: "10px",
+                  paddingRight: "30px",
+                  ".MuiSelect-select": {
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "0 !important",
+                  },
+                }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value="lahore">Lahore</MenuItem>
+                <MenuItem value="sheikhupura">Sheikhupura</MenuItem>
+                <MenuItem value="rtw">RTW</MenuItem>
+                <MenuItem value="all">Show all</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
         </div>
 
         {/* 🔹 Separator line */}
@@ -361,7 +468,6 @@ const DashboardSidebar = ({
         </div>
 
         {/* New Buttons Section */}
-        {/* 🔹 New Buttons Section */}
         <div
           style={{
             color: "#fff",

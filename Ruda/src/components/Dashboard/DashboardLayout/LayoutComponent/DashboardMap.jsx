@@ -66,6 +66,15 @@ const DashboardMap = ({
 
   // Proposed roads state: listen for toggle event and fetch on first show
   const proposedRef = useRef({ data: null, visible: false });
+
+  // Ruda boundaries (Lahore, Sheikhupura, RTW)
+  const boundaryRef = useRef({
+    selection: null, // last selection from sidebar
+    lahore: { data: null },
+    sheikhupura: { data: null },
+    rtw: { data: null },
+  });
+
   useEffect(() => {
     const onToggle = async () => {
       const map = mapRef.current;
@@ -169,6 +178,160 @@ const DashboardMap = ({
 
     window.addEventListener("toggleProposedRoads", onToggle);
     return () => window.removeEventListener("toggleProposedRoads", onToggle);
+  }, []);
+
+  // Ruda Boundaries layers (Lahore, Sheikhupura, RTW)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    // Fetch each boundary GeoJSON only once
+    const fetchOnce = async (key, url) => {
+      const bucket = boundaryRef.current[key];
+      if (!bucket.data) {
+        const res = await fetch(url);
+        const data = await res.json();
+        bucket.data = data;
+      }
+      return boundaryRef.current[key].data;
+    };
+
+    const ensureSourceAndLayer = async (key, url, color, lineWidth) => {
+      const map = mapRef.current;
+      if (!map) return;
+
+      const data = await fetchOnce(key, url);
+      const sourceId = `${key}-boundary`;
+      const layerId = `${key}-boundary-line`;
+
+      // Source
+      if (!map.getSource(sourceId)) {
+        map.addSource(sourceId, {
+          type: "geojson",
+          data,
+        });
+      } else {
+        map.getSource(sourceId).setData(data);
+      }
+
+      // Layer (simple line; works for polygons and lines)
+      if (!map.getLayer(layerId)) {
+        // Put boundary layers *below* the dashboard fill layer
+        const beforeId = map.getLayer("ruda-dashboard-fill")
+          ? "ruda-dashboard-fill"
+          : undefined;
+
+        map.addLayer(
+          {
+            id: layerId,
+            type: "line",
+            source: sourceId,
+            layout: {
+              visibility: "none", // default off; we toggle below
+            },
+            paint: {
+              "line-color": color,
+              "line-width": lineWidth,
+            },
+          },
+          beforeId
+        );
+      }
+
+      return layerId;
+    };
+
+    const applyState = async (state) => {
+      if (!state) return;
+      const map = mapRef.current;
+      if (!map) return;
+
+      const {
+        lahore,
+        sheikhupura,
+        rtw,
+        order = ["lahore", "sheikhupura", "rtw"],
+      } = state;
+
+      // Ensure layers exist for the ones we want visible
+      if (lahore) {
+        await ensureSourceAndLayer(
+          "lahore",
+          "/geojson/Lahore.geojson",
+          "#f44336",
+          2
+        );
+      }
+      if (sheikhupura) {
+        await ensureSourceAndLayer(
+          "sheikhupura",
+          "/geojson/Sheikhupura.geojson",
+          "#4caf50",
+          2
+        );
+      }
+      if (rtw) {
+        await ensureSourceAndLayer(
+          "rtw",
+          "/geojson/River.geojson",
+          "#2196f3",
+          2.2
+        );
+      }
+
+      // Toggle visibility according to selection
+      const flags = { lahore, sheikhupura, rtw };
+      ["lahore", "sheikhupura", "rtw"].forEach((key) => {
+        const layerId = `${key}-boundary-line`;
+        if (map.getLayer(layerId)) {
+          map.setLayoutProperty(
+            layerId,
+            "visibility",
+            flags[key] ? "visible" : "none"
+          );
+        }
+      });
+
+      // Enforce ordering: Lahore & Sheikhupura below RTW,
+      // and ALL boundaries below the Layer Filters (ruda-dashboard-fill)
+      const beforeId = map.getLayer("ruda-dashboard-fill")
+        ? "ruda-dashboard-fill"
+        : undefined;
+
+      if (beforeId) {
+        (order || ["lahore", "sheikhupura", "rtw"]).forEach((key) => {
+          if (!flags[key]) return;
+          const layerId = `${key}-boundary-line`;
+          if (map.getLayer(layerId)) {
+            // Move layer so it's just under the dashboard fill
+            map.moveLayer(layerId, beforeId);
+          }
+        });
+      }
+    };
+
+    // Handle events coming from DashboardSidebar
+    const onBoundaryChange = (e) => {
+      const detail = e.detail || {};
+      boundaryRef.current.selection = detail; // remember last choice
+      applyState(detail);
+    };
+
+    window.addEventListener("rudaBoundariesChange", onBoundaryChange);
+
+    // Re-apply current boundaries after a basemap style change
+    const reapplyOnStyleLoad = () => {
+      if (boundaryRef.current.selection) {
+        applyState(boundaryRef.current.selection);
+      }
+    };
+
+    map.on("style.load", reapplyOnStyleLoad);
+
+    return () => {
+      window.removeEventListener("rudaBoundariesChange", onBoundaryChange);
+      map.off("style.load", reapplyOnStyleLoad);
+    };
   }, []);
 
   // update source & layers when features or colorMap change
