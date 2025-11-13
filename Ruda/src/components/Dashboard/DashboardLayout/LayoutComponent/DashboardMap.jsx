@@ -196,13 +196,15 @@ const DashboardMap = ({
       return boundaryRef.current[key].data;
     };
 
-    const ensureSourceAndLayer = async (key, url, color, lineWidth) => {
+    // Create / update source + FILL + LINE layers
+    const ensureSourceAndLayers = async (key, url, fillColor) => {
       const map = mapRef.current;
       if (!map) return;
 
       const data = await fetchOnce(key, url);
       const sourceId = `${key}-boundary`;
-      const layerId = `${key}-boundary-line`;
+      const fillId = `${key}-boundary-fill`;
+      const lineId = `${key}-boundary-line`;
 
       // Source
       if (!map.getSource(sourceId)) {
@@ -214,31 +216,49 @@ const DashboardMap = ({
         map.getSource(sourceId).setData(data);
       }
 
-      // Layer (simple line; works for polygons and lines)
-      if (!map.getLayer(layerId)) {
-        // Put boundary layers *below* the dashboard fill layer
-        const beforeId = map.getLayer("ruda-dashboard-fill")
-          ? "ruda-dashboard-fill"
-          : undefined;
+      const beforeId = map.getLayer("ruda-dashboard-fill")
+        ? "ruda-dashboard-fill"
+        : undefined;
 
+      // FILL layer
+      if (!map.getLayer(fillId)) {
         map.addLayer(
           {
-            id: layerId,
-            type: "line",
+            id: fillId,
+            type: "fill",
             source: sourceId,
             layout: {
-              visibility: "none", // default off; we toggle below
+              visibility: "none",
             },
             paint: {
-              "line-color": color,
-              "line-width": lineWidth,
+              "fill-color": fillColor,
+              "fill-opacity": 0.25,
             },
           },
           beforeId
         );
       }
 
-      return layerId;
+      // OUTLINE layer
+      if (!map.getLayer(lineId)) {
+        map.addLayer(
+          {
+            id: lineId,
+            type: "line",
+            source: sourceId,
+            layout: {
+              visibility: "none",
+            },
+            paint: {
+              "line-color": fillColor,
+              "line-width": 1.5,
+            },
+          },
+          beforeId
+        );
+      }
+
+      return { fillId, lineId };
     };
 
     const applyState = async (state) => {
@@ -255,39 +275,41 @@ const DashboardMap = ({
 
       // Ensure layers exist for the ones we want visible
       if (lahore) {
-        await ensureSourceAndLayer(
+        await ensureSourceAndLayers(
           "lahore",
           "/geojson/Lahore.geojson",
-          "#f44336",
-          2
+          "#284a28"
         );
       }
       if (sheikhupura) {
-        await ensureSourceAndLayer(
+        await ensureSourceAndLayers(
           "sheikhupura",
           "/geojson/Sheikhupura.geojson",
-          "#4caf50",
-          2
+          "#ba0000"
         );
       }
       if (rtw) {
-        await ensureSourceAndLayer(
-          "rtw",
-          "/geojson/River.geojson",
-          "#2196f3",
-          2.2
-        );
+        await ensureSourceAndLayers("rtw", "/geojson/River.geojson", "#122460");
       }
 
       // Toggle visibility according to selection
       const flags = { lahore, sheikhupura, rtw };
       ["lahore", "sheikhupura", "rtw"].forEach((key) => {
-        const layerId = `${key}-boundary-line`;
-        if (map.getLayer(layerId)) {
+        const visible = flags[key];
+        const fillId = `${key}-boundary-fill`;
+        const lineId = `${key}-boundary-line`;
+        if (map.getLayer(fillId)) {
           map.setLayoutProperty(
-            layerId,
+            fillId,
             "visibility",
-            flags[key] ? "visible" : "none"
+            visible ? "visible" : "none"
+          );
+        }
+        if (map.getLayer(lineId)) {
+          map.setLayoutProperty(
+            lineId,
+            "visibility",
+            visible ? "visible" : "none"
           );
         }
       });
@@ -301,12 +323,51 @@ const DashboardMap = ({
       if (beforeId) {
         (order || ["lahore", "sheikhupura", "rtw"]).forEach((key) => {
           if (!flags[key]) return;
-          const layerId = `${key}-boundary-line`;
-          if (map.getLayer(layerId)) {
-            // Move layer so it's just under the dashboard fill
-            map.moveLayer(layerId, beforeId);
+          const fillId = `${key}-boundary-fill`;
+          const lineId = `${key}-boundary-line`;
+          if (map.getLayer(fillId)) {
+            map.moveLayer(fillId, beforeId);
+          }
+          if (map.getLayer(lineId)) {
+            map.moveLayer(lineId, beforeId);
           }
         });
+      }
+
+      // 🔹 Zoom to selected boundaries
+      const visibleKeys = Object.entries(flags)
+        .filter(([, v]) => v)
+        .map(([k]) => k);
+
+      if (visibleKeys.length) {
+        const allCoords = [];
+
+        visibleKeys.forEach((key) => {
+          const bucket = boundaryRef.current[key];
+          const data = bucket?.data;
+          if (!data) return;
+
+          const feats =
+            data.type === "FeatureCollection" ? data.features : [data];
+
+          feats.forEach((feat) => {
+            allCoords.push(...getCoordinatesFlat(feat.geometry));
+          });
+        });
+
+        if (allCoords.length) {
+          const lons = allCoords.map((c) => c[0]);
+          const lats = allCoords.map((c) => c[1]);
+          const minLon = Math.min(...lons);
+          const maxLon = Math.max(...lons);
+          const minLat = Math.min(...lats);
+          const maxLat = Math.max(...lats);
+
+          map.fitBounds([minLon, minLat, maxLon, maxLat], {
+            padding: 40,
+            duration: 500,
+          });
+        }
       }
     };
 
@@ -432,11 +493,18 @@ const DashboardMap = ({
                 props.physical_actual ??
                 0;
 
-              const isProject =
-                !!(props.__category || props.__package) && !!props.__name;
-              const selectedParam = isProject
-                ? name
-                : props.__package || props.__phase || name;
+              // 🔹 NEW: better project / package / phase detection
+              const isProject = !!props.__category && !!props.__name;
+              const isPackage = !!props.__package && !props.__category;
+
+              let selectedParam;
+              if (isProject) {
+                selectedParam = name;
+              } else if (isPackage) {
+                selectedParam = props.__package || name;
+              } else {
+                selectedParam = props.__phase || name;
+              }
 
               const popupHTML = `
   <div style="font-family: 'Segoe UI', sans-serif; min-width:180px; ">
@@ -500,7 +568,6 @@ const DashboardMap = ({
     </div>
   </div>
 `;
-
               new mapboxgl.Popup()
                 .setLngLat(e.lngLat)
                 .setHTML(popupHTML)

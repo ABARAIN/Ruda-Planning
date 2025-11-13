@@ -181,11 +181,18 @@ const DashboardSidebar = ({
 
     const handleChange = (event) => {
       const selected = event.target.value;
+
       if (selected.includes("ALL")) {
         setValue(isAllSelected ? [] : options);
-        return;
+      } else {
+        setValue(selected);
       }
-      setValue(selected);
+
+      // 🔹 Auto-close dropdown by blurring the active element
+      const active = event.target.ownerDocument?.activeElement;
+      if (active && typeof active.blur === "function") {
+        active.blur();
+      }
     };
 
     return (
@@ -281,6 +288,8 @@ const DashboardSidebar = ({
     padding: "20px 15px",
     fontFamily: '"Open Sans", sans-serif',
     overflowY: "auto",
+    msOverflowStyle: "none", // IE / Edge
+    scrollbarWidth: "none", // Firefox
   };
 
   return (
