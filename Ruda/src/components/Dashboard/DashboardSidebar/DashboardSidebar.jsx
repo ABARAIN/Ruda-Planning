@@ -701,7 +701,7 @@ const DashboardSidebar = ({
             </div>
 
             {/* 🔹 Available Land (below Proposed Roads) */}
-            <div
+            {/* <div
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -721,10 +721,10 @@ const DashboardSidebar = ({
               }
             >
               <Landmark size={18} /> Available Land
-            </div>
+            </div> */}
 
             {/* RTW Dashboard Button */}
-            <div
+            {/* <div
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -744,7 +744,7 @@ const DashboardSidebar = ({
               }
             >
               <LayoutDashboard size={18} /> RTW Dashboard
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
