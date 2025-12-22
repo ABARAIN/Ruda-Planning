@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import HeaderButtons from "../Dashboard/DashboardHeader/HeaderButtons";
 
 export default function OngoingProjects() {
   const [data, setData] = useState([]);
@@ -339,9 +340,10 @@ export default function OngoingProjects() {
   }
 
   const headerStyle = {
-    background: "#2c5282",
+    background:
+      "radial-gradient(farthest-side ellipse at 20% 0, #333867 40%, #23274b)",
     color: "white",
-    padding: "15px 20px",
+    padding: "15px 15px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -388,7 +390,7 @@ export default function OngoingProjects() {
   };
 
   const headerRowStyle = {
-    background: "#2c5282",
+    background: "#113055",
     color: "white",
     position: "sticky",
     top: 0,
@@ -397,7 +399,7 @@ export default function OngoingProjects() {
 
   const headerCellStyle = {
     padding: "12px 8px",
-    border: "1px solid #357abd",
+    border: "1px solid #204871",
     textAlign: "center",
     fontWeight: "bold",
     fontSize: "12px",
@@ -409,26 +411,19 @@ export default function OngoingProjects() {
       {/* Header */}
       <div style={headerStyle}>
         <div>
-          <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "bold" }}>
+          <h1
+            style={{
+              margin: 0,
+              fontWeight: 100,
+              fontSize: "1.5rem",
+              color: "#fff",
+            }}
+          >
             ONGOING DEVELOPMENT PROJECTS
           </h1>
         </div>
-        <div>
-          <button
-            style={{
-              background: "#4a90e2",
-              color: "white",
-              border: "none",
-              padding: "8px 16px",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-            onClick={() => (window.location.href = "/")}
-          >
-            HOME
-          </button>
-        </div>
+        {/* Right: Header Buttons */}
+        <HeaderButtons />
       </div>
 
       {/* Controls */}
