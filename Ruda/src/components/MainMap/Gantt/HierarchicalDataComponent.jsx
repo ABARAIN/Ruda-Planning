@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-
+import HeaderButtons from "../../Dashboard/DashboardHeader/HeaderButtons";
 /**
  * RUDA Development Plan – Timeline (Updated Design)
  * Matches the design from the provided image
@@ -18,6 +18,7 @@ const MILESTONE_COLS = [
   "Contract Award",
   "Commencement of Work",
 ];
+
 export default function RUDAPlanTimeline({
   jsonPath = "/Sheet.json",
   sheetName = "R.Dev Plan (v3.2 Actual udpate)",
@@ -28,7 +29,6 @@ export default function RUDAPlanTimeline({
   const COL_BUDGET_REV0 = "Budget Estimates \nRev-0\n(PKR Millions)";
   const COL_ONGOING = "Ongoing / Completed";
   const COL_PRIORITY = "Priority Projects";
-  const COL_CHANGE = "Change Record";
   const COL_RUDA = "RAVI URBAN DEVELOPMENT AUTHORITY (RUDA)";
   const COL_SECTION = "Section";
   const COL_SN = "Sn.";
@@ -41,9 +41,7 @@ export default function RUDAPlanTimeline({
   const [expanded, setExpanded] = useState({});
   const [expandedCategories, setExpandedCategories] = useState({});
   const [query, setQuery] = useState("");
-  // Add showPriority state for the PRIORITY/SHOW ALL button
   const [showPriority, setShowPriority] = useState(false);
-  // Add showCompleted and showOngoing states for new buttons
   const [showCompleted, setShowCompleted] = useState(false);
   const [showOngoing, setShowOngoing] = useState(false);
 
@@ -52,7 +50,6 @@ export default function RUDAPlanTimeline({
     try {
       const params = new URLSearchParams(window.location.search);
       const f = (params.get("filter") || "").trim().toLowerCase();
-      const expandParam = params.get("expand");
       const searchParam = params.get("search");
 
       if (f === "ongoing") {
@@ -69,15 +66,7 @@ export default function RUDAPlanTimeline({
         setShowOngoing(false);
       }
 
-      // Handle expand parameter to auto-expand phases
-      if (expandParam === "all") {
-        // Will be handled after hierarchy is built
-      }
-
-      // Handle search parameter
-      if (searchParam) {
-        setQuery(searchParam);
-      }
+      if (searchParam) setQuery(searchParam);
     } catch (e) {
       // ignore malformed URL params
     }
@@ -109,9 +98,7 @@ export default function RUDAPlanTimeline({
   }, [jsonPath]);
 
   // ----- Sheet list -----
-  const sheets = useMemo(() => {
-    return raw?.workbook?.sheets ?? [];
-  }, [raw]);
+  const sheets = useMemo(() => raw?.workbook?.sheets ?? [], [raw]);
 
   useEffect(() => {
     if (!sheets.length) return;
@@ -122,7 +109,7 @@ export default function RUDAPlanTimeline({
     ) {
       setActiveSheetName(sheets[0].name);
     }
-  }, [sheets]);
+  }, [sheets, activeSheetName]);
 
   const rows = useMemo(() => {
     const s = sheets.find(
@@ -182,10 +169,12 @@ export default function RUDAPlanTimeline({
   // Collect FY columns dynamically
   const FY_COLS = useMemo(() => {
     const set = new Set();
-    for (const r of rows)
+    for (const r of rows) {
       Object.keys(r).forEach((k) => {
         if (/^FY\s*\d{2}\s*[-–]\s*\d{2}$/i.test(k)) set.add(k);
       });
+    }
+
     const mostFYRow = rows.reduce(
       (best, r) => {
         const c = Object.keys(r).filter((k) =>
@@ -195,7 +184,9 @@ export default function RUDAPlanTimeline({
       },
       { row: null, count: 0 }
     ).row;
+
     if (!mostFYRow) return Array.from(set);
+
     const ordered = Object.keys(mostFYRow).filter(
       (k) => /^FY\s*\d{2}\s*[-–]\s*\d{2}$/i.test(k) && set.has(k)
     );
@@ -203,17 +194,10 @@ export default function RUDAPlanTimeline({
     return ordered;
   }, [rows]);
 
-  // Get value for a specific FY column from row data
   const getFYValue = (row, fyCol) => {
     const value = get(row, fyCol);
-    if (
-      value === null ||
-      value === undefined ||
-      value === "" ||
-      value === "-"
-    ) {
+    if (value === null || value === undefined || value === "" || value === "-")
       return null;
-    }
     return value;
   };
 
@@ -222,6 +206,7 @@ export default function RUDAPlanTimeline({
     const phases = [];
     let curP = null;
     let curC = null;
+
     for (const r of rows) {
       if (isPhaseRow(r)) {
         const title = String(get(r, COL_RUDA, [COL_SECTION]) ?? "").trim();
@@ -263,94 +248,80 @@ export default function RUDAPlanTimeline({
     return phases;
   }, [rows]);
 
-  // Filter by search and priority
+  // Filter by search and priority/completed/ongoing
   const filteredHierarchy = useMemo(() => {
     let filtered = hierarchy;
-    // Priority filter
+
+    const upper = (v) =>
+      String(v || "")
+        .trim()
+        .toUpperCase();
+
     if (showPriority) {
       filtered = filtered
         .map((phase) => {
           const cats = phase.cats
             .map((cat) => {
               const items = cat.items.filter(
-                (item) =>
-                  String(item.raw[COL_PRIORITY]).trim().toUpperCase() === "YES"
+                (item) => upper(item.raw[COL_PRIORITY]) === "YES"
               );
-              const isCatPriority =
-                String(cat.raw[COL_PRIORITY]).trim().toUpperCase() === "YES";
-              if (isCatPriority || items.length > 0) {
-                return { ...cat, items };
-              }
+              const isCatPriority = upper(cat.raw[COL_PRIORITY]) === "YES";
+              if (isCatPriority || items.length > 0) return { ...cat, items };
               return null;
             })
             .filter(Boolean);
-          const isPhasePriority =
-            String(phase.raw[COL_PRIORITY]).trim().toUpperCase() === "YES";
-          if (isPhasePriority || cats.length > 0) {
-            return { ...phase, cats };
-          }
+
+          const isPhasePriority = upper(phase.raw[COL_PRIORITY]) === "YES";
+          if (isPhasePriority || cats.length > 0) return { ...phase, cats };
           return null;
         })
         .filter(Boolean);
     }
-    // Completed filter
+
     if (showCompleted) {
       filtered = filtered
         .map((phase) => {
           const cats = phase.cats
             .map((cat) => {
               const items = cat.items.filter(
-                (item) =>
-                  String(item.raw[COL_ONGOING]).trim().toUpperCase() ===
-                  "COMPLETED"
+                (item) => upper(item.raw[COL_ONGOING]) === "COMPLETED"
               );
               const isCatCompleted =
-                String(cat.raw[COL_ONGOING]).trim().toUpperCase() ===
-                "COMPLETED";
-              if (isCatCompleted || items.length > 0) {
-                return { ...cat, items };
-              }
+                upper(cat.raw[COL_ONGOING]) === "COMPLETED";
+              if (isCatCompleted || items.length > 0) return { ...cat, items };
               return null;
             })
             .filter(Boolean);
+
           const isPhaseCompleted =
-            String(phase.raw[COL_ONGOING]).trim().toUpperCase() === "COMPLETED";
-          if (isPhaseCompleted || cats.length > 0) {
-            return { ...phase, cats };
-          }
+            upper(phase.raw[COL_ONGOING]) === "COMPLETED";
+          if (isPhaseCompleted || cats.length > 0) return { ...phase, cats };
           return null;
         })
         .filter(Boolean);
     }
-    // Ongoing filter
+
     if (showOngoing) {
       filtered = filtered
         .map((phase) => {
           const cats = phase.cats
             .map((cat) => {
               const items = cat.items.filter(
-                (item) =>
-                  String(item.raw[COL_ONGOING]).trim().toUpperCase() ===
-                  "ONGOING"
+                (item) => upper(item.raw[COL_ONGOING]) === "ONGOING"
               );
-              const isCatOngoing =
-                String(cat.raw[COL_ONGOING]).trim().toUpperCase() === "ONGOING";
-              if (isCatOngoing || items.length > 0) {
-                return { ...cat, items };
-              }
+              const isCatOngoing = upper(cat.raw[COL_ONGOING]) === "ONGOING";
+              if (isCatOngoing || items.length > 0) return { ...cat, items };
               return null;
             })
             .filter(Boolean);
-          const isPhaseOngoing =
-            String(phase.raw[COL_ONGOING]).trim().toUpperCase() === "ONGOING";
-          if (isPhaseOngoing || cats.length > 0) {
-            return { ...phase, cats };
-          }
+
+          const isPhaseOngoing = upper(phase.raw[COL_ONGOING]) === "ONGOING";
+          if (isPhaseOngoing || cats.length > 0) return { ...phase, cats };
           return null;
         })
         .filter(Boolean);
     }
-    // Search filter
+
     const q = query.trim().toLowerCase();
     if (q) {
       filtered = filtered
@@ -367,12 +338,14 @@ export default function RUDAPlanTimeline({
               return { ...c, items: its };
             })
             .filter(Boolean);
+
           if (pHit && cats.length === 0) return p;
           if (pHit || cats.length > 0) return { ...p, cats };
           return null;
         })
         .filter(Boolean);
     }
+
     return filtered;
   }, [hierarchy, query, showPriority, showCompleted, showOngoing]);
 
@@ -398,113 +371,64 @@ export default function RUDAPlanTimeline({
     }
   }, [filteredHierarchy]);
 
+  // ---- UI helpers (no functionality changes) ----
+  const setExclusiveFilter = (key) => {
+    if (key === "priority") {
+      setShowPriority((v) => !v);
+      setShowCompleted(false);
+      setShowOngoing(false);
+      return;
+    }
+    if (key === "completed") {
+      setShowCompleted((v) => !v);
+      setShowPriority(false);
+      setShowOngoing(false);
+      return;
+    }
+    if (key === "ongoing") {
+      setShowOngoing((v) => !v);
+      setShowPriority(false);
+      setShowCompleted(false);
+      return;
+    }
+  };
+
+  const filterButtons = [
+    {
+      key: "priority",
+      label: "PRIORITY",
+      active: showPriority,
+      onClick: () => setExclusiveFilter("priority"),
+    },
+    {
+      key: "completed",
+      label: "COMPLETED",
+      active: showCompleted,
+      onClick: () => setExclusiveFilter("completed"),
+    },
+    {
+      key: "ongoing",
+      label: "ONGOING",
+      active: showOngoing,
+      onClick: () => setExclusiveFilter("ongoing"),
+    },
+  ];
+
   if (loading) return <div className="ruda-loading">Loading...</div>;
   if (err) return <div className="ruda-error">Error: {err}</div>;
 
   return (
     <div className="ruda-container">
-      {/* Header */}
+      {/* Header (same as OngoingProjects) */}
       <div className="ruda-header">
-        <div className="header-left">
+        <div>
           <h1>RUDA DEVELOPMENT PLAN - TIMELINE</h1>
         </div>
-        <div className="header-right" style={{ display: "flex", gap: "10px" }}>
-          <button
-            className={`priority-btn${showPriority ? " active" : ""}`}
-            onClick={() => {
-              setShowPriority((v) => !v);
-              setShowCompleted(false);
-              setShowOngoing(false);
-            }}
-            style={{
-              background: showPriority ? "#dc2626" : "#ef4444",
-              color: "white",
-              border: showPriority
-                ? "2px solid #991b1b"
-                : "2px solid transparent",
-              padding: "8px 16px",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              boxShadow: showPriority
-                ? "0 2px 8px rgba(220, 38, 38, 0.3)"
-                : "none",
-              transform: showPriority ? "translateY(-1px)" : "none",
-              transition: "all 0.2s ease-in-out",
-            }}
-          >
-            PRIORITY
-          </button>
-          <button
-            className={`completed-btn${showCompleted ? " active" : ""}`}
-            onClick={() => {
-              setShowCompleted((v) => !v);
-              setShowPriority(false);
-              setShowOngoing(false);
-            }}
-            style={{
-              background: showCompleted ? "#16a34a" : "#22c55e",
-              color: "white",
-              border: showCompleted
-                ? "2px solid #15803d"
-                : "2px solid transparent",
-              padding: "8px 16px",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              boxShadow: showCompleted
-                ? "0 2px 8px rgba(22, 163, 74, 0.3)"
-                : "none",
-              transform: showCompleted ? "translateY(-1px)" : "none",
-              transition: "all 0.2s ease-in-out",
-            }}
-          >
-            COMPLETED
-          </button>
-          <button
-            className={`ongoing-btn${showOngoing ? " active" : ""}`}
-            onClick={() => {
-              setShowOngoing((v) => !v);
-              setShowPriority(false);
-              setShowCompleted(false);
-            }}
-            style={{
-              background: showOngoing ? "#ea580c" : "#f97316",
-              color: "white",
-              border: showOngoing
-                ? "2px solid #c2410c"
-                : "2px solid transparent",
-              padding: "8px 16px",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              boxShadow: showOngoing
-                ? "0 2px 8px rgba(234, 88, 12, 0.3)"
-                : "none",
-              transform: showOngoing ? "translateY(-1px)" : "none",
-              transition: "all 0.2s ease-in-out",
-            }}
-          >
-            ONGOING
-          </button>
-          <button
-            className="home-btn"
-            onClick={() => (window.location.href = "/")}
-          >
-            HOME
-          </button>
-        </div>
+        <HeaderButtons />
       </div>
 
       {/* Controls */}
       <div className="ruda-controls">
-        <input
-          type="text"
-          placeholder="Search phases / packages..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="search-input"
-        />
         <select
           value={activeSheetName}
           onChange={(e) => {
@@ -519,6 +443,33 @@ export default function RUDAPlanTimeline({
             </option>
           ))}
         </select>
+
+        {/* Search centered with better left/right padding */}
+        <div className="search-wrap">
+          <input
+            type="text"
+            placeholder="Search phases / packages..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="search-input"
+          />
+        </div>
+
+        {/* Right buttons */}
+        <div className="header-right">
+          <div className="filter-group" role="group" aria-label="Filters">
+            {filterButtons.map((b) => (
+              <button
+                key={b.key}
+                className={`chip-btn ${b.key}${b.active ? " active" : ""}`}
+                onClick={b.onClick}
+                type="button"
+              >
+                {b.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Table */}
@@ -673,6 +624,7 @@ export default function RUDAPlanTimeline({
                               const itemKey = `${category.name}-${item.name}-${itemIdx}`;
                               const isMilestoneExpanded =
                                 expandedCategories[itemKey];
+
                               return (
                                 <React.Fragment key={item.name}>
                                   <tr
@@ -724,8 +676,9 @@ export default function RUDAPlanTimeline({
                                       );
                                     })}
                                   </tr>
+
                                   {isMilestoneExpanded &&
-                                    MILESTONE_COLS.map((milestone, msIdx) => (
+                                    MILESTONE_COLS.map((milestone) => (
                                       <React.Fragment
                                         key={item.name + milestone}
                                       >
@@ -786,164 +739,139 @@ export default function RUDAPlanTimeline({
       </div>
 
       <style>{`
-        .col-milestone {
-          min-width: 120px;
-          padding: 8px !important;
-          text-align: center;
-          font-weight: bold;
-          background: #f3f4f6;
-        }
-        .milestone-cell {
-          text-align: center;
-          color: #888;
-          font-style: italic;
-          background: #f9fafb;
-        }
-        .milestone-row .milestone-name {
-          
-          color: #2c5282;
-          font-size: 12px;
-          font-style: italic;
-        }
-        .milestone-row td {
-          border-left: 1px solid #e2e8f0;
-          border-right: 1px solid #e2e8f0;
-          padding: 8px 8px;
-          background: #f9fafb;
-        }
-        .milestone-separator td {
-          background: #f9fafb;
-          height: 2px;
-          padding: 0;
-          border: none;
-        }
-        .milestone-indent {
-          width: 20px;
-          display: inline-block;
-        }
-        .priority-btn {
-          background: #ef4444;
-          color: white;
-          border: 2px solid transparent;
-          padding: 8px 16px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-weight: bold;
-          transition: all 0.2s ease-in-out;
-        }
-        .priority-btn.active {
-          background: #dc2626;
-          border: 2px solid #991b1b;
-          box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
-          transform: translateY(-1px);
-        }
-        .priority-btn:hover {
-          background: #dc2626;
-          transform: translateY(-1px);
-        }
-        .completed-btn {
-          background: #22c55e;
-          color: white;
-          border: 2px solid transparent;
-          padding: 8px 16px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-weight: bold;
-          transition: all 0.2s ease-in-out;
-        }
-        .completed-btn.active {
-          background: #16a34a;
-          border: 2px solid #15803d;
-          box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
-          transform: translateY(-1px);
-        }
-        .completed-btn:hover {
-          background: #16a34a;
-          transform: translateY(-1px);
-        }
-        .ongoing-btn {
-          background: #f97316;
-          color: white;
-          border: 2px solid transparent;
-          padding: 8px 16px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-weight: bold;
-          transition: all 0.2s ease-in-out;
-        }
-        .ongoing-btn.active {
-          background: #ea580c;
-          border: 2px solid #c2410c;
-          box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3);
-          transform: translateY(-1px);
-        }
-        .ongoing-btn:hover {
-          background: #ea580c;
-          transform: translateY(-1px);
-        }
         .ruda-container {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          // background: #2c5282;
           min-height: 100vh;
           padding: 0;
           margin: 0;
+          background: #fff;
         }
 
+        /* Header same as OngoingProjects */
         .ruda-header {
-          background: #2c5282;
+          background: radial-gradient(farthest-side ellipse at 20% 0, #333867 40%, #23274b);
           color: white;
-          padding: 15px 20px;
+          padding: 15px 15px;
           display: flex;
           justify-content: space-between;
           align-items: center;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
         .ruda-header h1 {
           margin: 0;
-          font-size: 20px;
-          font-weight: bold;
+          font-weight: 100;
+          font-size: 1.5rem;
+          color: #fff;
+          text-transform: uppercase;
         }
 
-        .home-btn {
-          background: #4a90e2;
-          color: white;
-          border: none;
-          padding: 8px 16px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-weight: bold;
-        }
-
-        .home-btn:hover {
-          background: #4b87cc;
-        }
-
+        /* Controls row */
         .ruda-controls {
           background: #e2e8f0;
-          padding: 10px 20px;
+          padding: 12px 24px; /* more left/right padding */
           display: flex;
-          gap: 15px;
+          gap: 14px;
           align-items: center;
+          border-bottom: 1px solid #d7dee9;
         }
-
-        .search-input {
-          flex: 1;
-          padding: 8px 12px;
-          border: 1px solid #cbd5e0;
-          border-radius: 4px;
-          font-size: 14px;
-        }
-
-
 
         .sheet-select {
           padding: 8px 12px;
           border: 1px solid #cbd5e0;
-          border-radius: 4px;
+          border-radius: 8px;
           font-size: 14px;
-          min-width: 200px;
+          min-width: 240px;
+          background: white;
+          outline: none;
         }
 
+        /* Search centered with better visibility */
+        .search-wrap {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          padding: 0 20px; /* left/right padding around search */
+        }
+        .search-input {
+          width: 100%;
+          max-width: 900px;
+          padding: 10px 14px;
+          border: 1px solid #cbd5e0;
+          border-radius: 10px;
+          font-size: 14px;
+          background: white;
+          outline: none;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .search-input:focus {
+          border-color: rgba(51,56,103,0.6);
+          box-shadow: 0 0 0 3px rgba(51,56,103,0.15);
+        }
+
+        /* Right-side buttons */
+        .header-right {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-shrink: 0;
+        }
+
+        .filter-group {
+          display: inline-flex;
+          gap: 8px;
+          padding: 6px;
+          border-radius: 12px;
+          
+          backdrop-filter: blur(4px);
+        }
+
+        /* Professional chips */
+        .chip-btn {
+          appearance: none;
+          border: 1px solid transparent;
+          padding: 8px 14px;
+          border-radius: 999px;
+          cursor: pointer;
+          font-weight: 700;
+          font-size: 12px;
+          letter-spacing: 0.3px;
+          transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+          color: white;
+          user-select: none;
+          white-space: nowrap;
+        }
+        .chip-btn:hover { transform: translateY(-1px); }
+        .chip-btn:active { transform: translateY(0px); }
+
+        .chip-btn.priority { background: #ef4444; }
+        .chip-btn.priority.active {
+          background: #dc2626;
+          border-color: #991b1b;
+          box-shadow: 0 6px 16px rgba(220,38,38,0.22);
+        }
+
+        .chip-btn.completed { background: #22c55e; }
+        .chip-btn.completed.active {
+          background: #16a34a;
+          border-color: #15803d;
+          box-shadow: 0 6px 16px rgba(22,163,74,0.22);
+        }
+
+        .chip-btn.ongoing { background: #f97316; }
+        .chip-btn.ongoing.active {
+          background: #ea580c;
+          border-color: #c2410c;
+          box-shadow: 0 6px 16px rgba(234,88,12,0.22);
+        }
+
+        .chip-btn.home {
+          background: #4a90e2;
+          border-color: rgba(0,0,0,0.05);
+        }
+        .chip-btn.home:hover { box-shadow: 0 6px 16px rgba(74,144,226,0.22); }
+
+        /* Table */
         .table-container {
           overflow: auto;
           background: white;
@@ -978,19 +906,9 @@ export default function RUDAPlanTimeline({
           min-width: 250px;
           text-align: left !important;
         }
-
-        .col-amount {
-          min-width: 90px;
-        }
-
-        .col-budget-rev0, .col-budget-est {
-          min-width: 100px;
-        }
-
-        .col-ongoing, .col-priority {
-          min-width: 80px;
-        }
-
+        .col-amount { min-width: 90px; }
+        .col-budget-rev0, .col-budget-est { min-width: 100px; }
+        .col-ongoing, .col-priority { min-width: 80px; }
         .col-fy {
           min-width: 120px;
           padding: 8px !important;
@@ -1003,11 +921,7 @@ export default function RUDAPlanTimeline({
           color: white;
           cursor: pointer;
         }
-
-        .phase-row:hover {
-          background: #4a5568;
-        }
-
+        .phase-row:hover { background: #4a5568; }
         .phase-row td {
           padding: 12px 8px;
           border: 1px solid #4a5568;
@@ -1024,69 +938,24 @@ export default function RUDAPlanTimeline({
           font-size: 10px;
           transition: transform 0.2s;
         }
+        .expand-icon.expanded { transform: rotate(180deg); }
 
-        .expand-icon.expanded {
-          transform: rotate(180deg);
-        }
+        .category-row { background: #f7fafc; cursor: pointer; }
+        .category-row:hover { background: #edf2f7; }
+        .category-row td { padding: 10px 8px; border: 1px solid #e2e8f0; }
 
-        .category-row {
-          background: #f7fafc;
-          cursor: pointer;
-        }
+        .category-name { display: flex; align-items: center; gap: 8px; }
+        .category-indent { width: 20px; }
+        .sub-item-indent { width: 40px; display: inline-block; }
 
-        .category-row:hover {
-          background: #edf2f7;
-        }
+        .item-row { background: white; }
+        .item-row td { padding: 8px 8px; border: 1px solid #e2e8f0; }
 
-        .category-row td {
-          padding: 10px 8px;
-          border: 1px solid #e2e8f0;
-        }
+        .item-name { text-align: left; font-weight: 500; }
+        .sub-item { padding-left: 20px; color: #4a5568; }
 
-        .category-name {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .category-indent {
-          width: 20px;
-        }
-
-        .sub-item-indent {
-          width: 40px;
-          display: inline-block;
-        }
-
-        .item-row {
-          background: white;
-        }
-
-        .item-row td {
-          padding: 8px 8px;
-          border: 1px solid #e2e8f0;
-        }
-
-        .item-name {
-          text-align: left;
-          font-weight: 500;
-        }
-
-        .sub-item {
-          padding-left: 20px;
-          color: #4a5568;
-        }
-
-        .amount {
-          text-align: center;
-          font-weight: 500;
-        }
-
-        .fy-cell {
-          padding: 8px !important;
-          text-align: center;
-          font-weight: 500;
-        }
+        .amount { text-align: center; font-weight: 500; }
+        .fy-cell { padding: 8px !important; text-align: center; font-weight: 500; }
 
         .ruda-loading, .ruda-error {
           padding: 40px;
@@ -1096,32 +965,55 @@ export default function RUDAPlanTimeline({
           margin: 20px;
           border-radius: 8px;
         }
+        .ruda-error { color: #dc2626; }
 
-        .ruda-error {
-          color: #dc2626;
+        .col-milestone {
+          min-width: 120px;
+          padding: 8px !important;
+          text-align: center;
+          font-weight: bold;
+          background: #f3f4f6;
+        }
+        .milestone-cell {
+          text-align: center;
+          color: #888;
+          font-style: italic;
+          background: #f9fafb;
+        }
+        .milestone-row .milestone-name {
+          color: #2c5282;
+          font-size: 12px;
+          font-style: italic;
+        }
+        .milestone-row td {
+          border-left: 1px solid #e2e8f0;
+          border-right: 1px solid #e2e8f0;
+          padding: 8px 8px;
+          background: #f9fafb;
+        }
+        .milestone-separator td {
+          background: #f9fafb;
+          height: 2px;
+          padding: 0;
+          border: none;
+        }
+        .milestone-indent {
+          width: 20px;
+          display: inline-block;
         }
 
         /* Responsive adjustments */
         @media (max-width: 1200px) {
-          .ruda-table {
-            font-size: 11px;
-          }
-          
-          .header-row th {
-            padding: 8px 6px;
-            font-size: 10px;
-          }
+          .ruda-table { font-size: 11px; }
+          .header-row th { padding: 8px 6px; font-size: 10px; }
+          .sheet-select { min-width: 200px; }
         }
 
-        @media (max-width: 768px) {
-          .ruda-controls {
-            flex-direction: column;
-            gap: 10px;
-          }
-          
-          .search-input, .sheet-select {
-            width: 100%;
-          }
+        @media (max-width: 900px) {
+          .ruda-controls { flex-direction: column; align-items: stretch; }
+          .search-wrap { justify-content: stretch; padding: 0; }
+          .search-input { max-width: 100%; }
+          .header-right { justify-content: space-between; }
         }
       `}</style>
     </div>

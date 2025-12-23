@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import HeaderButtons from "../Dashboard/DashboardHeader/HeaderButtons";
 
 export default function OverallSummary() {
   const [data, setData] = useState([]);
@@ -14,13 +15,7 @@ export default function OverallSummary() {
   const extractMainProjectName = (fullName) => {
     if (!fullName) return "";
 
-    // Remove extra details like "3Km", "2.5Km", etc.
-    // Examples: "RTW Package-01 3Km" -> "RTW Package-01"
-    //           "RTW Package-02 2.5Km" -> "RTW Package-02"
-    //           "RTW Package-03 1.8Km" -> "RTW Package-03"
     const cleaned = fullName.replace(/\s+\d+(\.\d+)?\s*km$/i, "").trim();
-
-    // Also handle other possible patterns like distances in parentheses
     const finalCleaned = cleaned
       .replace(/\s*\(\d+(\.\d+)?\s*km\)$/i, "")
       .trim();
@@ -69,7 +64,6 @@ export default function OverallSummary() {
 
       if (!sheet?.rows) throw new Error("Invalid data structure");
 
-      // Process all projects (not just ongoing)
       const processedData = processAllProjects(sheet.rows);
       setData(processedData);
     } catch (err) {
@@ -86,7 +80,6 @@ export default function OverallSummary() {
     rows.forEach((row) => {
       const projectName = row[COL_BREAKDOWN];
 
-      // Skip if no project name or if it's a summary/total row
       if (
         !projectName ||
         projectName.toLowerCase().includes("total") ||
@@ -97,7 +90,6 @@ export default function OverallSummary() {
       )
         return;
 
-      // Include all projects that have meaningful data
       if (projectName && (row[COL_BUDGET_EST] || row[COL_ACTUAL_EXP])) {
         const project = {
           serialNumber: serialNumber++,
@@ -113,7 +105,6 @@ export default function OverallSummary() {
       }
     });
 
-    // Group projects by category
     const groupedProjects = {};
     allProjects.forEach((project) => {
       if (!groupedProjects[project.category]) {
@@ -170,7 +161,6 @@ export default function OverallSummary() {
   };
 
   const extractStartDate = (row) => {
-    // Extract start date from FY columns - find first non-null/non-zero value
     const fyColumns = [
       "FY 20-21",
       "FY 21-22",
@@ -189,7 +179,6 @@ export default function OverallSummary() {
   };
 
   const extractFinishDate = (row) => {
-    // Extract finish date from FY columns - find last non-null/non-zero value
     const fyColumns = [
       "FY 35-36",
       "FY 34-35",
@@ -236,7 +225,7 @@ export default function OverallSummary() {
         100,
         Math.round((actual / budget) * 100)
       );
-      const planPercentage = Math.floor(Math.random() * 100); // Placeholder for plan data
+      const planPercentage = Math.floor(Math.random() * 100);
 
       return {
         plan: planPercentage,
@@ -250,11 +239,8 @@ export default function OverallSummary() {
   };
 
   const calculateLandStatus = (projectName) => {
-    // For RTW projects, try to get real data from the API
     if (projectName && projectName.toLowerCase().includes("rtw")) {
-      // This would ideally fetch from the same API as DashboardRTW
-      // For now, return realistic placeholder values
-      const available = Math.floor(Math.random() * 60) + 20; // 20-80%
+      const available = Math.floor(Math.random() * 60) + 20;
       const remaining = 100 - available;
 
       return {
@@ -263,8 +249,7 @@ export default function OverallSummary() {
       };
     }
 
-    // For other projects, return placeholder data
-    const available = Math.floor(Math.random() * 80) + 10; // 10-90%
+    const available = Math.floor(Math.random() * 80) + 10;
     const remaining = 100 - available;
 
     return {
@@ -288,7 +273,6 @@ export default function OverallSummary() {
     Object.keys(data).forEach((category) => {
       let categoryProjects = [...data[category]];
 
-      // Apply search filter
       if (query.trim()) {
         const searchTerm = query.toLowerCase();
         categoryProjects = categoryProjects.filter(
@@ -299,16 +283,13 @@ export default function OverallSummary() {
         );
       }
 
-      // Apply dropdown filter
       if (filterValue !== "all") {
         if (category.toLowerCase().includes(filterValue.toLowerCase())) {
-          // Keep all projects in this category
         } else {
-          categoryProjects = []; // Filter out this entire category
+          categoryProjects = [];
         }
       }
 
-      // Only include categories that have projects after filtering
       if (categoryProjects.length > 0) {
         filteredGroups[category] = categoryProjects;
       }
@@ -344,7 +325,7 @@ export default function OverallSummary() {
     const categories = Object.keys(data);
     const expanded = {};
     categories.forEach((category) => {
-      expanded[category] = true; // All categories expanded by default
+      expanded[category] = true;
     });
     setExpandedCategories(expanded);
   };
@@ -399,9 +380,10 @@ export default function OverallSummary() {
   }
 
   const headerStyle = {
-    background: "#2c5282",
+    background:
+      "radial-gradient(farthest-side ellipse at 20% 0, #333867 40%, #23274b)",
     color: "white",
-    padding: "15px 20px",
+    padding: "15px 15px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -448,7 +430,7 @@ export default function OverallSummary() {
   };
 
   const headerRowStyle = {
-    background: "#2c5282",
+    background: "#113055",
     color: "white",
     position: "sticky",
     top: 0,
@@ -458,38 +440,32 @@ export default function OverallSummary() {
 
   const headerCellStyle = {
     padding: "12px 28px",
-    border: "1px solid #357abd",
+    border: "1px solid #25486b",
     textAlign: "center",
-    fontWeight: "bold",
+    fontWeight: "normal",
     fontSize: "14px",
     verticalAlign: "middle",
   };
 
   return (
     <div style={containerStyle}>
-      {/* Header */}
+      {/* Header (same like OngoingProjects) */}
       <div style={headerStyle}>
         <div>
-          <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "bold" }}>
+          <h1
+            style={{
+              margin: 0,
+              fontWeight: 100,
+              fontSize: "1.5rem",
+              color: "#fff",
+            }}
+          >
             OVERALL SUMMARY
           </h1>
         </div>
-        <div>
-          <button
-            style={{
-              background: "#4a90e2",
-              color: "white",
-              border: "none",
-              padding: "8px 16px",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-            onClick={() => (window.location.href = "/")}
-          >
-            HOME
-          </button>
-        </div>
+
+        {/* Right: Header Buttons */}
+        <HeaderButtons />
       </div>
 
       {/* Controls */}
@@ -604,7 +580,7 @@ export default function OverallSummary() {
                           colSpan="5"
                           style={{
                             padding: "12px 15px",
-                            border: "1px solid #357abd",
+                            border: "1px solid #25486b",
                             fontWeight: "normal",
                             fontSize: "14px",
                             textAlign: "left",
@@ -631,7 +607,7 @@ export default function OverallSummary() {
                           const nameCellStyle = {
                             ...cellStyle,
                             textAlign: "left",
-                            paddingLeft: "25px", // Indent sub-projects
+                            paddingLeft: "25px",
                             color: "#4a5568",
                             cursor: "pointer",
                             transition: "all 0.2s ease",
@@ -798,12 +774,11 @@ export default function OverallSummary() {
                                   style={{
                                     fontSize: "12px",
                                     display: "flex",
-                                    alignItems: "center", // vertically center
-                                    justifyContent: "center", // horizontally center
-                                    gap: "20px", // text aur chart ke darmiyan gap
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "20px",
                                   }}
                                 >
-                                  {/* Left side text */}
                                   <div
                                     style={{
                                       display: "flex",
@@ -821,7 +796,6 @@ export default function OverallSummary() {
                                     </div>
                                   </div>
 
-                                  {/* Right side pie chart */}
                                   <div
                                     style={{
                                       width: "80px",

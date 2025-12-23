@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import HeaderButtons from "../Dashboard/DashboardHeader/HeaderButtons";
 import {
   Box,
   Typography,
@@ -130,50 +131,63 @@ const ProgressUpdate = () => {
         padding: "0px",
       }}
     >
-      {/* Header */}
+      {/* Header (same like OngoingProjects) */}
       <Box
         sx={{
-          backgroundColor: "#2c5282",
+          background:
+            "radial-gradient(farthest-side ellipse at 20% 0, #333867 40%, #23274b)",
           color: "white",
-          padding: "10px 20px",
+          padding: "15px 15px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: "bold",
-            fontSize: "24px",
-            textTransform: "uppercase",
-          }}
-        >
-          Progress Update – CFY Ongoing Works
-        </Typography>
-
-        <FormControl sx={{ minWidth: 100, minHeight: 50 }}>
-          <InputLabel sx={{ color: "white", fontSize: "18px" }}>FY</InputLabel>
-          <Select
-            value={selectedFY}
-            onChange={(e) => setSelectedFY(e.target.value)}
+        <Box>
+          <Typography
+            component="h1"
             sx={{
-              color: "white",
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "white",
-              },
-              "& .MuiSvgIcon-root": {
-                color: "white",
-              },
+              margin: 0,
+              fontWeight: 100,
+              fontSize: "1.5rem",
+              color: "#fff",
+              textTransform: "uppercase",
             }}
           >
-            {fyOptions.map((fy) => (
-              <MenuItem key={fy} value={fy}>
-                {fy}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            Progress Update – CFY Ongoing Works
+          </Typography>
+        </Box>
+
+        {/* Right side: FY filter then icons (FY stays left of icons) */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <FormControl sx={{ minWidth: 100, minHeight: 50 }}>
+            <InputLabel sx={{ color: "white", fontSize: "18px" }}>
+              FY
+            </InputLabel>
+            <Select
+              value={selectedFY}
+              onChange={(e) => setSelectedFY(e.target.value)}
+              sx={{
+                color: "white",
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "white",
+                },
+                "& .MuiSvgIcon-root": {
+                  color: "white",
+                },
+              }}
+            >
+              {fyOptions.map((fy) => (
+                <MenuItem key={fy} value={fy}>
+                  {fy}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <HeaderButtons />
+        </Box>
       </Box>
 
       {/* Grid Layout */}
